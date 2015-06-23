@@ -5,10 +5,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Event[] events = {
-                new Event(EventType.EVENT_A, 0, 0),
-                new Event(EventType.EVENT_B, 1, 0)
-        };
+        Event[] events = Generator.generate();
 
         Detector detector = new Detector(new Spec());
         boolean res = detector.detect(events);
