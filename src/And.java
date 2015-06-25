@@ -1,10 +1,10 @@
 /**
  * Created by William Braik on 6/25/2015.
  */
-public class And extends AbstractBinaryRuleComposite {
+public class And extends AbstractRuleComposite {
 
-    public And(BinaryRule left, BinaryRule right) {
-        super(left, right);
+    public And(Rule left, Rule right) {
+        super(RuleType.RULE_AND, left, right);
     }
 
     @Override

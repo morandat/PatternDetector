@@ -3,4 +3,7 @@
  */
 public interface BinaryRule extends Rule {
 
+    public EventType getLeft();
+
+    public EventType getRight();
 }

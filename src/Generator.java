@@ -9,15 +9,17 @@ import java.util.ArrayList;
  */
 public final class Generator {
 
+    static private int _t = 0;
+
     private Generator() {
 
     }
 
     public static ArrayList<Event> generateStream() {
-        ArrayList<Event> eventStream = new ArrayList<Event>();
+        ArrayList<Event> eventStream = new ArrayList<>();
 
-        eventStream.add(new Event(EventType.EVENT_A, 0, 0));
-        eventStream.add(new Event(EventType.EVENT_B, 1, 0));
+        eventStream.add(new Event(EventType.EVENT_A, _t++));
+        eventStream.add(new Event(EventType.EVENT_B, _t++));
 
         return eventStream;
     }

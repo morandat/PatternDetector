@@ -3,7 +3,7 @@
  */
 public enum EventType {
 
-    EVENT_A("a"), EVENT_B("b");
+    EVENT_A("A"), EVENT_B("B");
 
     private final String _event;
 

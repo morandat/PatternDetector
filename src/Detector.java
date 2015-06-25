@@ -5,11 +5,10 @@
 import java.util.ArrayList;
 
 /**
- * Parses a stream of events to detect patterns according to a given Spec *
+ * Parses a stream of events to detect patterns according to a given Spec
  */
 public class Detector {
 
-    // For now the Detector only has a single Rule.
     Rule _rule;
 
     public Detector(Rule rule) {
@@ -19,10 +18,11 @@ public class Detector {
     // For now this method returns whether any pattern (defined by the spec) was found within the input event sequence.
     public boolean detect(ArrayList<Event> eventStream) {
 
+        System.out.println("Stream : " + eventStream);
+        System.out.println("Rule : " + _rule);
+
+        System.out.println(_rule.getType());
+
         return true;
     }
-
-    // public void addRule()
-
-    // public void removeRule()
 }

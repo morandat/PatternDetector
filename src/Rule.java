@@ -3,8 +3,9 @@
  */
 
 /**
- * Query/Rule that describes the patterns (complex events) we are interested in. *
+ * Query/Rule that describes the patterns (complex events) we are interested in.
  */
 public interface Rule {
 
+    public RuleType getType();
 }
