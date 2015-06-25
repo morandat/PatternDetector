@@ -12,4 +12,8 @@ public class Event {
         _timestamp = timestamp;
         _clientId = clientId;
     }
+
+    public void print() {
+
+    }
 }

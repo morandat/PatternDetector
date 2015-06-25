@@ -3,5 +3,15 @@
  */
 public enum EventType {
 
-    EVENT_A, EVENT_B
+    EVENT_A("a"), EVENT_B("b");
+
+    private final String _event;
+
+    private EventType(String event) {
+        _event = event;
+    }
+
+    public String toString() {
+        return _event;
+    }
 }

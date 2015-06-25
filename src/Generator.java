@@ -2,23 +2,27 @@
  * Created by William Braik on 6/23/2015.
  */
 
-/** Generates logs corresponding to various scenarios. **/
+import java.util.ArrayList;
+
+/**
+ * Generates logs corresponding to various scenarios. *
+ */
 public final class Generator {
 
     private Generator() {
 
     }
 
-    public static Event[] generate() {
-        Event[] events = {
-                new Event(EventType.EVENT_A, 0, 0),
-                new Event(EventType.EVENT_B, 1, 0)
-        };
+    public static ArrayList<Event> generateStream() {
+        ArrayList<Event> eventStream = new ArrayList<Event>();
 
-        return events;
+        eventStream.add(new Event(EventType.EVENT_A, 0, 0));
+        eventStream.add(new Event(EventType.EVENT_B, 1, 0));
+
+        return eventStream;
     }
 
-    // public static Event[] generateOtherScenario()
+    // public static ArrayList<Event> generateOtherScenario()
 
-    // public static Event[] generateYetAnotherScenario()
+    // public static ArrayList<Event> generateYetAnotherScenario()
 }
