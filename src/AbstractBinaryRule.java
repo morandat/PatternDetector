@@ -1,24 +1,29 @@
 /**
  * Created by William Braik on 6/25/2015.
  */
-public abstract class AbstractBinaryRule extends AbstractRule implements BinaryRule {
+public abstract class AbstractBinaryRule extends AbstractRule implements IBinaryRule {
 
-    EventType _left;
-    EventType _right;
+    protected IRule _left;
+    protected IRule _right;
 
-    public AbstractBinaryRule(RuleType type, EventType left, EventType right) {
-        _type = type;
+    public AbstractBinaryRule(RuleType type, String symbol, IRule left, IRule right) {
+        super(type, symbol);
         _left = left;
         _right = right;
     }
 
     @Override
-    public EventType getLeft() {
+    public IRule getLeftRule() {
         return _left;
     }
 
     @Override
-    public EventType getRight() {
+    public IRule getRightRule() {
         return _right;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + _left.toString() + " " + _symbol + " " + _right.toString() + ")";
     }
 }

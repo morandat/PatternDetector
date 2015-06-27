@@ -5,7 +5,9 @@
 /**
  * Query/Rule that describes the patterns (complex events) we are interested in.
  */
-public interface Rule {
+public interface IRule {
 
     public RuleType getType();
+
+    public String getSymbol();
 }

@@ -3,12 +3,7 @@
  */
 public class AlwaysFollowedBy extends AbstractBinaryRule {
 
-    public AlwaysFollowedBy(EventType left, EventType right) {
-        super(RuleType.RULE_ALWAYS_FOLLOWED_BY, left, right);
-    }
-
-    @Override
-    public String toString() {
-        return _left.toString() + " --> " + _right.toString();
+    public AlwaysFollowedBy(IRule left, IRule right) {
+        super(RuleType.RULE_ALWAYS_FOLLOWED_BY, "-->", left, right);
     }
 }

@@ -9,9 +9,9 @@ import java.util.ArrayList;
  */
 public class Detector {
 
-    Rule _rule;
+    IRule _rule;
 
-    public Detector(Rule rule) {
+    public Detector(IRule rule) {
         _rule = rule;
     }
 
@@ -20,8 +20,6 @@ public class Detector {
 
         System.out.println("Stream : " + eventStream);
         System.out.println("Rule : " + _rule);
-
-        System.out.println(_rule.getType());
 
         return true;
     }
