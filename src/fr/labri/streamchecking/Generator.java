@@ -1,4 +1,4 @@
-/**
+package fr.labri.streamchecking; /**
  * Created by William Braik on 6/23/2015.
  */
 
@@ -25,7 +25,7 @@ public final class Generator {
         return eventStream;
     }
 
-    // public static ArrayList<Event> generateOtherScenario()
+    // public static ArrayList<fr.labri.streamchecking.Event> generateOtherScenario()
 
-    // public static ArrayList<Event> generateYetAnotherScenario()
+    // public static ArrayList<fr.labri.streamchecking.Event> generateYetAnotherScenario()
 }

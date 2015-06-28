@@ -1,9 +1,16 @@
+package fr.labri.streamchecking.rules;
+
+import fr.labri.streamchecking.Detector;
+import fr.labri.streamchecking.Event;
+import fr.labri.streamchecking.EventType;
+import fr.labri.streamchecking.Generator;
+
 import java.util.ArrayList;
 
 /**
  * Created by William Braik on 6/22/2015.
  */
-public class Main {
+public class TestRules {
 
     public static void main(String[] args) {
 

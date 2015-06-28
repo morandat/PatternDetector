@@ -1,3 +1,7 @@
+package fr.labri.streamchecking.rules;
+
+import fr.labri.streamchecking.EventType;
+
 /**
  * Created by William Braik on 6/27/2015.
  */

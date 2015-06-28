@@ -1,6 +1,8 @@
-/**
+package fr.labri.streamchecking; /**
  * Created by William Braik on 6/22/2015.
  */
+
+import fr.labri.streamchecking.rules.IRule;
 
 import java.util.ArrayList;
 

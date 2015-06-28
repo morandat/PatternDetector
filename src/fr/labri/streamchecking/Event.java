@@ -1,7 +1,9 @@
+package fr.labri.streamchecking;
+
 /**
  * Created by William Braik on 6/22/2015.
  */
-public class Event {
+public class Event implements IEvent {
 
     EventType _type;
     int _timestamp;
@@ -9,6 +11,16 @@ public class Event {
     public Event(EventType type, int timestamp) {
         _type = type;
         _timestamp = timestamp;
+    }
+
+    @Override
+    public EventType getType() {
+        return _type;
+    }
+
+    @Override
+    public int getTimestamp() {
+        return _timestamp;
     }
 
     @Override
