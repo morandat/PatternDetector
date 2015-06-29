@@ -1,6 +1,13 @@
 package fr.labri.streamchecking.automaton;
 
+import fr.labri.streamchecking.Event;
 import fr.labri.streamchecking.EventType;
+import fr.labri.streamchecking.Generator;
+import fr.labri.streamchecking.rules.AlwaysFollowedBy;
+import fr.labri.streamchecking.rules.Atom;
+import fr.labri.streamchecking.rules.IRule;
+
+import java.util.stream.Stream;
 
 /**
  * Created by William Braik on 6/29/2015.
@@ -9,30 +16,19 @@ public class TestAutomaton {
 
     public static void main(String[] args) {
 
-        IState s0 = new State(StateType.STATE_INITIAL, "0");
-        IState s1 = new State(StateType.STATE_NORMAL, "1");
-        IState s2 = new State(StateType.STATE_FINAL, "2");
+        IRule r = new AlwaysFollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
+        IAutomaton a1 = r.buildAutomaton();
 
-        s0.registerTransition(EventType.EVENT_A, s1);
-        s1.registerTransition(EventType.EVENT_A, s1);
-        s1.registerTransition(EventType.EVENT_C, s1);
-        s1.registerTransition(EventType.EVENT_B, s2);
+        Stream<Event> events = Generator.generateStream().stream();
 
-        // a --> b
-        IAutomaton a1 = new Automaton();
-        a1.setInitialState(s0);
-        a1.registerState(s1);
-        a1.registerState(s2);
-
-        try {
-            System.out.println(a1.getCurrentState());
-            System.out.println(a1.fire(EventType.EVENT_A));
-            System.out.println(a1.fire(EventType.EVENT_A));
-            System.out.println(a1.fire(EventType.EVENT_C));
-            System.out.println(a1.fire(EventType.EVENT_B));
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            //e.printStackTrace();
-        }
+        System.out.println(a1.getCurrentState());
+        events.forEach(event -> {
+            try {
+                System.out.println(a1.fire(event.getType()));
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+                //e.printStackTrace();
+            }
+        });
     }
 }

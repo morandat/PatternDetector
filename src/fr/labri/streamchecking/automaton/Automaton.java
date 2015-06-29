@@ -46,8 +46,12 @@ public class Automaton implements IAutomaton {
     @Override
     public IState fire(EventType e) throws Exception {
         if (_currentState != null) {
-            _currentState = _currentState.next(e);
-            return _currentState;
+            if (_currentState.isFinal()) {
+                throw new Exception("FINAL STATE ALREADY REACHED"); //TODO AutomatonException
+            } else {
+                _currentState = _currentState.next(e);
+                return _currentState;
+            }
         } else {
             throw new Exception("INITIAL STATE NOT SET"); //TODO AutomatonException
         }

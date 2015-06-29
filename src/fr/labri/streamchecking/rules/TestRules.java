@@ -5,7 +5,7 @@ import fr.labri.streamchecking.Event;
 import fr.labri.streamchecking.EventType;
 import fr.labri.streamchecking.Generator;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by William Braik on 6/22/2015.
@@ -13,9 +13,6 @@ import java.util.ArrayList;
 public class TestRules {
 
     public static void main(String[] args) {
-
-        ArrayList<Event> eventStream = Generator.generateStream();
-
         // 1) a --> b
         IRule r1 = new AlwaysFollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
         // 2) a <-- b
@@ -48,8 +45,9 @@ public class TestRules {
                         new AlwaysPrecedes(new Atom(EventType.EVENT_A), r1)
                 ));
 
+        Collection<Event> events = Generator.generateStream();
         Detector detector = new Detector(r13);
-        boolean res = detector.detect(eventStream);
+        boolean res = detector.detect(events);
 
         System.out.println(res);
     }

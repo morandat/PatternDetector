@@ -1,31 +1,29 @@
-package fr.labri.streamchecking; /**
+package fr.labri.streamchecking;
+/**
  * Created by William Braik on 6/23/2015.
  */
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
- * Generates logs corresponding to various scenarios. *
+ * Pre-generates logs according to various scenarios.
  */
 public final class Generator {
 
     static private int _t = 0;
 
     private Generator() {
-
     }
 
-    public static ArrayList<Event> generateStream() {
-        ArrayList<Event> eventStream = new ArrayList<>();
+    public static Collection<Event> generateStream() {
+        Collection<Event> eventStream = new ArrayList<>();
 
         eventStream.add(new Event(EventType.EVENT_A, _t++));
-        eventStream.add(new Event(EventType.EVENT_B, _t++));
         eventStream.add(new Event(EventType.EVENT_C, _t++));
+        eventStream.add(new Event(EventType.EVENT_B, _t++));
+        eventStream.add(new Event(EventType.EVENT_A, _t++));
 
         return eventStream;
     }
-
-    // public static ArrayList<fr.labri.streamchecking.Event> generateOtherScenario()
-
-    // public static ArrayList<fr.labri.streamchecking.Event> generateYetAnotherScenario()
 }
