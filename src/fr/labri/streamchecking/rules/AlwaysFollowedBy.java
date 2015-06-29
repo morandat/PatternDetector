@@ -19,7 +19,7 @@ public class AlwaysFollowedBy extends AbstractBinaryRule {
         IState s2 = new State(StateType.STATE_FINAL, "2");
 
         s0.registerTransition(EventType.EVENT_A, s1);
-        s1.registerTransition(EventType.EVENT_A, s1);
+        s1.registerTransition(EventType.EVENT_A, s1); //TODO Should be !b
         s1.registerTransition(EventType.EVENT_C, s1);
         s1.registerTransition(EventType.EVENT_B, s2);
 

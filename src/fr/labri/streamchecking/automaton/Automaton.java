@@ -50,6 +50,7 @@ public class Automaton implements IAutomaton {
                 throw new Exception("FINAL STATE ALREADY REACHED"); //TODO AutomatonException
             } else {
                 _currentState = _currentState.next(e);
+                //TODO if final state reached, reset the automata
                 return _currentState;
             }
         } else {
