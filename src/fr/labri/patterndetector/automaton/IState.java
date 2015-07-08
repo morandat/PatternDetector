@@ -1,6 +1,6 @@
-package fr.labri.streamchecking.automaton;
+package fr.labri.patterndetector.automaton;
 
-import fr.labri.streamchecking.EventType;
+import fr.labri.patterndetector.EventType;
 
 /**
  * Created by William Braik on 6/28/2015.

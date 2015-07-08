@@ -1,7 +1,6 @@
-package fr.labri.streamchecking.automaton;
+package fr.labri.patterndetector.automaton;
 
-import fr.labri.streamchecking.EventType;
-import fr.labri.streamchecking.automaton.IState;
+import fr.labri.patterndetector.EventType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +33,13 @@ public class State implements IState {
     @Override
     public IState next(EventType e) throws Exception {
         IState next = _transitions.get(e);
+
+        // If the event can't fire any transition from this state, check if the state has a negative transition.
+        // The negative transition HAS to be checked last.
+        if (next == null) {
+            next = _transitions.get(EventType.EVENT_SPECIAL);
+        }
+
         if (next != null) {
             return next;
         } else {

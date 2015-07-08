@@ -1,4 +1,4 @@
-package fr.labri.streamchecking;
+package fr.labri.patterndetector;
 
 /**
  * Created by William Braik on 6/28/2015.

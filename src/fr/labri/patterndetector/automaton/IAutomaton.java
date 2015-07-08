@@ -1,6 +1,6 @@
-package fr.labri.streamchecking.automaton;
+package fr.labri.patterndetector.automaton;
 
-import fr.labri.streamchecking.EventType;
+import fr.labri.patterndetector.EventType;
 
 import java.util.Set;
 

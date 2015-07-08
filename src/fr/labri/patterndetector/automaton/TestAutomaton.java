@@ -1,11 +1,11 @@
-package fr.labri.streamchecking.automaton;
+package fr.labri.patterndetector.automaton;
 
-import fr.labri.streamchecking.Event;
-import fr.labri.streamchecking.EventType;
-import fr.labri.streamchecking.Generator;
-import fr.labri.streamchecking.rules.AlwaysFollowedBy;
-import fr.labri.streamchecking.rules.Atom;
-import fr.labri.streamchecking.rules.IRule;
+import fr.labri.patterndetector.Event;
+import fr.labri.patterndetector.EventType;
+import fr.labri.patterndetector.Generator;
+import fr.labri.patterndetector.rules.FollowedBy;
+import fr.labri.patterndetector.rules.Atom;
+import fr.labri.patterndetector.rules.IRule;
 
 import java.util.stream.Stream;
 
@@ -16,7 +16,7 @@ public class TestAutomaton {
 
     public static void main(String[] args) {
 
-        IRule r = new AlwaysFollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
+        IRule r = new FollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
         IAutomaton a1 = r.buildAutomaton();
 
         Stream<Event> events = Generator.generateStream().stream();

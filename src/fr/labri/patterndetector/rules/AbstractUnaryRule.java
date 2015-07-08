@@ -1,4 +1,4 @@
-package fr.labri.streamchecking.rules;
+package fr.labri.patterndetector.rules;
 
 /**
  * Created by William Braik on 6/28/2015.
@@ -9,6 +9,11 @@ public abstract class AbstractUnaryRule extends AbstractRule implements IUnaryRu
 
     public AbstractUnaryRule(RuleType type, String symbol, IRule r) {
         super(type, symbol);
+        _r = r;
+    }
+
+    public AbstractUnaryRule(RuleType type, String symbol, IRule r, TimeConstraint tc) {
+        super(type, symbol, tc);
         _r = r;
     }
 

@@ -1,4 +1,4 @@
-package fr.labri.streamchecking.rules;
+package fr.labri.patterndetector.rules;
 
 /**
  * Created by William Braik on 6/25/2015.
@@ -10,6 +10,12 @@ public abstract class AbstractBinaryRule extends AbstractRule implements IBinary
 
     public AbstractBinaryRule(RuleType type, String symbol, IRule left, IRule right) {
         super(type, symbol);
+        _left = left;
+        _right = right;
+    }
+
+    public AbstractBinaryRule(RuleType type, String symbol, IRule left, IRule right, TimeConstraint tc) {
+        super(type, symbol, tc);
         _left = left;
         _right = right;
     }

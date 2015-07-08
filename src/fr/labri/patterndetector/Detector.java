@@ -1,9 +1,9 @@
-package fr.labri.streamchecking;
+package fr.labri.patterndetector;
 /**
  * Created by William Braik on 6/22/2015.
  */
 
-import fr.labri.streamchecking.rules.IRule;
+import fr.labri.patterndetector.rules.IRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,7 +19,7 @@ public class Detector {
         _rule = rule;
     }
 
-    // For now this method returns whether any pattern (defined by the spec) was found within the input event sequence.
+    // For now this method returns whether any pattern (defined by the rule) was found within the input event sequence.
     public boolean detect(Collection<Event> events) {
 
         System.out.println("Stream : " + events);

@@ -1,6 +1,6 @@
-package fr.labri.streamchecking.rules;
+package fr.labri.patterndetector.rules;
 
-import fr.labri.streamchecking.EventType;
+import fr.labri.patterndetector.EventType;
 
 /**
  * Created by William Braik on 6/27/2015.

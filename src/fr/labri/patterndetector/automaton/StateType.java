@@ -1,4 +1,4 @@
-package fr.labri.streamchecking.automaton;
+package fr.labri.patterndetector.automaton;
 
 /**
  * Created by William Braik on 6/28/2015.
