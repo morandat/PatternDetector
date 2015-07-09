@@ -7,6 +7,7 @@ public class Event implements IEvent {
 
     EventType _type;
     int _timestamp;
+    // TODO events have data attached to them.
 
     public Event(EventType type, int timestamp) {
         _type = type;

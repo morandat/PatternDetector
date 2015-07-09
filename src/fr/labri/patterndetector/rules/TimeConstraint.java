@@ -8,11 +8,11 @@ import java.util.concurrent.TimeUnit;
 public class TimeConstraint implements ITimeConstraint {
 
     private int _value;
-    private TimeUnit _unit;
+    private TimeUnit _unit; // TODO might have to implement our own, more restrictive TimeUnit later.
 
     TimeConstraint(int value, TimeUnit unit) {
         _value = value;
-        _unit = TimeUnit.SECONDS;
+        _unit = unit;
     }
 
     @Override

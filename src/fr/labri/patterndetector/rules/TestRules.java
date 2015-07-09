@@ -6,6 +6,7 @@ import fr.labri.patterndetector.EventType;
 import fr.labri.patterndetector.Generator;
 
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by William Braik on 6/22/2015.
@@ -38,6 +39,9 @@ public class TestRules {
                         new FollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B)),
                         new FollowedBy(new Atom(EventType.EVENT_A), r1)
                 ));
+        // 14) a --> b [10s]
+        IRule r14 = new FollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B),
+                new TimeConstraint(10, TimeUnit.SECONDS));
 
         Collection<Event> events = Generator.generateStream();
         Detector detector = new Detector(r13);
