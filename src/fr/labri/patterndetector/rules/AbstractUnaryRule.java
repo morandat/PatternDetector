@@ -29,6 +29,6 @@ public abstract class AbstractUnaryRule extends AbstractRule implements IUnaryRu
 
     @Override
     public String toString() {
-        return _symbol + _r.toString();
+        return "(" + _r.toString() + ")" + _symbol;
     }
 }

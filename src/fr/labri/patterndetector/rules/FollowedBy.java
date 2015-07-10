@@ -18,15 +18,22 @@ public class FollowedBy extends AbstractBinaryRule {
 
     @Override
     public IAutomaton buildAutomaton() {
+        Atom left = (Atom) _left;
+        Atom right = (Atom) _right;
+
         IState s0 = new State(StateType.STATE_INITIAL, "0");
-        IState s1 = new State(StateType.STATE_NORMAL, "1");
-        IState s2 = new State(StateType.STATE_FINAL, "2");
+        IState s1 = new State(StateType.STATE_TAKE, "1");
+        IState s2 = new State(StateType.STATE_IGNORE, "1");
+        IState s3 = new State(StateType.STATE_FINAL, "2");
 
-        s0.registerTransition(EventType.EVENT_A, s1);
-        s1.registerTransition(EventType.EVENT_SPECIAL, s1); // !b
-        s1.registerTransition(EventType.EVENT_B, s2);
+        s0.registerTransition(left.getEventType(), s1);
+        s1.registerTransition(left.getEventType(), s1);
+        s1.registerTransition(EventType.EVENT_SPECIAL, s2);
+        s2.registerTransition(left.getEventType(), s1);
+        s2.registerTransition(right.getEventType(), s3);
+        s2.registerTransition(EventType.EVENT_SPECIAL, s2);
+        s1.registerTransition(right.getEventType(), s3);
 
-        // a --> b
         IAutomaton automaton = new Automaton();
         automaton.setInitialState(s0);
         automaton.registerState(s1);

@@ -16,4 +16,8 @@ public interface IRule {
     public IAutomaton buildAutomaton();
 
     public TimeConstraint getTimeConstraint();
+
+    // TODO getOutputSpecification();
+
+    // TODO getName();
 }

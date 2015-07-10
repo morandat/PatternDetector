@@ -21,7 +21,7 @@ public class AtomNot extends AbstractRule implements IAtom {
     }
 
     @Override
-    public EventType getAtom() {
+    public EventType getEventType() {
         return _x;
     }
 

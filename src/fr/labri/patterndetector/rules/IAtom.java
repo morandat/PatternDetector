@@ -7,5 +7,5 @@ import fr.labri.patterndetector.EventType;
  */
 public interface IAtom extends IRule {
 
-    public EventType getAtom();
+    public EventType getEventType();
 }

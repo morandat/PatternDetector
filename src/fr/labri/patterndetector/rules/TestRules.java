@@ -42,9 +42,15 @@ public class TestRules {
         // 14) a --> b [10s]
         IRule r14 = new FollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B),
                 new TimeConstraint(10, TimeUnit.SECONDS));
+        // 15) a+
+        IRule r15 = new KleeneContiguous(new Atom(EventType.EVENT_A));
+        // 16) a++
+        IRule r16 = new KleeneNotContiguous(new Atom(EventType.EVENT_A));
 
-        Collection<Event> events = Generator.generateStream();
-        Detector detector = new Detector(r13);
+        //Collection<Event> events = Generator.generateFollowedBy();
+        //Detector detector = new Detector(r1);
+        Collection<Event> events = Generator.generateKleeneNotContiguous();
+        Detector detector = new Detector(r16);
         boolean res = detector.detect(events);
 
         System.out.println(res);
