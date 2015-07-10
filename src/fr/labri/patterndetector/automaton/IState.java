@@ -15,5 +15,7 @@ public interface IState {
 
     public void registerTransition(EventType e, IState s);
 
+    public void setFinal(boolean isFinal);
+
     public boolean isFinal();
 }

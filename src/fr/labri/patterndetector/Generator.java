@@ -22,8 +22,23 @@ public final class Generator {
 
         Collection<Event> eventStream = new ArrayList<>();
 
+        eventStream.add(new Event(EventType.EVENT_B, _t++));
         eventStream.add(new Event(EventType.EVENT_A, _t++));
         eventStream.add(new Event(EventType.EVENT_C, _t++));
+        eventStream.add(new Event(EventType.EVENT_B, _t++));
+        eventStream.add(new Event(EventType.EVENT_A, _t++));
+
+        return eventStream;
+    }
+
+    public static Collection<Event> generateImmediatelyFollowedBy() {
+
+        // ... a b ...
+
+        Collection<Event> eventStream = new ArrayList<>();
+
+        eventStream.add(new Event(EventType.EVENT_C, _t++));
+        eventStream.add(new Event(EventType.EVENT_A, _t++));
         eventStream.add(new Event(EventType.EVENT_B, _t++));
         eventStream.add(new Event(EventType.EVENT_A, _t++));
 

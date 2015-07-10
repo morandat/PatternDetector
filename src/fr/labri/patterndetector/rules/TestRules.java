@@ -46,13 +46,11 @@ public class TestRules {
         IRule r15 = new KleeneContiguous(new Atom(EventType.EVENT_A));
         // 16) a++
         IRule r16 = new KleeneNotContiguous(new Atom(EventType.EVENT_A));
+        // 17) a . b
+        IRule r17 = new ImmediatelyFollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
 
-        //Collection<Event> events = Generator.generateFollowedBy();
-        //Detector detector = new Detector(r1);
         Collection<Event> events = Generator.generateKleeneNotContiguous();
         Detector detector = new Detector(r16);
-        boolean res = detector.detect(events);
-
-        System.out.println(res);
+        detector.detect(events);
     }
 }

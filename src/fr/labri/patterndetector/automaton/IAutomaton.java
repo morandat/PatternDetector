@@ -19,5 +19,7 @@ public interface IAutomaton {
 
     public void registerState(IState s);
 
+    public void registerFinalState(IState s);
+
     public IState fire(EventType e) throws Exception; //TODO AutomatonException
 }

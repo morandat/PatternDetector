@@ -5,5 +5,5 @@ package fr.labri.patterndetector.automaton;
  */
 public enum StateType {
 
-    STATE_INITIAL, STATE_FINAL, STATE_TAKE, STATE_IGNORE
+    STATE_INITIAL, STATE_TAKE, STATE_IGNORE
 }

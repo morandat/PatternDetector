@@ -44,17 +44,26 @@ public class Automaton implements IAutomaton {
     }
 
     @Override
+    public void registerFinalState(IState s) {
+        s.setFinal(true);
+        _states.add(s);
+    }
+
+    @Override
     public IState fire(EventType e) throws Exception {
         if (_currentState != null) {
             if (_currentState.isFinal()) {
-                throw new Exception("FINAL STATE ALREADY REACHED"); //TODO AutomatonException
+                throw new Exception("Final state already reached ! Ignoring : " + e); //TODO AutomatonException
             } else {
                 _currentState = _currentState.next(e);
+                if (_currentState.isFinal()) {
+                    System.out.println("Final state reached !");
+                }
                 //TODO if final state reached, reset the automata
                 return _currentState;
             }
         } else {
-            throw new Exception("INITIAL STATE NOT SET"); //TODO AutomatonException
+            throw new Exception("Initial state not set !"); //TODO AutomatonException
         }
     }
 

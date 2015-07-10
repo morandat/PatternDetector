@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 /**
- * Parses a stream of events to detect patterns according to a given Spec
+ * Parses a stream of events to detect patterns according to a given Rule
  */
 public class Detector {
 

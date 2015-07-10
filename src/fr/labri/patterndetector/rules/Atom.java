@@ -1,7 +1,7 @@
 package fr.labri.patterndetector.rules;
 
 import fr.labri.patterndetector.EventType;
-import fr.labri.patterndetector.automaton.IAutomaton;
+import fr.labri.patterndetector.automaton.*;
 
 /**
  * Created by William Braik on 6/27/2015.
@@ -32,6 +32,6 @@ public class Atom extends AbstractRule implements IAtom {
 
     @Override
     public IAutomaton buildAutomaton() {
-        return null; //TODO
+        return null;
     }
 }
