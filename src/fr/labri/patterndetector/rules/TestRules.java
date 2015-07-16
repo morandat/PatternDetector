@@ -40,8 +40,8 @@ public class TestRules {
                         new FollowedBy(new Atom(EventType.EVENT_A), r1)
                 ));
         // 14) a --> b [10s]
-        IRule r14 = new FollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B),
-                new TimeConstraint(10, TimeUnit.SECONDS));
+        IRule r14 = new FollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B))
+                .setTimeConstraint(new TimeConstraint(10, TimeUnit.SECONDS));
         // 15) a+
         IRule r15 = new KleeneContiguous(new Atom(EventType.EVENT_A));
         // 16) a++
@@ -49,7 +49,9 @@ public class TestRules {
         // 17) a . b
         IRule r17 = new ImmediatelyFollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
         // 18) a+ -> b
-        IRule r18 = new FollowedBy(new KleeneContiguous(new Atom(EventType.EVENT_A)), new Atom(EventType.EVENT_B));
+        //IRule r18 = new FollowedBy(new KleeneContiguous(new Atom(EventType.EVENT_A)), new Atom(EventType.EVENT_B));
+        // 19) a++ -> b
+        //IRule r19 = new FollowedBy(new KleeneNotContiguous(new Atom(EventType.EVENT_A)), new Atom(EventType.EVENT_B));
 
         Collection<Event> events = Generator.generateKleeneNotContiguous();
         Detector detector = new Detector(r16);

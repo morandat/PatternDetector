@@ -12,11 +12,6 @@ public abstract class AbstractUnaryRule extends AbstractRule implements IUnaryRu
         _r = r;
     }
 
-    public AbstractUnaryRule(RuleType type, String symbol, IRule r, TimeConstraint tc) {
-        super(type, symbol, tc);
-        _r = r;
-    }
-
     @Override
     public RuleType getType() {
         return _type;

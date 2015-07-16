@@ -26,17 +26,21 @@ public class Detector {
         System.out.println("Stream : " + events);
         System.out.println("Rule : " + _rule);
 
-        IAutomaton a1 = _rule.buildAutomaton();
+        try {
+            IAutomaton a1 = _rule.buildAutomaton();
 
-        System.out.println(a1.getCurrentState());
-        events.stream().forEach(event -> {
-            try {
-                System.out.println(a1.fire(event.getType()));
-            } catch (Exception e) {
-                System.err.println(e.getMessage());
-                //e.printStackTrace();
-            }
-        });
+            System.out.println(a1.getCurrentState());
+            events.stream().forEach(event -> {
+                try {
+                    System.out.println(a1.fire(event.getType()));
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());
+                    //e.printStackTrace();
+                }
+            });
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
 
         return true;
     }

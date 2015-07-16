@@ -12,10 +12,6 @@ public class ImmediatelyFollowedBy extends AbstractBinaryRule {
         super(RuleType.RULE_FOLLOWED_BY, ".", left, right);
     }
 
-    public ImmediatelyFollowedBy(IRule left, IRule right, TimeConstraint tc) {
-        super(RuleType.RULE_FOLLOWED_BY, ".", left, right, tc);
-    }
-
     @Override
     public IAutomaton buildAutomaton() {
         Atom left = (Atom) _left; // TODO atom for tests, must be rules though

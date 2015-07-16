@@ -15,11 +15,6 @@ public class Atom extends AbstractRule implements IAtom {
         _x = x;
     }
 
-    public Atom(EventType x, TimeConstraint tc) {
-        super(RuleType.RULE_ATOM, null, tc);
-        _x = x;
-    }
-
     @Override
     public EventType getEventType() {
         return _x;

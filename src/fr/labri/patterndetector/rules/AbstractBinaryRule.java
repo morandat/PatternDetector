@@ -14,12 +14,6 @@ public abstract class AbstractBinaryRule extends AbstractRule implements IBinary
         _right = right;
     }
 
-    public AbstractBinaryRule(RuleType type, String symbol, IRule left, IRule right, TimeConstraint tc) {
-        super(type, symbol, tc);
-        _left = left;
-        _right = right;
-    }
-
     @Override
     public IRule getLeftRule() {
         return _left;

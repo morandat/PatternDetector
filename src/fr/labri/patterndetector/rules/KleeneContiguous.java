@@ -10,11 +10,7 @@ import fr.labri.patterndetector.automaton.*;
 public class KleeneContiguous extends AbstractUnaryRule {
 
     public KleeneContiguous(Atom x) {
-        super(RuleType.RULE_KLEENE, "+", x);
-    }
-
-    public KleeneContiguous(Atom x, TimeConstraint tc) {
-        super(RuleType.RULE_KLEENE, "+", x, tc);
+        super(RuleType.RULE_KLEENE, ".+", x);
     }
 
     @Override

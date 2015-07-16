@@ -15,11 +15,6 @@ public class AtomNot extends AbstractRule implements IAtom {
         _x = x;
     }
 
-    public AtomNot(EventType x, TimeConstraint tc) {
-        super(RuleType.RULE_ATOM_NOT, null, tc);
-        _x = x;
-    }
-
     @Override
     public EventType getEventType() {
         return _x;

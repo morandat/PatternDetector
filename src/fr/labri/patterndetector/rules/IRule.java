@@ -1,4 +1,5 @@
-package fr.labri.patterndetector.rules; /**
+package fr.labri.patterndetector.rules;
+/**
  * Created by William Braik on 6/25/2015.
  */
 
@@ -13,9 +14,15 @@ public interface IRule {
 
     public String getSymbol();
 
-    public IAutomaton buildAutomaton();
+    public IAutomaton buildAutomaton() throws Exception;
 
     public TimeConstraint getTimeConstraint();
+
+    public SelectionPolicy getSelectionPolicy();
+
+    public IRule setTimeConstraint(TimeConstraint tc);
+
+    public IRule setSelectionPolicy(SelectionPolicy sp);
 
     // TODO getOutputSpecification();
 

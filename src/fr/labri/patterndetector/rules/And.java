@@ -11,10 +11,6 @@ public class And extends AbstractBinaryRule {
         super(RuleType.RULE_AND, "&&", left, right);
     }
 
-    public And(IRule left, IRule right, TimeConstraint tc) {
-        super(RuleType.RULE_AND, "&&", left, right, tc);
-    }
-
     @Override
     public IAutomaton buildAutomaton() {
         return null; //TODO
