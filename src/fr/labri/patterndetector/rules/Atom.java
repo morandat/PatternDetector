@@ -26,7 +26,7 @@ public class Atom extends AbstractRule implements IAtom {
     }
 
     @Override
-    public IAutomaton buildAutomaton() {
+    public IAutomaton buildAutomaton() throws Exception {
         return null;
     }
 }

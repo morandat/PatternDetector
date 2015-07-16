@@ -13,25 +13,30 @@ public class ImmediatelyFollowedBy extends AbstractBinaryRule {
     }
 
     @Override
-    public IAutomaton buildAutomaton() {
-        Atom left = (Atom) _left; // TODO atom for tests, must be rules though
-        Atom right = (Atom) _right;
+    public IAutomaton buildAutomaton() throws Exception {
+        if (_left instanceof Atom && _right instanceof Atom) {
 
-        IState s0 = new State(StateType.STATE_INITIAL, "0");
-        IState s1 = new State(StateType.STATE_TAKE, "1");
-        IState s2 = new State(StateType.STATE_TAKE, "2");
-        IState s3 = new State(StateType.STATE_IGNORE, "3");
+            Atom left = (Atom) _left; // TODO atom for tests, must be rules though
+            Atom right = (Atom) _right;
 
-        s0.registerTransition(left.getEventType(), s1);
-        s1.registerTransition(right.getEventType(), s2);
-        s1.registerTransition(EventType.EVENT_NEGATION, s3);
+            IState s0 = new State(StateType.STATE_INITIAL, "0");
+            IState s1 = new State(StateType.STATE_TAKE, "1");
+            IState s2 = new State(StateType.STATE_TAKE, "2");
+            IState s3 = new State(StateType.STATE_IGNORE, "3");
 
-        IAutomaton automaton = new Automaton();
-        automaton.setInitialState(s0);
-        automaton.registerState(s1);
-        automaton.registerFinalState(s2);
-        automaton.registerFinalState(s3);
+            s0.registerTransition(left.getEventType(), s1);
+            s1.registerTransition(right.getEventType(), s2);
+            s1.registerTransition(EventType.EVENT_NEGATION, s3);
 
-        return automaton;
+            IAutomaton automaton = new Automaton();
+            automaton.setInitialState(s0);
+            automaton.registerState(s1);
+            automaton.registerFinalState(s2);
+            automaton.registerFinalState(s3);
+
+            return automaton;
+        } else {
+            throw new Exception("This operator currently does not support rule composition");
+        }
     }
 }

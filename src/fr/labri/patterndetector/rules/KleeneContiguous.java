@@ -14,7 +14,7 @@ public class KleeneContiguous extends AbstractUnaryRule {
     }
 
     @Override
-    public IAutomaton buildAutomaton() {
+    public IAutomaton buildAutomaton() throws Exception {
         Atom x = (Atom) _r;
 
         IState s0 = new State(StateType.STATE_INITIAL, "0");

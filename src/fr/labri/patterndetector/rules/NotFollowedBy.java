@@ -12,7 +12,7 @@ public class NotFollowedBy extends AbstractBinaryRule {
     }
 
     @Override
-    public IAutomaton buildAutomaton() {
+    public IAutomaton buildAutomaton() throws Exception {
         return null; //TODO
     }
 }
