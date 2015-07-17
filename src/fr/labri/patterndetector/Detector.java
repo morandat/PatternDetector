@@ -28,8 +28,8 @@ public class Detector {
 
         try {
             IAutomaton a1 = _rule.buildAutomaton();
-
             System.out.println(a1.getCurrentState());
+
             events.stream().forEach(event -> {
                 try {
                     System.out.println(a1.fire(event.getType()));
@@ -38,6 +38,8 @@ public class Detector {
                     //e.printStackTrace();
                 }
             });
+
+            System.out.println("\nOutput : " + a1);
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
