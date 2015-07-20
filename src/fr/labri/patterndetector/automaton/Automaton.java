@@ -1,7 +1,6 @@
 package fr.labri.patterndetector.automaton;
 
-import fr.labri.patterndetector.Event;
-import fr.labri.patterndetector.EventType;
+import fr.labri.patterndetector.IEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +15,7 @@ public class Automaton implements IAutomaton {
     protected IState _initialState;
     protected Set<IState> _states;
     protected IState _currentState;
-    protected ArrayList<EventType> _buffer;
+    protected ArrayList<IEvent> _buffer;
 
     public Automaton() {
         _states = new HashSet<>();
@@ -55,20 +54,20 @@ public class Automaton implements IAutomaton {
     }
 
     @Override
-    public IState fire(EventType e) throws Exception {
+    public IState fire(IEvent e) throws Exception {
         if (_currentState != null) {
             if (_currentState.isFinal()) {
                 throw new Exception("Final state already reached ! Ignoring : " + e); //TODO AutomatonException
             } else {
                 _currentState = _currentState.next(e);
                 // If the current state is of type "Take", collect e
-                if (StateType.STATE_TAKE.equals(_currentState.getType())) {
+                if (_currentState.isTake()) {
                     _buffer.add(e);
                 }
+
                 // Check if the final state has been reached
                 if (_currentState.isFinal()) {
                     System.out.println("Final state reached !");
-                    //TODO if final state reached, reset the automata
                 }
 
                 return _currentState;
@@ -83,7 +82,16 @@ public class Automaton implements IAutomaton {
         return _buffer.toString();
     }
 
-    public Collection<EventType> getBuffer() {
+    @Override
+    public Collection<IEvent> getBuffer() {
         return _buffer;
+    }
+
+    @Override
+    public void reset() {
+        _currentState = _initialState;
+        _buffer = new ArrayList<>();
+
+        System.out.println("Automaton reset");
     }
 }

@@ -24,9 +24,4 @@ public class AtomNot extends AbstractRule implements IAtom {
     public String toString() {
         return "!" + _x.toString();
     }
-
-    @Override
-    public IAutomaton buildAutomaton() throws Exception {
-        return null; //TODO
-    }
 }

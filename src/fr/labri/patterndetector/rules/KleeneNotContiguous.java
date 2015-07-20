@@ -17,15 +17,20 @@ public class KleeneNotContiguous extends AbstractUnaryRule {
 
     public KleeneNotContiguous(Atom x) {
         super(RuleType.RULE_KLEENE, "+", x);
+
+        try {
+            buildAutomaton();
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
     }
 
-    @Override
-    public IAutomaton buildAutomaton() throws Exception {
+    public void buildAutomaton() throws Exception {
         Atom x = (Atom) _r;
 
-        IState s0 = new State(StateType.STATE_INITIAL, "0");
-        IState s1 = new State(StateType.STATE_TAKE, "1");
-        IState s2 = new State(StateType.STATE_IGNORE, "2");
+        IState s0 = new State(false, "0");
+        IState s1 = new State(true, "1");
+        IState s2 = new State(false, "2");
 
         s0.registerTransition(x.getEventType(), s1);
         s1.registerTransition(x.getEventType(), s1);
@@ -38,6 +43,6 @@ public class KleeneNotContiguous extends AbstractUnaryRule {
         automaton.registerState(s1);
         automaton.registerState(s2);
 
-        return automaton;
+        _automaton = automaton;
     }
 }

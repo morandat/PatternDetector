@@ -1,7 +1,8 @@
 package fr.labri.patterndetector.automaton;
 
-import fr.labri.patterndetector.EventType;
+import fr.labri.patterndetector.IEvent;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -21,5 +22,9 @@ public interface IAutomaton {
 
     public void registerFinalState(IState s);
 
-    public IState fire(EventType e) throws Exception; //TODO AutomatonException
+    public IState fire(IEvent e) throws Exception; //TODO AutomatonException
+
+    public Collection<IEvent> getBuffer();
+
+    public void reset();
 }

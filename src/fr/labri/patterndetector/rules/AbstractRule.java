@@ -1,5 +1,7 @@
 package fr.labri.patterndetector.rules;
 
+import fr.labri.patterndetector.automaton.IAutomaton;
+
 /**
  * Created by William Braik on 6/25/2015.
  */
@@ -9,12 +11,14 @@ public abstract class AbstractRule implements IRule {
     protected String _symbol;
     protected TimeConstraint _tc;
     protected SelectionPolicy _sp;
+    protected IAutomaton _automaton;
 
     public AbstractRule(RuleType type, String symbol) {
         _type = type;
         _symbol = symbol;
         _sp = null;
         _tc = null;
+        _automaton = null;
     }
 
     @Override
@@ -49,5 +53,10 @@ public abstract class AbstractRule implements IRule {
         _sp = sp;
 
         return this;
+    }
+
+    @Override
+    public IAutomaton getAutomaton() {
+        return _automaton;
     }
 }

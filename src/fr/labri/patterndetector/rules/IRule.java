@@ -14,7 +14,7 @@ public interface IRule {
 
     public String getSymbol();
 
-    public IAutomaton buildAutomaton() throws Exception;
+    public IAutomaton getAutomaton();
 
     public TimeConstraint getTimeConstraint();
 
