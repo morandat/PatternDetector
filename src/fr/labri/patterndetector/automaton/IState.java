@@ -26,5 +26,5 @@ public interface IState {
 
     public void registerTransition(EventType e, IState s);
 
-    public IState next(IEvent e) throws Exception; //TODO StateException
+    public IState next(IEvent e);
 }

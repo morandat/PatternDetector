@@ -23,7 +23,7 @@ public class FollowedBy extends AbstractBinaryRule {
             Atom left = (Atom) _left;
             Atom right = (Atom) _right;
 
-            IState s0 = new State(false);
+            IState s0 = new State(false); // Initial state
             IState s1 = new State(true);
             IState s2 = new State(false);
             IState s3 = new State(true);
@@ -43,8 +43,6 @@ public class FollowedBy extends AbstractBinaryRule {
             automaton.registerFinalState(s3);
 
             _automaton = automaton;
-        } else {
-            throw new Exception("This operator currently does not support rule composition");
         }
     }
 }

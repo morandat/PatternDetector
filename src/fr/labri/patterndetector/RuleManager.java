@@ -4,7 +4,6 @@ package fr.labri.patterndetector;
  */
 
 import fr.labri.patterndetector.automaton.IAutomaton;
-import fr.labri.patterndetector.automaton.IState;
 import fr.labri.patterndetector.rules.IRule;
 
 import java.util.Collection;
@@ -29,13 +28,7 @@ public class RuleManager {
         if (automaton != null) {
             events.stream().forEach(event -> {
                 try {
-                    IState s = automaton.fire(event);
-                    // If the automaton has reached its final state, return the buffer and reset the automaton.
-                    if (s.isFinal()) {
-                        post(automaton.getBuffer());
-                        automaton.reset();
-                    }
-                    System.out.println(s);
+                    automaton.fire(event);
                 } catch (Exception e) {
                     System.err.println(e.getMessage());
                     //e.printStackTrace();
@@ -44,9 +37,5 @@ public class RuleManager {
         } else {
             System.err.println("Invalid rule : " + _rule);
         }
-    }
-
-    public void post(Collection<IEvent> pattern) {
-        System.out.println("PATTERN FOUND ! " + pattern);
     }
 }

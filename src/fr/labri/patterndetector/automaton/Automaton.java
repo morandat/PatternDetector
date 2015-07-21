@@ -13,6 +13,7 @@ import java.util.Set;
 public class Automaton implements IAutomaton {
 
     protected IState _initialState;
+    protected IState _finalState;
     protected Set<IState> _states;
     protected IState _currentState;
     protected ArrayList<IEvent> _buffer;
@@ -38,12 +39,20 @@ public class Automaton implements IAutomaton {
     }
 
     @Override
+    public IState getFinalState() {
+        return _finalState;
+    }
+
+    @Override
     public Collection<IEvent> getBuffer() {
         return _buffer;
     }
 
     @Override
     public void registerInitialState(IState s) throws Exception {
+        if (_initialState != null) {
+            throw new Exception("An initial state has already been set !");
+        }
         _initialState = s;
         registerState(s);
     }
@@ -55,37 +64,42 @@ public class Automaton implements IAutomaton {
     }
 
     @Override
-    public void registerFinalState(IState s) {
+    public void registerFinalState(IState s) throws Exception {
+        if (_finalState != null) {
+            throw new Exception("A final state has already been set !");
+        }
+        _finalState = s;
         s.setFinal(true);
         registerState(s);
     }
 
     @Override
-    public IState fire(IEvent e) throws Exception {
+    public void fire(IEvent e) throws Exception {
         if (_initialState != null) {
             // Initialize current state if needed
             if (_currentState == null) {
                 _currentState = _initialState;
             }
-
+//
             if (_currentState.isFinal()) {
-                throw new Exception("Final state already reached ! Ignoring : " + e); //TODO AutomatonException
+                throw new Exception("Final state has already been reached ! Ignoring : " + e);
             } else {
                 _currentState = _currentState.next(e);
+                System.out.println(_currentState);
+
                 // If the current state is of type "Take", collect e
                 if (_currentState.isTake()) {
                     _buffer.add(e);
                 }
-
-                // Check if the final state has been reached
+                // If the final state has been reached, post the found pattern and reset the automaton
                 if (_currentState.isFinal()) {
-                    System.out.println("Final state reached !");
+                    post(_buffer);
+                    reset();
+                    System.out.println("Final state reached, automaton reset");
                 }
-
-                return _currentState;
             }
         } else {
-            throw new Exception("Initial state not set !"); //TODO AutomatonException
+            throw new Exception("Initial state not set !");
         }
     }
 
@@ -97,8 +111,10 @@ public class Automaton implements IAutomaton {
     @Override
     public void reset() {
         _currentState = _initialState;
-        _buffer = new ArrayList<>();
+        _buffer.clear();
+    }
 
-        System.out.println("Automaton reset");
+    public void post(Collection<IEvent> pattern) {
+        System.out.println("PATTERN FOUND ! " + pattern);
     }
 }

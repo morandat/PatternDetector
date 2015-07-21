@@ -19,29 +19,6 @@ public class ImmediatelyFollowedBy extends AbstractBinaryRule {
     }
 
     public void buildAutomaton() throws Exception {
-        if (_left instanceof Atom && _right instanceof Atom) {
 
-            Atom left = (Atom) _left; // TODO atom for tests, must be rules though
-            Atom right = (Atom) _right;
-
-            IState s0 = new State(false);
-            IState s1 = new State(true);
-            IState s2 = new State(true);
-            IState s3 = new State(false);
-
-            s0.registerTransition(left.getEventType(), s1);
-            s1.registerTransition(right.getEventType(), s2);
-            s1.registerTransition(EventType.EVENT_NEGATION, s3);
-
-            IAutomaton automaton = new Automaton();
-            automaton.registerInitialState(s0);
-            automaton.registerState(s1);
-            automaton.registerFinalState(s2);
-            automaton.registerFinalState(s3);
-
-            _automaton = automaton;
-        } else {
-            throw new Exception("This operator currently does not support rule composition");
-        }
     }
 }

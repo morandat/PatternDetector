@@ -11,15 +11,15 @@ import java.util.Map;
  */
 public class State implements IState {
 
-    protected boolean _isTake;
+    protected boolean _take;
     protected String _label;
     protected Map<EventType, IState> _transitions;
-    protected boolean _isFinal;
+    protected boolean _final;
 
-    public State(boolean isTake) {
-        _isTake = isTake;
+    public State(boolean take) {
+        _take = take;
         _transitions = new HashMap<>();
-        _isFinal = false;
+        _final = false;
     }
 
     @Override
@@ -34,12 +34,12 @@ public class State implements IState {
 
     @Override
     public boolean isFinal() {
-        return _isFinal;
+        return _final;
     }
 
     @Override
     public boolean isTake() {
-        return _isTake;
+        return _take;
     }
 
     @Override
@@ -49,12 +49,12 @@ public class State implements IState {
 
     @Override
     public void setFinal(boolean isFinal) {
-        _isFinal = isFinal;
+        _final = isFinal;
     }
 
     @Override
     public void setTake(boolean take) {
-        _isTake = take;
+        _take = take;
     }
 
     @Override
@@ -63,7 +63,7 @@ public class State implements IState {
     }
 
     @Override
-    public IState next(IEvent e) throws Exception {
+    public IState next(IEvent e) {
         IState next = _transitions.get(e.getType());
 
         // If the event can't fire any transition from this state, check if the state has a negative transition.
@@ -76,12 +76,13 @@ public class State implements IState {
             System.out.println("Transitioning : " + e);
             return next;
         } else {
-            throw new Exception("Can't transition : " + e); //TODO StateException
+            System.out.println("Can't transition : " + e);
+            return this;
         }
     }
 
     @Override
     public String toString() {
-        return "STATE " + _label + (_isTake ? " [TAKE]" : " [IGNORE]");
+        return "STATE " + _label + (_take ? " [TAKE]" : " [IGNORE]");
     }
 }

@@ -46,6 +46,8 @@ public final class Generator {
         eventStream.add(new Event(EventType.EVENT_A, _t++));
         eventStream.add(new Event(EventType.EVENT_B, _t++));
         eventStream.add(new Event(EventType.EVENT_A, _t++));
+        eventStream.add(new Event(EventType.EVENT_A, _t++));
+        eventStream.add(new Event(EventType.EVENT_B, _t++));
 
         return eventStream;
     }
