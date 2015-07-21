@@ -13,22 +13,22 @@ public class TestRules {
     public static void main(String[] args) {
         // 1) a --> b
         IRule r1 = new FollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
-        // 10) a --> R
-        //IRule r10 = new FollowedBy(new Atom(EventType.EVENT_A), r1);
         // 3) a -/->
-        IRule r3 = new NotFollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
+        //IRule r3 = new NotFollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
         // 4) a && b
-        IRule r4 = new And(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
+        //IRule r4 = new And(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
         // 5) a || b
-        IRule r5 = new Or(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
+        //IRule r5 = new Or(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
         // 6) !a
-        IRule r6 = new AtomNot(EventType.EVENT_A);
+        //IRule r6 = new AtomNot(EventType.EVENT_A);
         // 7) R --> b
         //IRule r7 = new FollowedBy(r1, new Atom(EventType.EVENT_B));
         // 9) R -/-> b
-        IRule r9 = new NotFollowedBy(r1, new Atom(EventType.EVENT_B));
+        //IRule r9 = new NotFollowedBy(r1, new Atom(EventType.EVENT_B));
+        // 10) a --> R
+        //IRule r10 = new FollowedBy(new Atom(EventType.EVENT_A), r1);
         // 12) a -/-> R
-        IRule r12 = new NotFollowedBy(new Atom(EventType.EVENT_A), r1);
+        //IRule r12 = new NotFollowedBy(new Atom(EventType.EVENT_A), r1);
         // 13) !c || ((a --> b) && (b <-- R))
         /*IRule r13 = new Or(
                 new AtomNot(EventType.EVENT_C),
@@ -37,14 +37,14 @@ public class TestRules {
                         new FollowedBy(new Atom(EventType.EVENT_A), r1)
                 ));*/
         // 14) a --> b [10s]
-        IRule r14 = new FollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B))
-                .setTimeConstraint(new TimeConstraint(10, TimeUnit.SECONDS));
+        /*IRule r14 = new FollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B))
+                .setTimeConstraint(new TimeConstraint(10, TimeUnit.SECONDS));*/
         // 15) a+
-        IRule r15 = new KleeneContiguous(new Atom(EventType.EVENT_A));
+        //IRule r15 = new KleeneContiguous(new Atom(EventType.EVENT_A));
         // 16) a++
-        IRule r16 = new KleeneNotContiguous(new Atom(EventType.EVENT_A));
+        //IRule r16 = new KleeneNotContiguous(new Atom(EventType.EVENT_A));
         // 17) a . b
-        IRule r17 = new ImmediatelyFollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
+        //IRule r17 = new ImmediatelyFollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
         // 18) a+ -> b
         //IRule r18 = new FollowedBy(new KleeneContiguous(new Atom(EventType.EVENT_A)), new Atom(EventType.EVENT_B));
         // 19) a++ -> b

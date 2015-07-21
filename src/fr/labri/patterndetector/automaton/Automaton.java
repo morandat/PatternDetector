@@ -33,29 +33,41 @@ public class Automaton implements IAutomaton {
     }
 
     @Override
-    public void setInitialState(IState s) {
-        _currentState = _initialState = s;
-    }
-
-    @Override
     public Set<IState> getStates() {
         return _states;
     }
 
     @Override
+    public Collection<IEvent> getBuffer() {
+        return _buffer;
+    }
+
+    @Override
+    public void registerInitialState(IState s) throws Exception {
+        _initialState = s;
+        registerState(s);
+    }
+
+    @Override
     public void registerState(IState s) {
+        s.setLabel(Integer.toString(_states.size()));
         _states.add(s);
     }
 
     @Override
     public void registerFinalState(IState s) {
         s.setFinal(true);
-        _states.add(s);
+        registerState(s);
     }
 
     @Override
     public IState fire(IEvent e) throws Exception {
-        if (_currentState != null) {
+        if (_initialState != null) {
+            // Initialize current state if needed
+            if (_currentState == null) {
+                _currentState = _initialState;
+            }
+
             if (_currentState.isFinal()) {
                 throw new Exception("Final state already reached ! Ignoring : " + e); //TODO AutomatonException
             } else {
@@ -80,11 +92,6 @@ public class Automaton implements IAutomaton {
     @Override
     public String toString() {
         return _buffer.toString();
-    }
-
-    @Override
-    public Collection<IEvent> getBuffer() {
-        return _buffer;
     }
 
     @Override

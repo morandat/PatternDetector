@@ -28,9 +28,9 @@ public class KleeneNotContiguous extends AbstractUnaryRule {
     public void buildAutomaton() throws Exception {
         Atom x = (Atom) _r;
 
-        IState s0 = new State(false, "0");
-        IState s1 = new State(true, "1");
-        IState s2 = new State(false, "2");
+        IState s0 = new State(false);
+        IState s1 = new State(true);
+        IState s2 = new State(false);
 
         s0.registerTransition(x.getEventType(), s1);
         s1.registerTransition(x.getEventType(), s1);
@@ -39,7 +39,7 @@ public class KleeneNotContiguous extends AbstractUnaryRule {
         s2.registerTransition(EventType.EVENT_NEGATION, s2);
 
         IAutomaton automaton = new Automaton();
-        automaton.setInitialState(s0);
+        automaton.registerInitialState(s0);
         automaton.registerState(s1);
         automaton.registerState(s2);
 

@@ -14,7 +14,7 @@ public class FollowedBy extends AbstractBinaryRule {
         try {
             buildAutomaton();
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            System.err.println("Can't instantiate rule ! " + e.getMessage());
         }
     }
 
@@ -23,10 +23,10 @@ public class FollowedBy extends AbstractBinaryRule {
             Atom left = (Atom) _left;
             Atom right = (Atom) _right;
 
-            IState s0 = new State(false, "0");
-            IState s1 = new State(true, "1");
-            IState s2 = new State(false, "2");
-            IState s3 = new State(true, "3");
+            IState s0 = new State(false);
+            IState s1 = new State(true);
+            IState s2 = new State(false);
+            IState s3 = new State(true);
 
             s0.registerTransition(left.getEventType(), s1);
             s1.registerTransition(left.getEventType(), s1);
@@ -37,7 +37,7 @@ public class FollowedBy extends AbstractBinaryRule {
             s1.registerTransition(right.getEventType(), s3);
 
             IAutomaton automaton = new Automaton();
-            automaton.setInitialState(s0);
+            automaton.registerInitialState(s0);
             automaton.registerState(s1);
             automaton.registerState(s2);
             automaton.registerFinalState(s3);

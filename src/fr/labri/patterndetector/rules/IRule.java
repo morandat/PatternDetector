@@ -23,8 +23,4 @@ public interface IRule {
     public IRule setTimeConstraint(TimeConstraint tc);
 
     public IRule setSelectionPolicy(SelectionPolicy sp);
-
-    // TODO getOutputSpecification();
-
-    // TODO getName();
 }
