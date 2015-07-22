@@ -1,7 +1,6 @@
 package fr.labri.patterndetector.automaton;
 
-import fr.labri.patterndetector.Event;
-import fr.labri.patterndetector.EventType;
+import fr.labri.patterndetector.IEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,9 +13,10 @@ import java.util.Set;
 public class Automaton implements IAutomaton {
 
     protected IState _initialState;
+    protected IState _finalState;
     protected Set<IState> _states;
     protected IState _currentState;
-    protected ArrayList<EventType> _buffer;
+    protected ArrayList<IEvent> _buffer;
 
     public Automaton() {
         _states = new HashSet<>();
@@ -34,47 +34,72 @@ public class Automaton implements IAutomaton {
     }
 
     @Override
-    public void setInitialState(IState s) {
-        _currentState = _initialState = s;
-    }
-
-    @Override
     public Set<IState> getStates() {
         return _states;
     }
 
     @Override
+    public IState getFinalState() {
+        return _finalState;
+    }
+
+    @Override
+    public Collection<IEvent> getBuffer() {
+        return _buffer;
+    }
+
+    @Override
+    public void registerInitialState(IState s) throws Exception {
+        if (_initialState != null) {
+            throw new Exception("An initial state has already been set !");
+        }
+        _initialState = s;
+        registerState(s);
+    }
+
+    @Override
     public void registerState(IState s) {
+        s.setLabel(Integer.toString(_states.size()));
         _states.add(s);
     }
 
     @Override
-    public void registerFinalState(IState s) {
+    public void registerFinalState(IState s) throws Exception {
+        if (_finalState != null) {
+            throw new Exception("A final state has already been set !");
+        }
+        _finalState = s;
         s.setFinal(true);
-        _states.add(s);
+        registerState(s);
     }
 
     @Override
-    public IState fire(EventType e) throws Exception {
-        if (_currentState != null) {
+    public void fire(IEvent e) throws Exception {
+        if (_initialState != null) {
+            // Initialize current state if needed
+            if (_currentState == null) {
+                _currentState = _initialState;
+            }
+//
             if (_currentState.isFinal()) {
-                throw new Exception("Final state already reached ! Ignoring : " + e); //TODO AutomatonException
+                throw new Exception("Final state has already been reached ! Ignoring : " + e);
             } else {
                 _currentState = _currentState.next(e);
+                System.out.println(_currentState);
+
                 // If the current state is of type "Take", collect e
-                if (StateType.STATE_TAKE.equals(_currentState.getType())) {
+                if (_currentState.isTake()) {
                     _buffer.add(e);
                 }
-                // Check if the final state has been reached
+                // If the final state has been reached, post the found pattern and reset the automaton
                 if (_currentState.isFinal()) {
-                    System.out.println("Final state reached !");
-                    //TODO if final state reached, reset the automata
+                    post(_buffer);
+                    reset();
+                    System.out.println("Final state reached, automaton reset");
                 }
-
-                return _currentState;
             }
         } else {
-            throw new Exception("Initial state not set !"); //TODO AutomatonException
+            throw new Exception("Initial state not set !");
         }
     }
 
@@ -83,7 +108,13 @@ public class Automaton implements IAutomaton {
         return _buffer.toString();
     }
 
-    public Collection<EventType> getBuffer() {
-        return _buffer;
+    @Override
+    public void reset() {
+        _currentState = _initialState;
+        _buffer.clear();
+    }
+
+    public void post(Collection<IEvent> pattern) {
+        System.out.println("PATTERN FOUND ! " + pattern);
     }
 }

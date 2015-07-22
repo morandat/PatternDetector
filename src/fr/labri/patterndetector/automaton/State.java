@@ -1,6 +1,7 @@
 package fr.labri.patterndetector.automaton;
 
 import fr.labri.patterndetector.EventType;
+import fr.labri.patterndetector.IEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,21 +11,15 @@ import java.util.Map;
  */
 public class State implements IState {
 
-    protected StateType _type;
+    protected boolean _take;
     protected String _label;
     protected Map<EventType, IState> _transitions;
-    protected boolean _isFinal;
+    protected boolean _final;
 
-    public State(StateType type, String label) {
-        _type = type;
-        _label = label;
+    public State(boolean take) {
+        _take = take;
         _transitions = new HashMap<>();
-        _isFinal = false;
-    }
-
-    @Override
-    public StateType getType() {
-        return _type;
+        _final = false;
     }
 
     @Override
@@ -33,21 +28,33 @@ public class State implements IState {
     }
 
     @Override
-    public IState next(EventType e) throws Exception {
-        IState next = _transitions.get(e);
+    public Map<EventType, IState> getTransitions() {
+        return _transitions;
+    }
 
-        // If the event can't fire any transition from this state, check if the state has a negative transition.
-        // The negative transition HAS to be checked last.
-        if (next == null) {
-            next = _transitions.get(EventType.EVENT_NEGATION);
-        }
+    @Override
+    public boolean isFinal() {
+        return _final;
+    }
 
-        if (next != null) {
-            System.out.println("Transitioning : " + e);
-            return next;
-        } else {
-            throw new Exception("Can't transition : " + e); //TODO StateException
-        }
+    @Override
+    public boolean isTake() {
+        return _take;
+    }
+
+    @Override
+    public void setLabel(String label) {
+        _label = label;
+    }
+
+    @Override
+    public void setFinal(boolean isFinal) {
+        _final = isFinal;
+    }
+
+    @Override
+    public void setTake(boolean take) {
+        _take = take;
     }
 
     @Override
@@ -56,17 +63,26 @@ public class State implements IState {
     }
 
     @Override
-    public void setFinal(boolean isFinal) {
-        _isFinal = isFinal;
-    }
+    public IState next(IEvent e) {
+        IState next = _transitions.get(e.getType());
 
-    @Override
-    public boolean isFinal() {
-        return _isFinal;
+        // If the event can't fire any transition from this state, check if the state has a negative transition.
+        // The negative transition must to be checked last.
+        if (next == null) {
+            next = _transitions.get(EventType.EVENT_NEGATION);
+        }
+
+        if (next != null) {
+            System.out.println("Transitioning : " + e);
+            return next;
+        } else {
+            System.out.println("Can't transition : " + e);
+            return this;
+        }
     }
 
     @Override
     public String toString() {
-        return _label + "[" + _type + "]";
+        return "STATE " + _label + (_take ? " [TAKE]" : " [IGNORE]");
     }
 }

@@ -10,9 +10,4 @@ public class And extends AbstractBinaryRule {
     public And(IRule left, IRule right) {
         super(RuleType.RULE_AND, "&&", left, right);
     }
-
-    @Override
-    public IAutomaton buildAutomaton() throws Exception {
-        return null; //TODO
-    }
 }

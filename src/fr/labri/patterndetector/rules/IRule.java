@@ -14,7 +14,7 @@ public interface IRule {
 
     public String getSymbol();
 
-    public IAutomaton buildAutomaton() throws Exception;
+    public IAutomaton getAutomaton();
 
     public TimeConstraint getTimeConstraint();
 
@@ -23,8 +23,4 @@ public interface IRule {
     public IRule setTimeConstraint(TimeConstraint tc);
 
     public IRule setSelectionPolicy(SelectionPolicy sp);
-
-    // TODO getOutputSpecification();
-
-    // TODO getName();
 }

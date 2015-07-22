@@ -10,9 +10,4 @@ public class NotFollowedBy extends AbstractBinaryRule {
     public NotFollowedBy(IRule left, IRule right) {
         super(RuleType.RULE_NOT_FOLLOWED_BY, "-/->", left, right);
     }
-
-    @Override
-    public IAutomaton buildAutomaton() throws Exception {
-        return null; //TODO
-    }
 }
