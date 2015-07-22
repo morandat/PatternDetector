@@ -1,13 +1,12 @@
-package fr.labri.patterndetector.rules;
+package fr.labri.streamchecking.rules;
 
-import fr.labri.patterndetector.EventType;
-import fr.labri.patterndetector.automaton.*;
+import fr.labri.streamchecking.EventType;
+import fr.labri.streamchecking.automaton.IAutomaton;
 
 /**
  * Created by William Braik on 6/27/2015.
  */
 public class Atom extends AbstractRule implements IAtom {
-
     protected EventType _x;
 
     public Atom(EventType x) {
@@ -16,7 +15,7 @@ public class Atom extends AbstractRule implements IAtom {
     }
 
     @Override
-    public EventType getEventType() {
+    public EventType getAtom() {
         return _x;
     }
 
@@ -26,7 +25,7 @@ public class Atom extends AbstractRule implements IAtom {
     }
 
     @Override
-    public IAutomaton buildAutomaton() throws Exception {
+    public IAutomaton buildAutomaton() {
         return null;
     }
 }
