@@ -2,10 +2,7 @@ package fr.labri.patterndetector.automaton;
 
 import fr.labri.patterndetector.IEvent;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by William Braik on 6/28/2015.
@@ -53,8 +50,9 @@ public class Automaton implements IAutomaton {
         if (_initialState != null) {
             throw new Exception("An initial state has already been set !");
         }
+        s.setLabel("I");
         _initialState = s;
-        registerState(s);
+        s.setInitial(true);
     }
 
     @Override
@@ -68,9 +66,9 @@ public class Automaton implements IAutomaton {
         if (_finalState != null) {
             throw new Exception("A final state has already been set !");
         }
+        s.setLabel("F");
         _finalState = s;
         s.setFinal(true);
-        registerState(s);
     }
 
     @Override
@@ -85,7 +83,7 @@ public class Automaton implements IAutomaton {
                 throw new Exception("Final state has already been reached ! Ignoring : " + e);
             } else {
                 _currentState = _currentState.next(e);
-                System.out.println(_currentState);
+                System.out.println(_currentState + (_currentState.isTake() ? " [take]" : " [ignore]"));
 
                 // If the current state is of type "Take", collect e
                 if (_currentState.isTake()) {
@@ -105,7 +103,13 @@ public class Automaton implements IAutomaton {
 
     @Override
     public String toString() {
-        return _buffer.toString();
+        StringBuilder transitions = new StringBuilder("[ (" + _initialState + "," + _initialState.getTransitions() + "," + _initialState.isTake() + ") ");
+        for (IState state : _states) {
+            transitions.append("(" + state + "," + state.getTransitions() + "," + state.isTake() + ") ");
+        }
+        transitions.append("(" + _finalState + "," + _finalState.getTransitions() + "," + _finalState.isTake() + ") ]");
+
+        return transitions.toString();
     }
 
     @Override
@@ -115,6 +119,6 @@ public class Automaton implements IAutomaton {
     }
 
     public void post(Collection<IEvent> pattern) {
-        System.out.println("PATTERN FOUND ! " + pattern);
+        System.out.println("Pattern found ! " + pattern);
     }
 }

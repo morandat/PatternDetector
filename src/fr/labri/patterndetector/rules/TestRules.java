@@ -16,7 +16,7 @@ public class TestRules {
         // 6) !a
         //IRule r6 = new AtomNot(EventType.EVENT_A);
         // 1) a --> b
-        //IRule r1 = new FollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
+        IRule r1 = new FollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
         // 3) a -/->
         //IRule r3 = new NotFollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
         // 4) a && b
@@ -46,14 +46,14 @@ public class TestRules {
         // 16) a++
         //IRule r16 = new KleeneNotContiguous(new Atom(EventType.EVENT_A));
         // 17) a . b
-        IRule r17 = new ImmediatelyFollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
+        //IRule r17 = new ImmediatelyFollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
         // 18) a+ -> b
         //IRule r18 = new FollowedBy(new KleeneContiguous(new Atom(EventType.EVENT_A)), new Atom(EventType.EVENT_B));
         // 19) a++ -> b
         //IRule r19 = new FollowedBy(new KleeneNotContiguous(new Atom(EventType.EVENT_A)), new Atom(EventType.EVENT_B));
 
         Collection<Event> events = Generator.generateImmediatelyFollowedBy();
-        RuleManager ruleManager = new RuleManager(r17);
+        RuleManager ruleManager = new RuleManager(r1);
         ruleManager.detect(events);
     }
 }

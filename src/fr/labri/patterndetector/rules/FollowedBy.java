@@ -14,35 +14,48 @@ public class FollowedBy extends AbstractBinaryRule {
         try {
             buildAutomaton();
         } catch (Exception e) {
-            System.err.println("Can't instantiate rule ! " + e.getMessage());
+            System.err.println("Can't instantiate rule ! (" + e.getMessage() + ")");
         }
     }
 
     public void buildAutomaton() throws Exception {
-        if (_left instanceof Atom && _right instanceof Atom) {
-            Atom left = (Atom) _left;
-            Atom right = (Atom) _right;
+        IAutomaton left = Automata.copy(_left.getAutomaton());
+        IAutomaton right = Automata.copy(_right.getAutomaton());
 
-            IState s0 = new State(false); // Initial state
-            IState s1 = new State(true);
-            IState s2 = new State(false);
-            IState s3 = new State(true);
+        System.out.println(left);
+        System.out.println(right);
 
-            s0.registerTransition(left.getEventType(), s1);
-            s1.registerTransition(left.getEventType(), s1);
-            s1.registerTransition(EventType.EVENT_NEGATION, s2);
-            s2.registerTransition(left.getEventType(), s1);
-            s2.registerTransition(right.getEventType(), s3);
-            s2.registerTransition(EventType.EVENT_NEGATION, s2);
-            s1.registerTransition(right.getEventType(), s3);
+        IAutomaton automaton = new Automaton();
 
-            IAutomaton automaton = new Automaton();
-            automaton.registerInitialState(s0);
-            automaton.registerState(s1);
-            automaton.registerState(s2);
-            automaton.registerFinalState(s3);
-
-            _automaton = automaton;
+        // left component
+        automaton.registerInitialState(left.getInitialState());
+        for (IState s : left.getStates()) {
+            automaton.registerState(s);
         }
+        IState q = left.getFinalState();
+        q.setFinal(false);
+        automaton.registerState(q);
+
+        // right component
+        IState p = right.getInitialState();
+        p.setInitial(false);
+        automaton.registerState(p);
+        for (IState s : right.getStates()) {
+            automaton.registerState(s);
+        }
+        automaton.registerFinalState(right.getFinalState());
+
+        // extra states and transitions
+        IState r = new State(false);
+        automaton.registerState(r);
+        q.registerTransition(EventType.EVENT_EPSILON, p);
+        q.registerTransition(EventType.EVENT_NEGATION, r);
+        r.registerTransition(EventType.EVENT_NEGATION, r);
+        r.registerTransition(EventType.EVENT_EPSILON, p);
+        p.registerTransition(EventType.EVENT_NEGATION, r);
+
+        System.out.println(automaton);
+
+        _automaton = automaton;
     }
 }

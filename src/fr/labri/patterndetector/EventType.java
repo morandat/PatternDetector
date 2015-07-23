@@ -6,7 +6,8 @@ package fr.labri.patterndetector;
 public enum EventType {
 
     EVENT_NEGATION("*"), // Used for negative transitions. Negative transitions negate all the other transitions.
-    EVENT_A("A"), EVENT_B("B"), EVENT_C("C");
+    EVENT_A("a"), EVENT_B("b"), EVENT_C("c"),
+    EVENT_EPSILON("$");
 
     private final String _label;
 

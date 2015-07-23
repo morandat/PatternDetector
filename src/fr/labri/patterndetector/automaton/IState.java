@@ -14,11 +14,15 @@ public interface IState {
 
     public Map<EventType, IState> getTransitions();
 
+    public boolean isInitial();
+
     public boolean isFinal();
 
     public boolean isTake();
 
     public void setLabel(String label);
+
+    public void setInitial(boolean initial);
 
     public void setFinal(boolean isFinal);
 
