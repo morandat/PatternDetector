@@ -5,7 +5,7 @@ package fr.labri.patterndetector;
  */
 public interface IEvent {
 
-    public EventType getType();
+    String getType();
 
-    public int getTimestamp();
+    int getTimestamp();
 }

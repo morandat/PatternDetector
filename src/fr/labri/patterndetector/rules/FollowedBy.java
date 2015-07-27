@@ -1,6 +1,5 @@
 package fr.labri.patterndetector.rules;
 
-import fr.labri.patterndetector.EventType;
 import fr.labri.patterndetector.automaton.*;
 
 /**
@@ -19,17 +18,17 @@ public class FollowedBy extends AbstractBinaryRule {
     }
 
     public void buildAutomaton() throws Exception {
-        IAutomaton left = Automata.copy(_left.getAutomaton());
-        IAutomaton right = Automata.copy(_right.getAutomaton());
+        IAutomaton left = AutomatonUtils.copy(_left.getAutomaton());
+        IAutomaton right = AutomatonUtils.copy(_right.getAutomaton());
 
-        System.out.println(left);
-        System.out.println(right);
+        System.out.println("Left component : " + left);
+        System.out.println("Right component : " + right);
 
         IAutomaton automaton = new Automaton();
 
         // left component
         automaton.registerInitialState(left.getInitialState());
-        for (IState s : left.getStates()) {
+        for (IState s : left.getStates().values()) {
             automaton.registerState(s);
         }
         IState q = left.getFinalState();
@@ -40,21 +39,16 @@ public class FollowedBy extends AbstractBinaryRule {
         IState p = right.getInitialState();
         p.setInitial(false);
         automaton.registerState(p);
-        for (IState s : right.getStates()) {
+        for (IState s : right.getStates().values()) {
             automaton.registerState(s);
         }
         automaton.registerFinalState(right.getFinalState());
 
-        // extra states and transitions
-        IState r = new State(false);
-        automaton.registerState(r);
-        q.registerTransition(EventType.EVENT_EPSILON, p);
-        q.registerTransition(EventType.EVENT_NEGATION, r);
-        r.registerTransition(EventType.EVENT_NEGATION, r);
-        r.registerTransition(EventType.EVENT_EPSILON, p);
-        p.registerTransition(EventType.EVENT_NEGATION, r);
+        // add extra stuff to obtain the final automaton (Thompson's construction style)
+        q.registerTransition(p, AutomatonUtils.epsilonTransitionLabel(), false);
+        p.registerTransition(p, AutomatonUtils.negativeTransitionLabel(), false);
 
-        System.out.println(automaton);
+        System.out.println("Final automaton : " + automaton);
 
         _automaton = automaton;
     }

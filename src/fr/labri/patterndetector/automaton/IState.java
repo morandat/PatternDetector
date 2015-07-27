@@ -1,6 +1,5 @@
 package fr.labri.patterndetector.automaton;
 
-import fr.labri.patterndetector.EventType;
 import fr.labri.patterndetector.IEvent;
 
 import java.util.Map;
@@ -10,25 +9,22 @@ import java.util.Map;
  */
 public interface IState {
 
-    public String getLabel();
+    String getLabel();
 
-    public Map<EventType, IState> getTransitions();
+    Map<String, ITransition> getTransitions();
 
-    public boolean isInitial();
+    boolean isInitial();
 
-    public boolean isFinal();
+    boolean isFinal();
 
-    public boolean isTake();
+    void setLabel(String label);
 
-    public void setLabel(String label);
+    void setInitial(boolean initial);
 
-    public void setInitial(boolean initial);
+    void setFinal(boolean isFinal);
 
-    public void setFinal(boolean isFinal);
+    void registerTransition(IState target, String label, boolean take) throws Exception;
 
-    public void setTake(boolean take);
 
-    public void registerTransition(EventType e, IState s);
-
-    public IState next(IEvent e);
+    ITransition getTransition(IEvent e);
 }

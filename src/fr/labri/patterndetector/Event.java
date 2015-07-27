@@ -5,17 +5,17 @@ package fr.labri.patterndetector;
  */
 public class Event implements IEvent {
 
-    EventType _type;
+    String _type;
     int _timestamp;
-    // TODO events have some data (payload) attached.
+    // TODO events have some data (aka payload) attached.
 
-    public Event(EventType type, int timestamp) {
+    public Event(String type, int timestamp) {
         _type = type;
         _timestamp = timestamp;
     }
 
     @Override
-    public EventType getType() {
+    public String getType() {
         return _type;
     }
 
@@ -26,6 +26,6 @@ public class Event implements IEvent {
 
     @Override
     public String toString() {
-        return _type.toString() + "<" + _timestamp + ">";
+        return _type + "<" + _timestamp + ">";
     }
 }

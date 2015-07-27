@@ -12,11 +12,12 @@ public class TestRules {
 
     public static void main(String[] args) {
         // 0) a
-        //IRule r0 = new Atom(EventType.EVENT_A);
+        //IRule r0 = new Atom("a");
         // 6) !a
-        //IRule r6 = new AtomNot(EventType.EVENT_A);
+        //IRule r6 = new AtomNot("a");
         // 1) a --> b
-        IRule r1 = new FollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
+        IRule r1 = new FollowedBy(new Atom("a"), new Atom("b"));
+        //IRule r001 = new FollowedBy(new AtomNot("a"), new Atom("b"));
         // 3) a -/->
         //IRule r3 = new NotFollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
         // 4) a && b

@@ -1,25 +1,24 @@
 package fr.labri.patterndetector.automaton;
 
-import fr.labri.patterndetector.EventType;
 import fr.labri.patterndetector.IEvent;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Created by William Braik on 6/28/2015.
  */
 public class State implements IState {
 
-    protected boolean _take;
+    public static final String LABEL_FINAL = "F";
+    public static final String LABEL_INITIAL = "I";
+
     protected String _label;
-    protected Map<EventType, IState> _transitions;
+    protected Map<String, ITransition> _transitions;
     protected boolean _initial;
     protected boolean _final;
 
-    public State(boolean take) {
-        _take = take;
+    public State() {
         _label = null;
         _transitions = new HashMap<>();
         _final = false;
@@ -32,7 +31,7 @@ public class State implements IState {
     }
 
     @Override
-    public Map<EventType, IState> getTransitions() {
+    public Map<String, ITransition> getTransitions() {
         return _transitions;
     }
 
@@ -44,11 +43,6 @@ public class State implements IState {
     @Override
     public boolean isFinal() {
         return _final;
-    }
-
-    @Override
-    public boolean isTake() {
-        return _take;
     }
 
     @Override
@@ -67,32 +61,24 @@ public class State implements IState {
     }
 
     @Override
-    public void setTake(boolean take) {
-        _take = take;
-    }
-
-    @Override
-    public void registerTransition(EventType e, IState s) {
-        _transitions.put(e, s);
-    }
-
-    @Override
-    public IState next(IEvent e) {
-        IState next = _transitions.get(e.getType());
-
-        // If the event can't fire any transition from this state, check if the state has a negative transition.
-        // The negative transition must to be checked last.
-        if (next == null) {
-            next = _transitions.get(EventType.EVENT_NEGATION);
-        }
-
-        if (next != null) {
-            System.out.println("Transitioning : " + e);
-            return next;
+    public void registerTransition(IState target, String label, boolean take) throws Exception {
+        if (_transitions.get(label) != null) {
+            throw new Exception("A transition for " + label + " already exists !");
         } else {
-            System.out.println("Can't transition : " + e);
-            return this;
+            _transitions.put(label, new Transition(this, target, label, take));
         }
+    }
+
+    @Override
+    public ITransition getTransition(IEvent e) {
+        ITransition t = _transitions.get(e.getType());
+        // If the event doesn't match any transition from this state,
+        // check if the state has a negative transition that could match.
+        if (t == null) {
+            t = _transitions.get(AutomatonUtils.negativeTransitionLabel());
+        }
+
+        return t;
     }
 
     @Override

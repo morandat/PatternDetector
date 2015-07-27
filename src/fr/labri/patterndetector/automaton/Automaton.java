@@ -11,12 +11,12 @@ public class Automaton implements IAutomaton {
 
     protected IState _initialState;
     protected IState _finalState;
-    protected Set<IState> _states;
+    protected Map<String, IState> _states;
     protected IState _currentState;
     protected ArrayList<IEvent> _buffer;
 
     public Automaton() {
-        _states = new HashSet<>();
+        _states = new HashMap<>();
         _buffer = new ArrayList<>();
     }
 
@@ -31,7 +31,14 @@ public class Automaton implements IAutomaton {
     }
 
     @Override
-    public Set<IState> getStates() {
+    public IState getState(String label) {
+        if (State.LABEL_INITIAL.equals(label)) return _initialState;
+        else if (State.LABEL_FINAL.equals(label)) return _finalState;
+        else return _states.get(label);
+    }
+
+    @Override
+    public Map<String, IState> getStates() {
         return _states;
     }
 
@@ -50,7 +57,7 @@ public class Automaton implements IAutomaton {
         if (_initialState != null) {
             throw new Exception("An initial state has already been set !");
         }
-        s.setLabel("I");
+        s.setLabel(State.LABEL_INITIAL);
         _initialState = s;
         s.setInitial(true);
     }
@@ -58,7 +65,7 @@ public class Automaton implements IAutomaton {
     @Override
     public void registerState(IState s) {
         s.setLabel(Integer.toString(_states.size()));
-        _states.add(s);
+        _states.put(s.getLabel(), s);
     }
 
     @Override
@@ -66,7 +73,7 @@ public class Automaton implements IAutomaton {
         if (_finalState != null) {
             throw new Exception("A final state has already been set !");
         }
-        s.setLabel("F");
+        s.setLabel(State.LABEL_FINAL);
         _finalState = s;
         s.setFinal(true);
     }
@@ -78,22 +85,30 @@ public class Automaton implements IAutomaton {
             if (_currentState == null) {
                 _currentState = _initialState;
             }
-//
+
+            System.out.println("Current state : " + _currentState);
+
             if (_currentState.isFinal()) {
                 throw new Exception("Final state has already been reached ! Ignoring : " + e);
             } else {
-                _currentState = _currentState.next(e);
-                System.out.println(_currentState + (_currentState.isTake() ? " [take]" : " [ignore]"));
+                ITransition t = _currentState.getTransition(e);
 
-                // If the current state is of type "Take", collect e
-                if (_currentState.isTake()) {
-                    _buffer.add(e);
-                }
-                // If the final state has been reached, post the found pattern and reset the automaton
-                if (_currentState.isFinal()) {
-                    post(_buffer);
-                    reset();
-                    System.out.println("Final state reached, automaton reset");
+                if (t != null) {
+                    System.out.println("Transitioning : " + t + " (" + e + ")");
+                    _currentState = _currentState.getTransition(e).getTarget();
+                    // If the transition is of type "Take", collect e
+                    if (t.isTake()) {
+                        _buffer.add(e);
+                    }
+
+                    // If the final state has been reached, post the found pattern and reset the automaton
+                    if (_currentState.isFinal()) {
+                        post(_buffer);
+                        reset();
+                        System.out.println("Final state reached, automaton reset");
+                    }
+                } else {
+                    System.out.println("Can't transition ! (" + e + ")");
                 }
             }
         } else {
@@ -103,11 +118,11 @@ public class Automaton implements IAutomaton {
 
     @Override
     public String toString() {
-        StringBuilder transitions = new StringBuilder("[ (" + _initialState + "," + _initialState.getTransitions() + "," + _initialState.isTake() + ") ");
-        for (IState state : _states) {
-            transitions.append("(" + state + "," + state.getTransitions() + "," + state.isTake() + ") ");
+        StringBuilder transitions = new StringBuilder("[ (" + _initialState + "," + _initialState.getTransitions() + "," + ") ");
+        for (IState state : _states.values()) {
+            transitions.append("(" + state + "," + state.getTransitions() + ") ");
         }
-        transitions.append("(" + _finalState + "," + _finalState.getTransitions() + "," + _finalState.isTake() + ") ]");
+        transitions.append("(" + _finalState + "," + _finalState.getTransitions() + "," + ") ]");
 
         return transitions.toString();
     }

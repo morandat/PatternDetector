@@ -3,6 +3,7 @@ package fr.labri.patterndetector.automaton;
 import fr.labri.patterndetector.IEvent;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -14,7 +15,9 @@ public interface IAutomaton {
 
     public IState getInitialState();
 
-    public Set<IState> getStates();
+    public IState getState(String label);
+
+    public Map<String, IState> getStates();
 
     public IState getFinalState();
 
