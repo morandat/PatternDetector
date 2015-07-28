@@ -44,9 +44,9 @@ public class FollowedBy extends AbstractBinaryRule {
         }
         automaton.registerFinalState(right.getFinalState());
 
-        // add extra stuff to obtain the final automaton (Thompson's construction style)
-        q.registerTransition(p, AutomatonUtils.epsilonTransitionLabel(), false);
-        p.registerTransition(p, AutomatonUtils.negativeTransitionLabel(), false);
+        // add extra stuff to obtain the new automaton (Thompson's construction style)
+        q.registerTransition(p, Transition.LABEL_EPSILON, TransitionType.TRANSITION_DROP);
+        p.registerTransition(p, Transition.LABEL_NEGATION, TransitionType.TRANSITION_DROP);
 
         System.out.println("Final automaton : " + automaton);
 

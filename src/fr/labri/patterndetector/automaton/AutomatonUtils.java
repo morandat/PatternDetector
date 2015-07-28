@@ -39,24 +39,16 @@ public final class AutomatonUtils {
             for (Map.Entry<String, ITransition> entry : s.getTransitions().entrySet()) {
                 ITransition t = entry.getValue();
                 IState s2 = t.getTarget();
-                if (copy.getState(s2.getLabel()) == null) {
+                if (copy.getStateByLabel(s2.getLabel()) == null) {
                     s2 = startCopy(s2, copy);
                 }
 
-                s1.registerTransition(s2, t.getLabel(), t.isTake());
+                s1.registerTransition(s2, t.getLabel(), t.getType());
             }
         } catch (Exception e) {
             System.err.println("An error occured during the copy of the automaton (" + e.getMessage() + ")");
         }
 
         return s1;
-    }
-
-    public static String negativeTransitionLabel() {
-        return "*";
-    }
-
-    public static String epsilonTransitionLabel() {
-        return "$";
     }
 }

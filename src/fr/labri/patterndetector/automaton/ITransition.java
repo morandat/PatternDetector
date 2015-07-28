@@ -11,5 +11,5 @@ public interface ITransition {
 
     String getLabel();
 
-    boolean isTake();
+    TransitionType getType();
 }

@@ -31,7 +31,7 @@ public class Automaton implements IAutomaton {
     }
 
     @Override
-    public IState getState(String label) {
+    public IState getStateByLabel(String label) {
         if (State.LABEL_INITIAL.equals(label)) return _initialState;
         else if (State.LABEL_FINAL.equals(label)) return _finalState;
         else return _states.get(label);
@@ -58,8 +58,8 @@ public class Automaton implements IAutomaton {
             throw new Exception("An initial state has already been set !");
         }
         s.setLabel(State.LABEL_INITIAL);
-        _initialState = s;
         s.setInitial(true);
+        _initialState = s;
     }
 
     @Override
@@ -74,8 +74,8 @@ public class Automaton implements IAutomaton {
             throw new Exception("A final state has already been set !");
         }
         s.setLabel(State.LABEL_FINAL);
-        _finalState = s;
         s.setFinal(true);
+        _finalState = s;
     }
 
     @Override
@@ -91,24 +91,35 @@ public class Automaton implements IAutomaton {
             if (_currentState.isFinal()) {
                 throw new Exception("Final state has already been reached ! Ignoring : " + e);
             } else {
-                ITransition t = _currentState.getTransition(e);
+                ITransition t = _currentState.pickTransition(e);
 
                 if (t != null) {
                     System.out.println("Transitioning : " + t + " (" + e + ")");
-                    _currentState = _currentState.getTransition(e).getTarget();
-                    // If the transition is of type "Take", collect e
-                    if (t.isTake()) {
-                        _buffer.add(e);
+
+                    // Action to perform on the transition
+                    switch (t.getType()) {
+                        case TRANSITION_APPEND:
+                            _buffer.add(e);
+                            break;
+                        case TRANSITION_OVERWRITE:
+                            _buffer.clear();
+                            _buffer.add(e);
+                            break;
+                        case TRANSITION_DROP:
                     }
 
-                    // If the final state has been reached, post the found pattern and reset the automaton
+                    // Update current state
+                    _currentState = _currentState.pickTransition(e).getTarget();
+
                     if (_currentState.isFinal()) {
+                        // If the final state has been reached, post the found pattern and reset the automaton
                         post(_buffer);
                         reset();
-                        System.out.println("Final state reached, automaton reset");
+                        System.out.println("Final state reached");
                     }
                 } else {
                     System.out.println("Can't transition ! (" + e + ")");
+                    reset();
                 }
             }
         } else {
@@ -118,11 +129,11 @@ public class Automaton implements IAutomaton {
 
     @Override
     public String toString() {
-        StringBuilder transitions = new StringBuilder("[ (" + _initialState + "," + _initialState.getTransitions() + "," + ") ");
+        StringBuilder transitions = new StringBuilder("[ (" + _initialState + "," + _initialState.getTransitions() + ") ");
         for (IState state : _states.values()) {
             transitions.append("(" + state + "," + state.getTransitions() + ") ");
         }
-        transitions.append("(" + _finalState + "," + _finalState.getTransitions() + "," + ") ]");
+        transitions.append("(" + _finalState + "," + _finalState.getTransitions() + ") ]");
 
         return transitions.toString();
     }
@@ -131,6 +142,7 @@ public class Automaton implements IAutomaton {
     public void reset() {
         _currentState = _initialState;
         _buffer.clear();
+        System.out.println("Automaton reset");
     }
 
     public void post(Collection<IEvent> pattern) {

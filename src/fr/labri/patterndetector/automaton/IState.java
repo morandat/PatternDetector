@@ -23,8 +23,9 @@ public interface IState {
 
     void setFinal(boolean isFinal);
 
-    void registerTransition(IState target, String label, boolean take) throws Exception;
+    void registerTransition(IState target, String label, TransitionType type) throws Exception;
 
+    ITransition pickTransition(IEvent event);
 
-    ITransition getTransition(IEvent e);
+    ITransition getTransitionByLabel(String label);
 }

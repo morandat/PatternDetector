@@ -34,7 +34,7 @@ public class Atom extends AbstractRule implements IAtom {
         IState s0 = new State(); // Initial state
         IState s1 = new State();
 
-        s0.registerTransition(s1, _x, true);
+        s0.registerTransition(s1, _x, TransitionType.TRANSITION_APPEND);
 
         IAutomaton automaton = new Automaton();
         automaton.registerInitialState(s0);

@@ -5,16 +5,19 @@ package fr.labri.patterndetector.automaton;
  */
 public class Transition implements ITransition {
 
+    public static final String LABEL_EPSILON = "$";
+    public static final String LABEL_NEGATION = "*";
+
     private IState _source;
     private IState _target;
     private String _label;
-    boolean _take;
+    TransitionType _type;
 
-    public Transition(IState source, IState target, String label, boolean take) {
+    public Transition(IState source, IState target, String label, TransitionType type) {
         _source = source;
         _target = target;
         _label = label;
-        _take = take;
+        _type = type;
     }
 
     @Override
@@ -33,12 +36,12 @@ public class Transition implements ITransition {
     }
 
     @Override
-    public boolean isTake() {
-        return _take;
+    public TransitionType getType() {
+        return _type;
     }
 
     @Override
     public String toString() {
-        return _label + ": " + _source + " => " + _target;
+        return _source + " => " + _target + " [" + _type + " " + _label + "]";
     }
 }

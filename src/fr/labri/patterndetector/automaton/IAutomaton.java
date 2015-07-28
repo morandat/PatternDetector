@@ -11,25 +11,25 @@ import java.util.Set;
  */
 public interface IAutomaton {
 
-    public IState getCurrentState();
+    IState getCurrentState();
 
-    public IState getInitialState();
+    IState getInitialState();
 
-    public IState getState(String label);
+    IState getStateByLabel(String label);
 
-    public Map<String, IState> getStates();
+    Map<String, IState> getStates();
 
-    public IState getFinalState();
+    IState getFinalState();
 
-    public Collection<IEvent> getBuffer();
+    Collection<IEvent> getBuffer();
 
-    public void registerInitialState(IState s) throws Exception;  //TODO AutomatonException;
+    void registerInitialState(IState s) throws Exception;  //TODO AutomatonException;
 
-    public void registerState(IState s);
+    void registerState(IState s);
 
-    public void registerFinalState(IState s) throws Exception; //TODO AutomatonException;
+    void registerFinalState(IState s) throws Exception; //TODO AutomatonException;
 
-    public void fire(IEvent e) throws Exception; //TODO AutomatonException
+    void fire(IEvent e) throws Exception; //TODO AutomatonException
 
-    public void reset();
+    void reset();
 }

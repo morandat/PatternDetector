@@ -17,6 +17,7 @@ public class State implements IState {
     protected Map<String, ITransition> _transitions;
     protected boolean _initial;
     protected boolean _final;
+    // TODO enum StateType : a state only has 1 type, either INITIAL,NORMAL,RESET or FINAL
 
     public State() {
         _label = null;
@@ -61,24 +62,31 @@ public class State implements IState {
     }
 
     @Override
-    public void registerTransition(IState target, String label, boolean take) throws Exception {
-        if (_transitions.get(label) != null) {
+    public void registerTransition(IState target, String label, TransitionType type) throws Exception {
+        if (_final) {
+            throw new Exception("Can't add transitions to a final state !");
+        } else if (_transitions.get(label) != null) {
             throw new Exception("A transition for " + label + " already exists !");
         } else {
-            _transitions.put(label, new Transition(this, target, label, take));
+            _transitions.put(label, new Transition(this, target, label, type));
         }
     }
 
     @Override
-    public ITransition getTransition(IEvent e) {
-        ITransition t = _transitions.get(e.getType());
+    public ITransition pickTransition(IEvent event) {
+        ITransition t = _transitions.get(event.getType());
         // If the event doesn't match any transition from this state,
         // check if the state has a negative transition that could match.
         if (t == null) {
-            t = _transitions.get(AutomatonUtils.negativeTransitionLabel());
+            t = _transitions.get(Transition.LABEL_NEGATION);
         }
 
         return t;
+    }
+
+    @Override
+    public ITransition getTransitionByLabel(String label) {
+        return _transitions.get(label);
     }
 
     @Override
