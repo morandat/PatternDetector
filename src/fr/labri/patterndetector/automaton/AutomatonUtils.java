@@ -15,40 +15,46 @@ public final class AutomatonUtils {
     }
 
     public static IAutomaton copy(IAutomaton automaton) {
-        IAutomaton copy = new Automaton();
-        startCopy(automaton.getInitialState(), copy);
+        IAutomaton automatonCopy = new Automaton();
+        startCopy(automaton.getInitialState(), automatonCopy);
 
-        return copy;
+        return automatonCopy;
     }
 
-    private static IState startCopy(IState s, IAutomaton copy) {
-        IState s1 = new State();
-        s1.setFinal(s.isFinal());
-        s1.setInitial(s.isInitial());
+    private static IState startCopy(IState state, IAutomaton automatonCopy) {
+        IState stateCopy = new State();
+        stateCopy.setFinal(state.isFinal());
+        stateCopy.setInitial(state.isInitial());
 
         try {
-            if (s1.isInitial()) {
-                copy.registerInitialState(s1);
-            } else if (s1.isFinal()) {
-                copy.registerFinalState(s1);
-            } else {
-                copy.registerState(s1);
-            }
-
-
-            for (Map.Entry<String, ITransition> entry : s.getTransitions().entrySet()) {
-                ITransition t = entry.getValue();
-                IState s2 = t.getTarget();
-                if (copy.getStateByLabel(s2.getLabel()) == null) {
-                    s2 = startCopy(s2, copy);
+            if (stateCopy.isInitial() || stateCopy.isFinal()) {
+                if (stateCopy.isInitial()) {
+                    automatonCopy.registerInitialState(stateCopy);
                 }
-
-                s1.registerTransition(s2, t.getLabel(), t.getType());
+                if (stateCopy.isFinal()) {
+                    automatonCopy.registerFinalState(stateCopy);
+                }
+            } else {
+                automatonCopy.registerState(stateCopy);
             }
+
+            state.getTransitions().values().forEach(t -> {
+                IState target = t.getTarget();
+                try {
+                    if (automatonCopy.getStateByLabel(target.getLabel()) == null) {
+                        target = startCopy(target, automatonCopy);
+                        stateCopy.registerTransition(target, t.getLabel(), t.getType());
+                    } else {
+                        stateCopy.registerTransition(automatonCopy.getStateByLabel(target.getLabel()), t.getLabel(), t.getType());
+                    }
+                } catch (Exception e) {
+                    System.err.println("An error occured during the copy of the automaton (" + e.getMessage() + ")");
+                }
+            });
         } catch (Exception e) {
             System.err.println("An error occured during the copy of the automaton (" + e.getMessage() + ")");
         }
 
-        return s1;
+        return stateCopy;
     }
 }

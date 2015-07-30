@@ -18,6 +18,7 @@ public class TestRules {
         // 1) a --> b
         //IRule r1 = new FollowedBy(new Atom("a"), new Atom("b"));
         //IRule r001 = new FollowedBy(new AtomNot("a"), new Atom("b"));
+        //IRule r002 = new FollowedBy(new FollowedBy(new Atom("a"), new Atom("b")), new Atom("c"));
         // 3) a -/->
         //IRule r3 = new NotFollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B));
         // 4) a && b
@@ -43,19 +44,21 @@ public class TestRules {
         /*IRule r14 = new FollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B))
                 .setTimeConstraint(new TimeConstraint(10, TimeUnit.SECONDS));*/
         // 15) a+
-        //IRule r15 = new KleeneContiguous(new Atom(EventType.EVENT_A));
+        //IRule r15 = new KleeneContiguous(new Atom("a"));
+        //IRule r015 = new KleeneContiguous(new FollowedBy(new Atom("a"), new Atom("b")));
+        IRule r0015 = new FollowedBy(new KleeneContiguous(new FollowedBy(new Atom("a"), new Atom("b"))), new Atom("c"));
         // 16) a++
         //IRule r16 = new KleeneNotContiguous(new Atom(EventType.EVENT_A));
         // 17) a . b
         //IRule r17 = new ImmediatelyFollowedBy(new Atom("a"), new Atom("b"));
-        IRule r017 = new ImmediatelyFollowedBy(new AtomNot("a"), new Atom("b"));
+        //IRule r017 = new ImmediatelyFollowedBy(new AtomNot("a"), new Atom("b"));
         // 18) a+ -> b
         //IRule r18 = new FollowedBy(new KleeneContiguous(new Atom(EventType.EVENT_A)), new Atom(EventType.EVENT_B));
         // 19) a++ -> b
         //IRule r19 = new FollowedBy(new KleeneNotContiguous(new Atom(EventType.EVENT_A)), new Atom(EventType.EVENT_B));
 
-        Collection<Event> events = Generator.generateImmediatelyFollowedBy();
-        RuleManager ruleManager = new RuleManager(r017);
+        Collection<Event> events = Generator.generateKleeneContiguous();
+        RuleManager ruleManager = new RuleManager(r0015);
         ruleManager.detect(events);
     }
 }

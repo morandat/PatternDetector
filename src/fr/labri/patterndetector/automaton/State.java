@@ -17,7 +17,6 @@ public class State implements IState {
     protected Map<String, ITransition> _transitions;
     protected boolean _initial;
     protected boolean _final;
-    // TODO enum StateType : a state only has 1 type, either INITIAL,NORMAL,RESET or FINAL
 
     public State() {
         _label = null;

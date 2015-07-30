@@ -30,25 +30,27 @@ public class ImmediatelyFollowedBy extends AbstractBinaryRule {
 
         // left component
         automaton.registerInitialState(left.getInitialState());
-        for (IState s : left.getStates().values()) {
-            automaton.registerState(s);
-        }
+        left.getStates().values().forEach(automaton::registerState);
         IState q = left.getFinalState();
         q.setFinal(false);
         automaton.registerState(q);
 
         // right component
         IState p = right.getInitialState();
-        p.setInitial(false);
-        automaton.registerState(p);
-        for (IState s : right.getStates().values()) {
-            automaton.registerState(s);
-        }
+        right.getStates().values().forEach(automaton::registerState);
+        p.getTransitions().values().forEach(t -> {
+            try {
+                q.registerTransition(t.getTarget(), t.getLabel(), t.getType());
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+            }
+        });
         automaton.registerFinalState(right.getFinalState());
 
         // add extra stuff to obtain the new automaton (Thompson's construction style)
-        q.registerTransition(p, Transition.LABEL_EPSILON, TransitionType.TRANSITION_DROP);
-
+        /* For each non-initial and non-final state, if it doesn't have any outgoing Epsilon or Star transitions,
+        add outgoing transitions that are identical to the ones of the initial state. The type of these transitions
+        has to be OVERWRITE when their target isn't the initial state. */
         Collection<ITransition> transitionsFromInitial = automaton.getInitialState().getTransitions().values();
         automaton.getStates().values().forEach(state -> {
             if (state.getTransitionByLabel(Transition.LABEL_EPSILON) == null

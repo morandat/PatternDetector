@@ -28,25 +28,26 @@ public class FollowedBy extends AbstractBinaryRule {
 
         // left component
         automaton.registerInitialState(left.getInitialState());
-        for (IState s : left.getStates().values()) {
-            automaton.registerState(s);
-        }
+        left.getStates().values().forEach(automaton::registerState);
         IState q = left.getFinalState();
         q.setFinal(false);
         automaton.registerState(q);
 
         // right component
+        // Merge p and q together (copy transitions of p and add them to q)
         IState p = right.getInitialState();
-        p.setInitial(false);
-        automaton.registerState(p);
-        for (IState s : right.getStates().values()) {
-            automaton.registerState(s);
-        }
+        right.getStates().values().forEach(automaton::registerState);
+        p.getTransitions().values().forEach(t -> {
+            try {
+                q.registerTransition(t.getTarget(), t.getLabel(), t.getType());
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+            }
+        });
         automaton.registerFinalState(right.getFinalState());
 
         // add extra stuff to obtain the new automaton (Thompson's construction style)
-        q.registerTransition(p, Transition.LABEL_EPSILON, TransitionType.TRANSITION_DROP);
-        p.registerTransition(p, Transition.LABEL_NEGATION, TransitionType.TRANSITION_DROP);
+        q.registerTransition(q, Transition.LABEL_NEGATION, TransitionType.TRANSITION_DROP);
 
         System.out.println("Final automaton : " + automaton);
 

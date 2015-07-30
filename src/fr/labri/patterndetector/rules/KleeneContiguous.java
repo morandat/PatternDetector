@@ -8,8 +8,8 @@ import fr.labri.patterndetector.automaton.*;
 
 public class KleeneContiguous extends AbstractUnaryRule {
 
-    public KleeneContiguous(Atom x) {
-        super(RuleType.RULE_KLEENE, ".+", x);
+    public KleeneContiguous(IRule r) {
+        super(RuleType.RULE_KLEENE, ".+", r);
 
         try {
             buildAutomaton();
@@ -19,23 +19,44 @@ public class KleeneContiguous extends AbstractUnaryRule {
     }
 
     public void buildAutomaton() throws Exception {
-        /*Atom x = (Atom) _r;
+        IAutomaton base = AutomatonUtils.copy(_r.getAutomaton());
+        IAutomaton kleene = AutomatonUtils.copy(_r.getAutomaton());
 
-        IState s0 = new State(false);
-        IState s1 = new State(true);
-        IState s2 = new State(false);
-
-        s0.registerTransition(x.getEventType(), s1);
-        s1.registerTransition(x.getEventType(), s1);
-        s1.registerTransition(AutomatonUtils.negationTransitionLabel(), s2);
+        System.out.println("Base component : " + base);
+        System.out.println("Kleene component : " + base);
 
         IAutomaton automaton = new Automaton();
-        automaton.registerInitialState(s0);
-        automaton.registerState(s1);
-        automaton.registerFinalState(s2);
 
-        _automaton = automaton;*/
+        // base component
+        automaton.registerInitialState(base.getInitialState());
+        base.getStates().values().forEach(automaton::registerState);
+        IState q = base.getFinalState();
+        q.setFinal(false);
+        automaton.registerState(q);
 
-        //TODO
+        // kleene component
+        // Merge p and q together (copy transitions of p and add them to q)
+        IState p = kleene.getInitialState();
+        kleene.getStates().values().forEach(automaton::registerState);
+        p.getTransitions().values().forEach(t -> {
+            try {
+                q.registerTransition(t.getTarget(), t.getLabel(), t.getType());
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+            }
+        });
+        IState r = kleene.getFinalState();
+        r.setFinal(false);
+        automaton.registerState(r);
+
+        // add extra stuff to obtain the new automaton (Thompson's construction style)
+        IState f = new State();
+        automaton.registerFinalState(f);
+        r.registerTransition(q, Transition.LABEL_EPSILON, TransitionType.TRANSITION_DROP);
+        q.registerTransition(f, Transition.LABEL_NEGATION, TransitionType.TRANSITION_DROP);
+
+        System.out.println("Final automaton : " + automaton);
+
+        _automaton = automaton;
     }
 }

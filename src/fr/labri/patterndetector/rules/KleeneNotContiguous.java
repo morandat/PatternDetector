@@ -14,8 +14,8 @@ import fr.labri.patterndetector.automaton.*;
  */
 public class KleeneNotContiguous extends AbstractUnaryRule {
 
-    public KleeneNotContiguous(Atom x) {
-        super(RuleType.RULE_KLEENE, "+", x);
+    public KleeneNotContiguous(IRule r) {
+        super(RuleType.RULE_KLEENE, "+", r);
 
         try {
             buildAutomaton();
@@ -25,25 +25,6 @@ public class KleeneNotContiguous extends AbstractUnaryRule {
     }
 
     public void buildAutomaton() throws Exception {
-        /*Atom x = (Atom) _r;
 
-        IState s0 = new State();
-        IState s1 = new State();
-        IState s2 = new State();
-
-        s0.registerTransition(x.getEventType(), s1);
-        s1.registerTransition(x.getEventType(), s1);
-        s1.registerTransition(AutomatonUtils.negationTransitionLabel(), s2);
-        s2.registerTransition(x.getEventType(), s1);
-        s2.registerTransition(AutomatonUtils.negationTransitionLabel(), s2);
-
-        IAutomaton automaton = new Automaton();
-        automaton.registerInitialState(s0);
-        automaton.registerState(s1);
-        automaton.registerState(s2);
-
-        _automaton = automaton;*/
-
-        //TODO
     }
 }

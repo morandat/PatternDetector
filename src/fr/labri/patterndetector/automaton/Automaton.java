@@ -146,6 +146,6 @@ public class Automaton implements IAutomaton {
     }
 
     public void post(Collection<IEvent> pattern) {
-        System.out.println("Pattern found ! " + pattern);
+        System.out.println("*** PATTERN FOUND : " + pattern + " ***");
     }
 }
