@@ -11,7 +11,7 @@ public final class AutomatonUtils {
     }
 
     public static IAutomaton powerset(IAutomaton automaton) {
-        return automaton; // TODO
+        return automaton; // TODO if a state has 2 transitions with distinct
     }
 
     public static IAutomaton copy(IAutomaton automaton) {

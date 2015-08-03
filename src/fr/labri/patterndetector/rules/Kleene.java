@@ -45,7 +45,7 @@ public class Kleene extends AbstractUnaryRule {
 
         IState s = new State();
         q.registerTransition(s, Transition.LABEL_EPSILON, TransitionType.TRANSITION_DROP);
-        s.registerTransition(s, Transition.LABEL_NEGATION, TransitionType.TRANSITION_APPEND);
+        s.registerTransition(s, Transition.LABEL_NEGATION, TransitionType.TRANSITION_DROP);
         s.registerTransition(automaton.getInitialState(), Transition.LABEL_EPSILON, TransitionType.TRANSITION_DROP);
         automaton.registerState(s);
 
