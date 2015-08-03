@@ -31,7 +31,7 @@ public class RuleManager {
                     automaton.fire(event);
                 } catch (Exception e) {
                     System.err.println(e.getMessage());
-                    //e.printStackTrace();
+                    e.printStackTrace();
                 }
             });
         } else {

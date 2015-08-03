@@ -2,7 +2,7 @@ package fr.labri.patterndetector.automaton;
 
 import fr.labri.patterndetector.IEvent;
 
-import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by William Braik on 6/28/2015.
@@ -11,7 +11,7 @@ public interface IState {
 
     String getLabel();
 
-    Map<String, ITransition> getTransitions();
+    Set<ITransition> getTransitions();
 
     boolean isInitial();
 
@@ -23,9 +23,11 @@ public interface IState {
 
     void setFinal(boolean isFinal);
 
-    void registerTransition(IState target, String label, TransitionType type) throws Exception;
+    void registerTransition(IState target, String label, TransitionType type);
 
-    ITransition pickTransition(IEvent event);
+    void removeTransition(String label);
 
-    ITransition getTransitionByLabel(String label);
+    ITransition pickTransition(IEvent event) throws Exception; // TODO NotDeterministicException
+
+    ITransition getTransitionByLabel(String label) throws Exception; // TODO NotDeterministicException;
 }

@@ -42,6 +42,17 @@ public class Transition implements ITransition {
 
     @Override
     public String toString() {
-        return _source + " => " + _target + " [" + _type + " " + _label + "]";
+        return _source + ":" + _label + " => " + _target + " [" + _type + "]";
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == null) return false;
+        if (other == this) return true;
+        if (!(other instanceof Transition)) return false;
+
+        Transition otherTransition = (Transition) other;
+        return otherTransition.getLabel().equals(_label) && otherTransition.getSource().equals(_source)
+                && otherTransition.getTarget().equals(_target) && otherTransition.getType().equals(_type);
     }
 }

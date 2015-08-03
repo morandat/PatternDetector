@@ -129,11 +129,17 @@ public class Automaton implements IAutomaton {
 
     @Override
     public String toString() {
-        StringBuilder transitions = new StringBuilder("[ (" + _initialState + "," + _initialState.getTransitions() + ") ");
-        for (IState state : _states.values()) {
-            transitions.append("(" + state + "," + state.getTransitions() + ") ");
+        StringBuilder transitions = new StringBuilder();
+        if (_initialState != null) {
+            transitions.append("[ (").append(_initialState).append(",").append(_initialState.getTransitions()).append(") ");
         }
-        transitions.append("(" + _finalState + "," + _finalState.getTransitions() + ") ]");
+        for (IState state : _states.values()) {
+            transitions.append("(").append(state).append(",").append(state.getTransitions()).append(") ");
+        }
+        if (_finalState != null) {
+            transitions.append("(").append(_finalState).append(",").append(_finalState.getTransitions()).append(") ]");
+        }
+
 
         return transitions.toString();
     }

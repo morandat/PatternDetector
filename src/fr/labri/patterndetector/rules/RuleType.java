@@ -6,6 +6,6 @@ package fr.labri.patterndetector.rules;
 public enum RuleType {
 
     RULE_ATOM, RULE_ATOM_NOT, // Atom
-    RULE_KLEENE, // Unary
-    RULE_FOLLOWED_BY, RULE_NOT_FOLLOWED_BY, RULE_AND, RULE_OR // Binary
+    RULE_KLEENE_CONTIGUOUS, RULE_KLEENE, // Unary
+    RULE_FOLLOWED_BY, RULE_FOLLOWED_BY_CONTIGUOUS, RULE_NOT_FOLLOWED_BY, RULE_AND, RULE_OR // Binary
 }

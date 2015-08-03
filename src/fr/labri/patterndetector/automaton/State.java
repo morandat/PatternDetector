@@ -2,8 +2,7 @@ package fr.labri.patterndetector.automaton;
 
 import fr.labri.patterndetector.IEvent;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by William Braik on 6/28/2015.
@@ -14,7 +13,7 @@ public class State implements IState {
     public static final String LABEL_INITIAL = "I";
 
     protected String _label;
-    protected Map<String, ITransition> _transitions;
+    protected Map<String, List<ITransition>> _transitions;
     protected boolean _initial;
     protected boolean _final;
 
@@ -31,8 +30,11 @@ public class State implements IState {
     }
 
     @Override
-    public Map<String, ITransition> getTransitions() {
-        return _transitions;
+    public Set<ITransition> getTransitions() {
+        Set<ITransition> set = new HashSet<>();
+        _transitions.values().forEach(list -> list.forEach(set::add));
+
+        return set;
     }
 
     @Override
@@ -61,31 +63,48 @@ public class State implements IState {
     }
 
     @Override
-    public void registerTransition(IState target, String label, TransitionType type) throws Exception {
-        if (_final) {
-            throw new Exception("Can't add transitions to a final state !");
-        } else if (_transitions.get(label) != null) {
-            throw new Exception("A transition for " + label + " already exists !");
+    public void registerTransition(IState target, String label, TransitionType type) {
+        ITransition t = new Transition(this, target, label, type);
+
+        if (_transitions.get(label) == null) {
+            List<ITransition> list = new ArrayList<>();
+            list.add(t);
+            _transitions.put(label, list);
         } else {
-            _transitions.put(label, new Transition(this, target, label, type));
+            if (!_transitions.get(label).contains(t)) {
+                _transitions.get(label).add(t);
+            }
         }
     }
 
     @Override
-    public ITransition pickTransition(IEvent event) {
-        ITransition t = _transitions.get(event.getType());
-        // If the event doesn't match any transition from this state,
-        // check if the state has a negative transition that could match.
-        if (t == null) {
-            t = _transitions.get(Transition.LABEL_NEGATION);
-        }
-
-        return t;
+    public void removeTransition(String label) {
+        _transitions.remove(label);
     }
 
     @Override
-    public ITransition getTransitionByLabel(String label) {
-        return _transitions.get(label);
+    public ITransition pickTransition(IEvent event) throws Exception {
+        List<ITransition> list = _transitions.get(event.getType());
+        if (list == null) {
+            list = _transitions.get(Transition.LABEL_NEGATION);
+        }
+
+        if (list == null) {
+            return null;
+        } else if (list.size() > 1) {
+            throw new Exception("The automaton is not deterministic !");
+        } else {
+            return list.get(0);
+        }
+    }
+
+    @Override
+    public ITransition getTransitionByLabel(String label) throws Exception {
+        if (_transitions.get(label).size() > 1) {
+            throw new Exception("The automaton is not deterministic !");
+        } else {
+            return _transitions.get(label).get(0);
+        }
     }
 
     @Override

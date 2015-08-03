@@ -2,18 +2,20 @@ package fr.labri.patterndetector.rules;
 
 import fr.labri.patterndetector.automaton.*;
 
+import java.util.Collection;
+
 /**
  * Created by William Braik on 6/25/2015.
  */
-public class FollowedBy extends AbstractBinaryRule {
+public class FollowedByContiguous extends AbstractBinaryRule {
 
-    public FollowedBy(IRule left, IRule right) {
-        super(RuleType.RULE_FOLLOWED_BY, "-->", left, right);
+    public FollowedByContiguous(IRule left, IRule right) {
+        super(RuleType.RULE_FOLLOWED_BY_CONTIGUOUS, ".", left, right);
 
         try {
             buildAutomaton();
         } catch (Exception e) {
-            System.err.println("Can't instantiate rule ! (" + e.getMessage() + ")");
+            System.err.println(e.getMessage());
         }
     }
 
@@ -29,6 +31,7 @@ public class FollowedBy extends AbstractBinaryRule {
         // left component
         automaton.registerInitialState(left.getInitialState());
         left.getStates().values().forEach(automaton::registerState);
+
         IState q = left.getFinalState();
         if (q == null) {
             // Kleene automata don't have any final state.
@@ -40,7 +43,6 @@ public class FollowedBy extends AbstractBinaryRule {
         }
 
         // right component
-        // Merge p and q together (copy transitions of p and add them to q)
         IState p = right.getInitialState();
         right.getStates().values().forEach(automaton::registerState);
         final IState qFinal = q;
@@ -54,10 +56,36 @@ public class FollowedBy extends AbstractBinaryRule {
         automaton.registerFinalState(right.getFinalState());
 
         // add extra stuff to obtain the new automaton (Thompson's construction style)
-        q.registerTransition(q, Transition.LABEL_NEGATION, TransitionType.TRANSITION_DROP);
 
-        if (RuleType.RULE_KLEENE_CONTIGUOUS.equals(_left.getType())) {
-            // If the left component is a Kleene Automaton
+        // If the left component is NOT a Kleene Automaton
+        // TODO this is a bit too complex...
+        if (!RuleType.RULE_KLEENE_CONTIGUOUS.equals(_left.getType()) && !RuleType.RULE_KLEENE.equals(_left.getType())) {
+        /* For each non-initial and non-final state, if there aren't any outgoing Epsilon or Star transitions,
+        outgoing transitions based on those of the initial state (same target, same label, same type) must be added to it.
+        The type of those transitions has to be changed to OVERWRITE only if they are non-looping. */
+            Collection<ITransition> transitionsFromInitial = automaton.getInitialState().getTransitions();
+            automaton.getStates().values().forEach(state -> {
+                try {
+                    if (state.getTransitionByLabel(Transition.LABEL_EPSILON) == null
+                            && state.getTransitionByLabel(Transition.LABEL_NEGATION) == null) {
+                        transitionsFromInitial.forEach(t -> {
+                            try {
+                                if (t.getTarget().getLabel().equals(t.getSource().getLabel())) {
+                                    state.registerTransition(t.getTarget(), t.getLabel(), t.getType());
+                                } else {
+                                    state.registerTransition(t.getTarget(), t.getLabel(), TransitionType.TRANSITION_OVERWRITE);
+                                }
+                            } catch (Exception e) {
+                                System.err.println("An error occurred while building the automaton (" + e.getMessage() + ")");
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    System.err.println("An error occurred while building the automaton (" + e.getMessage() + ")");
+                }
+            });
+        } else if (RuleType.RULE_KLEENE_CONTIGUOUS.equals(_left.getType())) {
+            // If the left component is a Contiguous Kleene Automaton
             boolean ok = false;
             for (IState s : left.getStates().values()) {
                 for (ITransition t : s.getTransitions()) {

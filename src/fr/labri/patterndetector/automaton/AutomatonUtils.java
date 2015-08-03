@@ -38,7 +38,7 @@ public final class AutomatonUtils {
                 automatonCopy.registerState(stateCopy);
             }
 
-            state.getTransitions().values().forEach(t -> {
+            state.getTransitions().forEach(t -> {
                 IState target = t.getTarget();
                 try {
                     if (automatonCopy.getStateByLabel(target.getLabel()) == null) {

@@ -36,7 +36,7 @@ public final class Generator {
         return eventStream;
     }
 
-    public static Collection<Event> generateImmediatelyFollowedBy() {
+    public static Collection<Event> generateFollowedByContiguous() {
 
         // ... a b ...
 
@@ -73,7 +73,7 @@ public final class Generator {
         return eventStream;
     }
 
-    public static Collection<Event> generateKleeneNotContiguous() {
+    public static Collection<Event> generateKleene() {
 
         // ... a .. a .. a .. a .. a .. a .. a ...
 
