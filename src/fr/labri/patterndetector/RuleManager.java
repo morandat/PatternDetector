@@ -25,6 +25,10 @@ public class RuleManager {
         System.out.println("Rule : " + _rule);
 
         IAutomaton automaton = _rule.getAutomaton();
+
+        /* TODO automaton.check() : checks whether the automaton is runnable e.g. only has deterministic transitions.
+        Check that there are no epsilon transitions left, and that for any state, there is only one transition per label */
+
         if (automaton != null) {
             events.stream().forEach(event -> {
                 try {

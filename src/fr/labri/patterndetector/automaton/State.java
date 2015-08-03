@@ -71,7 +71,7 @@ public class State implements IState {
             list.add(t);
             _transitions.put(label, list);
         } else {
-            if (!_transitions.get(label).contains(t)) {
+            if (!_transitions.get(label).contains(t)) { // Check duplicate transitions
                 _transitions.get(label).add(t);
             }
         }
