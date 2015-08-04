@@ -58,7 +58,7 @@ public class FollowedByContiguous extends AbstractBinaryRule {
         // add extra stuff to obtain the new automaton (Thompson's construction style)
 
         // If the left component is NOT a Kleene Automaton
-        // TODO this is a bit too complex...
+        // TODO this is a bit too complex... see if there is a simpler way
         if (!RuleType.RULE_KLEENE_CONTIGUOUS.equals(_left.getType()) && !RuleType.RULE_KLEENE.equals(_left.getType())) {
         /* For each non-initial and non-final state, if there aren't any outgoing Epsilon or Star transitions,
         outgoing transitions based on those of the initial state (same target, same label, same type) must be added to it.
@@ -77,11 +77,13 @@ public class FollowedByContiguous extends AbstractBinaryRule {
                                 }
                             } catch (Exception e) {
                                 System.err.println("An error occurred while building the automaton (" + e.getMessage() + ")");
+                                e.printStackTrace();
                             }
                         });
                     }
                 } catch (Exception e) {
                     System.err.println("An error occurred while building the automaton (" + e.getMessage() + ")");
+                    e.printStackTrace();
                 }
             });
         } else if (RuleType.RULE_KLEENE_CONTIGUOUS.equals(_left.getType())) {

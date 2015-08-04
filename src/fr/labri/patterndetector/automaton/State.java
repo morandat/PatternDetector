@@ -100,10 +100,15 @@ public class State implements IState {
 
     @Override
     public ITransition getTransitionByLabel(String label) throws Exception {
-        if (_transitions.get(label).size() > 1) {
-            throw new Exception("The automaton is not deterministic !");
-        } else {
-            return _transitions.get(label).get(0);
+        Collection<ITransition> transitions = _transitions.get(label);
+        if (transitions == null)
+            return null;
+        else {
+            if (transitions.size() > 1) {
+                throw new Exception("The automaton is not deterministic !");
+            } else {
+                return _transitions.get(label).get(0);
+            }
         }
     }
 

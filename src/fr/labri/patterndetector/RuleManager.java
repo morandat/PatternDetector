@@ -20,12 +20,14 @@ public class RuleManager {
     }
 
     public void detect(Collection<Event> events) {
-        System.out.println("Stream : " + events);
+        System.out.println("\nStream : " + events);
         System.out.println("Rule : " + _rule);
 
-        IAutomaton automaton = _rule.getAutomaton();
+        IAutomaton automaton = AutomatonUtils.powerset(_rule.getAutomaton());
 
-        System.out.println("POWERSET AUTOMATON : " + AutomatonUtils.powerset(automaton));
+        System.out.println("Powerset : " + automaton);
+        System.out.println("\nAutomaton execution");
+        System.out.println("===================");
 
         // TODO automaton.check() : checks whether the automaton is correct (i.e. only has deterministic transitions, etc.)
         // Check that the automaton is correct

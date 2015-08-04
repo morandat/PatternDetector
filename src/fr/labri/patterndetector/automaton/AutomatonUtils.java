@@ -59,7 +59,7 @@ public final class AutomatonUtils {
     }
 
     public static IAutomaton powerset(IAutomaton automaton) {
-        // Powerset construction algorithm : remove the epsilon transitions from the NFA to obtain a corresponding DFA.
+        // Powerset construction algorithm : remove the epsilon transitions from the NFA to obtain a DFA.
         IAutomaton finalAutomaton = new Automaton();
         Set<IState> initialStateSet = new HashSet<>();
         initialStateSet.add(automaton.getInitialState());
@@ -161,9 +161,12 @@ public final class AutomatonUtils {
         return extendedStateSet;
     }
 
+    /**
+     * Check if the state set contains at least one accepting state
+     **/
     private static boolean isFinalStateSet(Set<IState> stateSet) {
         boolean isFinal = false;
-        // Check if the target state is an accepting state
+
         for (IState s : stateSet) {
             if (s.isFinal()) {
                 isFinal = true;

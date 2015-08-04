@@ -32,6 +32,7 @@ public class FollowedBy extends AbstractBinaryRule {
         IState q = left.getFinalState();
         if (q == null) {
             // Kleene automata don't have any final state.
+            // TODO unsafe cast
             Kleene k = (Kleene) _left;
             q = left.getStateByLabel(k.getPivotStateLabel());
         } else {
@@ -51,7 +52,10 @@ public class FollowedBy extends AbstractBinaryRule {
                 System.err.println("An error occurred while building the automaton (" + e.getMessage() + ")");
             }
         });
-        automaton.registerFinalState(right.getFinalState());
+
+        if (right.getFinalState() != null) { // If the right component is a Kleene, then it is possible that there is no final state
+            automaton.registerFinalState(right.getFinalState());
+        }
 
         // add extra stuff to obtain the new automaton (Thompson's construction style)
         q.registerTransition(q, Transition.LABEL_NEGATION, TransitionType.TRANSITION_DROP);
