@@ -41,9 +41,9 @@ public class TestRules {
         /*IRule r14 = new FollowedBy(new Atom(EventType.EVENT_A), new Atom(EventType.EVENT_B))
                 .setTimeConstraint(new TimeConstraint(10, TimeUnit.SECONDS));*/
         // 15) a+
-        IRule r15 = new FollowedBy(new KleeneContiguous(new FollowedBy(new Atom("a"), new Atom("b"))), new Atom("a"));
+        //IRule r15 = new FollowedBy(new KleeneContiguous(new FollowedBy(new Atom("a"), new Atom("b"))), new Atom("a"));
         // 16) a++
-        //IRule r16 = new Kleene(new Atom("a"));
+        IRule r16 = new FollowedBy(new Kleene(new Atom("a")), new Atom("b"));
         // 17) a . b
         //IRule r17 = new FollowedByContiguous(new Atom("a"), new Atom("b"));
         // 18) a+ -> b
@@ -52,7 +52,7 @@ public class TestRules {
         //IRule r19 = new FollowedBy(new Kleene(new Atom(EventType.EVENT_A)), new Atom(EventType.EVENT_B));
 
         Collection<Event> events = Generator.generateKleene();
-        RuleManager ruleManager = new RuleManager(r15);
+        RuleManager ruleManager = new RuleManager(r16);
         ruleManager.detect(events);
     }
 }

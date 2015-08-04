@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by William Braik on 7/23/2015.
@@ -61,42 +62,71 @@ public final class AutomatonUtils {
         // Powerset construction algorithm : remove the epsilon transitions from the NFA to obtain a corresponding DFA.
         IAutomaton finalAutomaton = new Automaton();
         Set<IState> initialStateSet = new HashSet<>();
+        initialStateSet.add(automaton.getInitialState());
         IState initialState = new State();
-        initialStateSet.add(initialState);
+        Map<Set<String>, IState> allStateSets = new HashMap<>();
+        allStateSets.put(initialStateSet.stream().map(s -> s.getLabel()).collect(Collectors.toSet()), initialState);
 
         try {
             finalAutomaton.registerInitialState(initialState);
-
-            startPowerset(initialState, initialStateSet, finalAutomaton);
+            startPowerset(initialStateSet, allStateSets, finalAutomaton);
         } catch (Exception e) {
             System.err.println("An error occured during Powerset (" + e.getMessage() + ")");
+            e.printStackTrace();
         }
 
         return finalAutomaton;
     }
 
-    private static IState startPowerset(IState currentState, Set<IState> currentStateSet, IAutomaton finalAutomaton) {
-        Map<String, Set<IState>> stateSets = new HashMap<>();
+    private static void startPowerset(Set<IState> currentStateSet, Map<Set<String>, IState> allStateSets, IAutomaton finalAutomaton) {
+        Map<String, Set<IState>> targetStateSets = new HashMap<>();
+        Map<String, TransitionType> transitionTypes = new HashMap<>();
 
-        currentStateSet.forEach(state ->
-                        state.getTransitions().forEach(t -> {
-                            Set<IState> stateSet = stateSets.get(t.getLabel());
-                            if (stateSet == null) {
-                                stateSet = new HashSet<>();
-                            }
-                            stateSets.put(t.getLabel(), stateSet);
-                        })
-        );
+        for (IState state : currentStateSet) {
+            for (ITransition t : state.getTransitions()) {
+                if (!Transition.LABEL_EPSILON.equals(t.getLabel())) {
+                    Set<IState> stateSet = targetStateSets.get(t.getLabel());
+                    if (stateSet == null) {
+                        stateSet = new HashSet<>();
+                    }
 
-        stateSets.values().forEach(stateSet -> extendStateSet(stateSet, new HashSet<>()));
+                    stateSet.add(t.getTarget());
+                    targetStateSets.put(t.getLabel(), stateSet);
+                    transitionTypes.put(t.getLabel(), t.getType());
+                }
+            }
+        }
 
-        stateSets.forEach((label, stateSet) -> {
-            IState newState = new State();
-            finalAutomaton.registerState(newState);
+        targetStateSets.forEach((label, targetStateSet) -> {
+            Set<IState> extendedStateSet = extendStateSet(targetStateSet, new HashSet<>());
+            targetStateSets.put(label, extendedStateSet);
+        });
 
-            currentState.registerTransition(newState, label, );
+        targetStateSets.forEach((label, targetStateSet) -> {
+            IState targetState = allStateSets.get(targetStateSet.stream().map(s -> s.getLabel()).collect(Collectors.toSet()));
 
-            startPowerset(stateSet, finalAutomaton);
+            if (targetState == null) {
+                // New state set detected, must create new target state
+                targetState = new State();
+
+                if (isFinalStateSet(targetStateSet)) {
+                    try {
+                        finalAutomaton.registerFinalState(targetState);
+                    } catch (Exception e) {
+                        System.err.println("An error occured during Powerset (" + e.getMessage() + ")");
+                        e.printStackTrace();
+                    }
+                } else {
+                    finalAutomaton.registerState(targetState);
+                }
+
+                allStateSets.put(targetStateSet.stream().map(s -> s.getLabel()).collect(Collectors.toSet()), targetState);
+
+                startPowerset(targetStateSet, allStateSets, finalAutomaton);
+            }
+
+            IState currentState = allStateSets.get(currentStateSet.stream().map(s -> s.getLabel()).collect(Collectors.toSet()));
+            currentState.registerTransition(targetState, label, transitionTypes.get(label));
         });
     }
 
@@ -105,13 +135,15 @@ public final class AutomatonUtils {
      * Used by the powerset construction algorithm.
      **/
     private static Set<IState> extendStateSet(Set<IState> stateSet, Set<String> checkedStates) {
+        Set<IState> extendedStateSet = new HashSet<>();
+        extendedStateSet.addAll(stateSet);
         boolean statesAdded = false;
 
         for (IState s : stateSet) {
             if (!checkedStates.contains(s.getLabel())) {
                 for (ITransition t : s.getTransitions()) {
                     if (Transition.LABEL_EPSILON.equals(t.getLabel())) {
-                        stateSet.add(t.getTarget());
+                        extendedStateSet.add(t.getTarget());
                         statesAdded = true;
                     }
                 }
@@ -123,9 +155,22 @@ public final class AutomatonUtils {
         /* If new states have been added to the state set, we need to check those for epsilon transitions, so keep the
         extension going. If no epsilon transitions were found in any state, we can stop the extension. */
         if (statesAdded) {
-            extendStateSet(stateSet, checkedStates);
+            extendedStateSet = extendStateSet(extendedStateSet, checkedStates);
         }
 
-        return stateSet;
+        return extendedStateSet;
+    }
+
+    private static boolean isFinalStateSet(Set<IState> stateSet) {
+        boolean isFinal = false;
+        // Check if the target state is an accepting state
+        for (IState s : stateSet) {
+            if (s.isFinal()) {
+                isFinal = true;
+                break;
+            }
+        }
+
+        return isFinal;
     }
 }

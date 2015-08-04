@@ -111,4 +111,15 @@ public class State implements IState {
     public String toString() {
         return _label;
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == null) return false;
+        if (other == this) return true;
+        if (!(other instanceof State)) return false;
+
+        State otherState = (State) other;
+        return otherState.getLabel().equals(_label) && otherState.isInitial() == _initial
+                && otherState.isFinal() == _final && otherState.getTransitions().equals(getTransitions());
+    }
 }
