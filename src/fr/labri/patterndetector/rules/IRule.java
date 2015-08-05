@@ -3,24 +3,28 @@ package fr.labri.patterndetector.rules;
  * Created by William Braik on 6/25/2015.
  */
 
-import fr.labri.patterndetector.automaton.IAutomaton;
+import fr.labri.patterndetector.automaton.IRuleAutomaton;
 
 /**
  * Query/Rule that describes the patterns (complex events) we are interested in.
  */
 public interface IRule {
 
-    public RuleType getType();
+    String getName();
 
-    public String getSymbol();
+    void setName(String name);
 
-    public IAutomaton getAutomaton();
+    RuleType getType();
 
-    public TimeConstraint getTimeConstraint();
+    String getSymbol();
 
-    public SelectionPolicy getSelectionPolicy();
+    IRuleAutomaton getAutomaton();
 
-    public IRule setTimeConstraint(TimeConstraint tc);
+    TimeConstraint getTimeConstraint();
 
-    public IRule setSelectionPolicy(SelectionPolicy sp);
+    SelectionPolicy getSelectionPolicy();
+
+    IRule setTimeConstraint(TimeConstraint tc);
+
+    IRule setSelectionPolicy(SelectionPolicy sp);
 }

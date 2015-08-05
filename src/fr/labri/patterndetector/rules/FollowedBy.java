@@ -18,13 +18,13 @@ public class FollowedBy extends AbstractBinaryRule {
     }
 
     public void buildAutomaton() throws Exception {
-        IAutomaton left = AutomatonUtils.copy(_left.getAutomaton());
-        IAutomaton right = AutomatonUtils.copy(_right.getAutomaton());
+        IRuleAutomaton left = AutomatonUtils.copy(_left.getAutomaton());
+        IRuleAutomaton right = AutomatonUtils.copy(_right.getAutomaton());
 
         System.out.println("Left component : " + left);
         System.out.println("Right component : " + right);
 
-        IAutomaton automaton = new Automaton();
+        IRuleAutomaton automaton = new RuleAutomaton(this);
 
         // left component
         automaton.registerInitialState(left.getInitialState());
@@ -72,7 +72,8 @@ public class FollowedBy extends AbstractBinaryRule {
                         break;
                     }
                 }
-                if (ok) break;
+                if (ok)
+                    break;
             }
         }
 

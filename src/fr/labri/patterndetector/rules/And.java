@@ -1,7 +1,5 @@
 package fr.labri.patterndetector.rules;
 
-import fr.labri.patterndetector.automaton.IAutomaton;
-
 /**
  * Created by William Braik on 6/25/2015.
  */

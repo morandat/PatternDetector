@@ -14,14 +14,14 @@ public final class AutomatonUtils {
     private AutomatonUtils() {
     }
 
-    public static IAutomaton copy(IAutomaton automaton) {
-        IAutomaton automatonCopy = new Automaton();
+    public static IRuleAutomaton copy(IRuleAutomaton automaton) {
+        IRuleAutomaton automatonCopy = new RuleAutomaton(automaton.getRule());
         startCopy(automaton.getInitialState(), automatonCopy);
 
         return automatonCopy;
     }
 
-    private static IState startCopy(IState state, IAutomaton automatonCopy) {
+    private static IState startCopy(IState state, IRuleAutomaton automatonCopy) {
         IState stateCopy = new State();
         stateCopy.setFinal(state.isFinal());
         stateCopy.setInitial(state.isInitial());
@@ -58,9 +58,9 @@ public final class AutomatonUtils {
         return stateCopy;
     }
 
-    public static IAutomaton powerset(IAutomaton automaton) {
+    public static IRuleAutomaton powerset(IRuleAutomaton automaton) {
         // Powerset construction algorithm : remove the epsilon transitions from the NFA to obtain a DFA.
-        IAutomaton finalAutomaton = new Automaton();
+        IRuleAutomaton finalAutomaton = new RuleAutomaton(automaton.getRule());
         Set<IState> initialStateSet = new HashSet<>();
         initialStateSet.add(automaton.getInitialState());
         IState initialState = new State();
@@ -78,7 +78,7 @@ public final class AutomatonUtils {
         return finalAutomaton;
     }
 
-    private static void startPowerset(Set<IState> currentStateSet, Map<Set<String>, IState> allStateSets, IAutomaton finalAutomaton) {
+    private static void startPowerset(Set<IState> currentStateSet, Map<Set<String>, IState> allStateSets, IRuleAutomaton finalAutomaton) {
         Map<String, Set<IState>> targetStateSets = new HashMap<>();
         Map<String, TransitionType> transitionTypes = new HashMap<>();
 

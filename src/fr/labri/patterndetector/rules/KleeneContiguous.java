@@ -20,11 +20,11 @@ public class KleeneContiguous extends AbstractUnaryRule {
     }
 
     public void buildAutomaton() throws Exception {
-        IAutomaton base = AutomatonUtils.copy(_r.getAutomaton());
+        IRuleAutomaton base = AutomatonUtils.copy(_r.getAutomaton());
 
         System.out.println("Base component : " + base);
 
-        IAutomaton automaton = new Automaton();
+        IRuleAutomaton automaton = new RuleAutomaton(this);
 
         // base component
         automaton.registerInitialState(base.getInitialState());

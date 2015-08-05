@@ -1,23 +1,36 @@
 package fr.labri.patterndetector.automaton;
 
 import fr.labri.patterndetector.IEvent;
+import fr.labri.patterndetector.rules.IRule;
 
 import java.util.*;
 
 /**
  * Created by William Braik on 6/28/2015.
  */
-public class Automaton implements IAutomaton {
+public class RuleAutomaton implements IRuleAutomaton {
 
+    protected IRule _rule;
     protected IState _initialState;
     protected IState _finalState;
     protected Map<String, IState> _states;
     protected IState _currentState;
     protected ArrayList<IEvent> _buffer;
 
-    public Automaton() {
+    public RuleAutomaton(IRule rule) {
+        _rule = rule;
         _states = new HashMap<>();
         _buffer = new ArrayList<>();
+    }
+
+    @Override
+    public IRule getRule() {
+        return _rule;
+    }
+
+    @Override
+    public String getRuleName() {
+        return _rule.getName();
     }
 
     @Override
@@ -86,7 +99,7 @@ public class Automaton implements IAutomaton {
                 _currentState = _initialState;
             }
 
-            System.out.println("Current state : " + _currentState);
+            //System.out.println("Current state : " + _currentState);
 
             if (_currentState.isFinal()) {
                 throw new Exception("Final state has already been reached ! Ignoring : " + e);
@@ -94,7 +107,7 @@ public class Automaton implements IAutomaton {
                 ITransition t = _currentState.pickTransition(e);
 
                 if (t != null) {
-                    System.out.println("Transitioning : " + t + " (" + e + ")");
+                    //System.out.println("Transitioning : " + t + " (" + e + ")");
 
                     // Action to perform on the transition
                     switch (t.getType()) {
@@ -115,10 +128,10 @@ public class Automaton implements IAutomaton {
                         // If the final state has been reached, post the found pattern and reset the automaton
                         post(_buffer);
                         reset();
-                        System.out.println("Final state reached");
+                        //System.out.println("Final state reached");
                     }
                 } else {
-                    System.out.println("Can't transition ! (" + e + ")");
+                    //System.out.println("Can't transition ! (" + e + ")");
                     reset();
                 }
             }
@@ -129,17 +142,17 @@ public class Automaton implements IAutomaton {
 
     @Override
     public String toString() {
-        StringBuilder transitions = new StringBuilder();
+        StringBuilder transitions = new StringBuilder("[ ");
         if (_initialState != null) {
-            transitions.append("[ (").append(_initialState).append(",").append(_initialState.getTransitions()).append(") ");
+            transitions.append("(").append(_initialState).append(",").append(_initialState.getTransitions()).append(") ");
         }
         for (IState state : _states.values()) {
             transitions.append("(").append(state).append(",").append(state.getTransitions()).append(") ");
         }
         if (_finalState != null) {
-            transitions.append("(").append(_finalState).append(",").append(_finalState.getTransitions()).append(") ]");
+            transitions.append("(").append(_finalState).append(",").append(_finalState.getTransitions()).append(")");
         }
-
+        transitions.append(" ]");
 
         return transitions.toString();
     }
@@ -148,10 +161,14 @@ public class Automaton implements IAutomaton {
     public void reset() {
         _currentState = _initialState;
         _buffer.clear();
-        System.out.println("Automaton reset");
+        //System.out.println("Automaton reset");
     }
 
     public void post(Collection<IEvent> pattern) {
         System.out.println("*** PATTERN FOUND : " + pattern + " ***");
+        // TODO some action to perform when a pattern is found
+        // TODO post() should be in RuleManager (in RuleAutomaton : _rule.post(); in Rule : _ruleManager.post();)
     }
+
+    // TODO implement logger and sign the logs with the rule name
 }

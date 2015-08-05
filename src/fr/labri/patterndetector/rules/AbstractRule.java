@@ -1,17 +1,18 @@
 package fr.labri.patterndetector.rules;
 
-import fr.labri.patterndetector.automaton.IAutomaton;
+import fr.labri.patterndetector.automaton.IRuleAutomaton;
 
 /**
  * Created by William Braik on 6/25/2015.
  */
 public abstract class AbstractRule implements IRule {
 
+    protected String _name;
     protected RuleType _type;
     protected String _symbol;
     protected TimeConstraint _tc;
     protected SelectionPolicy _sp;
-    protected IAutomaton _automaton;
+    protected IRuleAutomaton _automaton;
 
     public AbstractRule(RuleType type, String symbol) {
         _type = type;
@@ -19,6 +20,16 @@ public abstract class AbstractRule implements IRule {
         _sp = null;
         _tc = null;
         _automaton = null;
+    }
+
+    @Override
+    public String getName() {
+        return _name;
+    }
+
+    @Override
+    public void setName(String name) {
+        _name = name;
     }
 
     @Override
@@ -56,7 +67,7 @@ public abstract class AbstractRule implements IRule {
     }
 
     @Override
-    public IAutomaton getAutomaton() {
+    public IRuleAutomaton getAutomaton() {
         return _automaton;
     }
 }

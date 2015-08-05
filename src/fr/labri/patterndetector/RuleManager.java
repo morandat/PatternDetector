@@ -4,45 +4,49 @@ package fr.labri.patterndetector;
  */
 
 import fr.labri.patterndetector.automaton.AutomatonUtils;
-import fr.labri.patterndetector.automaton.IAutomaton;
+import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.rules.IRule;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Parses a stream of events to detect patterns corresponding to a given Rule
  */
 public class RuleManager {
-    IRule _rule;
 
-    public RuleManager(IRule rule) {
-        _rule = rule;
+    private int _ruleId;
+
+    Map<IRule, IRuleAutomaton> _rules; // Map binding each rule to its automaton
+
+    public RuleManager() {
+        _ruleId = 0;
+        _rules = new HashMap<>();
+    }
+
+    public void addRule(IRule rule) {
+        if (rule.getAutomaton() == null) {
+            System.err.println("Invalid rule : " + rule);
+        } else {
+            rule.setName(rule.getName() == null ? "R" + _ruleId++ : rule.getName() + "-" + _ruleId++);
+            _rules.put(rule, AutomatonUtils.powerset(rule.getAutomaton()));
+            System.out.println("* Rule " + rule.getName() + " added : " + rule);
+            System.out.println(rule.getName() + " powerset : " + _rules.get(rule));
+        }
     }
 
     public void detect(Collection<Event> events) {
-        System.out.println("\nStream : " + events);
-        System.out.println("Rule : " + _rule);
+        System.out.println("\n* Stream : " + events + "\n");
 
-        IAutomaton automaton = AutomatonUtils.powerset(_rule.getAutomaton());
-
-        System.out.println("Powerset : " + automaton);
-        System.out.println("\nAutomaton execution");
-        System.out.println("===================");
-
-        // TODO automaton.check() : checks whether the automaton is correct (i.e. only has deterministic transitions, etc.)
-        // Check that the automaton is correct
-
-        if (automaton != null) {
-            events.stream().forEach(event -> {
-                try {
-                    automaton.fire(event);
-                } catch (Exception e) {
-                    System.err.println(e.getMessage());
-                    e.printStackTrace();
-                }
-            });
-        } else {
-            System.err.println("Invalid rule : " + _rule);
-        }
+        events.stream().forEach(event ->
+                _rules.values().forEach(automaton -> {
+                    try {
+                        automaton.fire(event);
+                    } catch (Exception e) {
+                        System.err.println(e.getMessage());
+                        e.printStackTrace();
+                    }
+                }));
     }
 }

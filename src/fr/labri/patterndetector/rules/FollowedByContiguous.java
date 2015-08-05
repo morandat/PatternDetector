@@ -20,13 +20,13 @@ public class FollowedByContiguous extends AbstractBinaryRule {
     }
 
     public void buildAutomaton() throws Exception {
-        IAutomaton left = AutomatonUtils.copy(_left.getAutomaton());
-        IAutomaton right = AutomatonUtils.copy(_right.getAutomaton());
+        IRuleAutomaton left = AutomatonUtils.copy(_left.getAutomaton());
+        IRuleAutomaton right = AutomatonUtils.copy(_right.getAutomaton());
 
         System.out.println("Left component : " + left);
         System.out.println("Right component : " + right);
 
-        IAutomaton automaton = new Automaton();
+        IRuleAutomaton automaton = new RuleAutomaton(this);
 
         // left component
         automaton.registerInitialState(left.getInitialState());
@@ -58,7 +58,7 @@ public class FollowedByContiguous extends AbstractBinaryRule {
         // add extra stuff to obtain the new automaton (Thompson's construction style)
 
         // If the left component is NOT a Kleene Automaton
-        // TODO this is a bit too complex... see if there is a simpler way
+        // TODO this part is a bit too complex... see if there is a simpler way
         if (!RuleType.RULE_KLEENE_CONTIGUOUS.equals(_left.getType()) && !RuleType.RULE_KLEENE.equals(_left.getType())) {
         /* For each non-initial and non-final state, if there aren't any outgoing Epsilon or Star transitions,
         outgoing transitions based on those of the initial state (same target, same label, same type) must be added to it.

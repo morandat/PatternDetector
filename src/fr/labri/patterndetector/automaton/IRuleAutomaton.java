@@ -1,6 +1,7 @@
 package fr.labri.patterndetector.automaton;
 
 import fr.labri.patterndetector.IEvent;
+import fr.labri.patterndetector.rules.IRule;
 
 import java.util.Collection;
 import java.util.Map;
@@ -9,7 +10,11 @@ import java.util.Set;
 /**
  * Created by William Braik on 6/28/2015.
  */
-public interface IAutomaton {
+public interface IRuleAutomaton {
+
+    IRule getRule();
+
+    String getRuleName();
 
     IState getCurrentState();
 
