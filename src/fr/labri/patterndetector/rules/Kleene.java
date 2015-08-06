@@ -14,22 +14,22 @@ import fr.labri.patterndetector.automaton.*;
  */
 public class Kleene extends AbstractUnaryRule {
 
+    public static final String Symbol = "+";
+
     private String _pivotStateLabel;
 
     public Kleene(IRule r) {
-        super(RuleType.RULE_KLEENE, "+", r);
+        super(RuleType.RULE_KLEENE, Kleene.Symbol, r);
 
         try {
             buildAutomaton();
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            System.err.println("Can't instantiate rule ! (" + e.getMessage() + ")");
         }
     }
 
     public void buildAutomaton() throws Exception {
         IRuleAutomaton base = AutomatonUtils.copy(_r.getAutomaton());
-
-        System.out.println("Base component : " + base);
 
         IRuleAutomaton automaton = new RuleAutomaton(this);
 
@@ -46,8 +46,6 @@ public class Kleene extends AbstractUnaryRule {
         s.registerTransition(s, Transition.LABEL_NEGATION, TransitionType.TRANSITION_DROP);
         s.registerTransition(automaton.getInitialState(), Transition.LABEL_EPSILON, TransitionType.TRANSITION_DROP);
         automaton.registerState(s);
-
-        System.out.println("Final automaton : " + automaton);
 
         _pivotStateLabel = s.getLabel();
         _automaton = automaton;

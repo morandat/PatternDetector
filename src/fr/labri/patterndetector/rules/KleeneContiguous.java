@@ -8,21 +8,20 @@ import fr.labri.patterndetector.automaton.*;
 
 public class KleeneContiguous extends AbstractUnaryRule {
 
+    public static final String Symbol = "+.";
 
     public KleeneContiguous(IRule r) {
-        super(RuleType.RULE_KLEENE_CONTIGUOUS, "+.", r);
+        super(RuleType.RULE_KLEENE_CONTIGUOUS, KleeneContiguous.Symbol, r);
 
         try {
             buildAutomaton();
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            System.err.println("Can't instantiate rule ! (" + e.getMessage() + ")");
         }
     }
 
     public void buildAutomaton() throws Exception {
         IRuleAutomaton base = AutomatonUtils.copy(_r.getAutomaton());
-
-        System.out.println("Base component : " + base);
 
         IRuleAutomaton automaton = new RuleAutomaton(this);
 
@@ -39,8 +38,6 @@ public class KleeneContiguous extends AbstractUnaryRule {
         IState f = new State();
         automaton.registerFinalState(f);
         q.registerTransition(f, Transition.LABEL_NEGATION, TransitionType.TRANSITION_DROP);
-
-        System.out.println("Final automaton : " + automaton);
 
         _automaton = automaton;
     }

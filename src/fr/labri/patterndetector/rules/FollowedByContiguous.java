@@ -9,22 +9,21 @@ import java.util.Collection;
  */
 public class FollowedByContiguous extends AbstractBinaryRule {
 
+    public static final String Symbol = ".";
+
     public FollowedByContiguous(IRule left, IRule right) {
-        super(RuleType.RULE_FOLLOWED_BY_CONTIGUOUS, ".", left, right);
+        super(RuleType.RULE_FOLLOWED_BY_CONTIGUOUS, FollowedByContiguous.Symbol, left, right);
 
         try {
             buildAutomaton();
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            System.err.println("Can't instantiate rule ! (" + e.getMessage() + ")");
         }
     }
 
     public void buildAutomaton() throws Exception {
         IRuleAutomaton left = AutomatonUtils.copy(_left.getAutomaton());
         IRuleAutomaton right = AutomatonUtils.copy(_right.getAutomaton());
-
-        System.out.println("Left component : " + left);
-        System.out.println("Right component : " + right);
 
         IRuleAutomaton automaton = new RuleAutomaton(this);
 
@@ -101,8 +100,6 @@ public class FollowedByContiguous extends AbstractBinaryRule {
                 if (ok) break;
             }
         }
-
-        System.out.println("Final automaton : " + automaton);
 
         _automaton = automaton;
     }

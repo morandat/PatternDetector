@@ -65,7 +65,7 @@ public final class AutomatonUtils {
         initialStateSet.add(automaton.getInitialState());
         IState initialState = new State();
         Map<Set<String>, IState> allStateSets = new HashMap<>();
-        allStateSets.put(initialStateSet.stream().map(s -> s.getLabel()).collect(Collectors.toSet()), initialState);
+        allStateSets.put(initialStateSet.stream().map(IState::getLabel).collect(Collectors.toSet()), initialState);
 
         try {
             finalAutomaton.registerInitialState(initialState);
@@ -103,7 +103,7 @@ public final class AutomatonUtils {
         });
 
         targetStateSets.forEach((label, targetStateSet) -> {
-            IState targetState = allStateSets.get(targetStateSet.stream().map(s -> s.getLabel()).collect(Collectors.toSet()));
+            IState targetState = allStateSets.get(targetStateSet.stream().map(IState::getLabel).collect(Collectors.toSet()));
 
             if (targetState == null) {
                 // New state set detected, must create new target state
@@ -120,12 +120,12 @@ public final class AutomatonUtils {
                     finalAutomaton.registerState(targetState);
                 }
 
-                allStateSets.put(targetStateSet.stream().map(s -> s.getLabel()).collect(Collectors.toSet()), targetState);
+                allStateSets.put(targetStateSet.stream().map(IState::getLabel).collect(Collectors.toSet()), targetState);
 
                 startPowerset(targetStateSet, allStateSets, finalAutomaton);
             }
 
-            IState currentState = allStateSets.get(currentStateSet.stream().map(s -> s.getLabel()).collect(Collectors.toSet()));
+            IState currentState = allStateSets.get(currentStateSet.stream().map(IState::getLabel).collect(Collectors.toSet()));
             currentState.registerTransition(targetState, label, transitionTypes.get(label));
         });
     }

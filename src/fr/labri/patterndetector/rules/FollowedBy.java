@@ -7,8 +7,10 @@ import fr.labri.patterndetector.automaton.*;
  */
 public class FollowedBy extends AbstractBinaryRule {
 
+    public static final String Symbol = "-->";
+
     public FollowedBy(IRule left, IRule right) {
-        super(RuleType.RULE_FOLLOWED_BY, "-->", left, right);
+        super(RuleType.RULE_FOLLOWED_BY, FollowedBy.Symbol, left, right);
 
         try {
             buildAutomaton();
@@ -20,9 +22,6 @@ public class FollowedBy extends AbstractBinaryRule {
     public void buildAutomaton() throws Exception {
         IRuleAutomaton left = AutomatonUtils.copy(_left.getAutomaton());
         IRuleAutomaton right = AutomatonUtils.copy(_right.getAutomaton());
-
-        System.out.println("Left component : " + left);
-        System.out.println("Right component : " + right);
 
         IRuleAutomaton automaton = new RuleAutomaton(this);
 
@@ -76,8 +75,6 @@ public class FollowedBy extends AbstractBinaryRule {
                     break;
             }
         }
-
-        System.out.println("Final automaton : " + automaton);
 
         _automaton = automaton;
     }

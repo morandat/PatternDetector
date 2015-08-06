@@ -5,7 +5,9 @@ package fr.labri.patterndetector.rules;
  */
 public class And extends AbstractBinaryRule {
 
+    public static final String Symbol = "&&";
+
     public And(IRule left, IRule right) {
-        super(RuleType.RULE_AND, "&&", left, right);
+        super(RuleType.RULE_AND, And.Symbol, left, right);
     }
 }

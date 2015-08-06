@@ -97,6 +97,7 @@ public final class Generator {
         eventStream.add(new Event("b", _t++));
         eventStream.add(new Event("a", _t++));
         eventStream.add(new Event("x", _t++));
+        eventStream.add(new Event("x", _t++));
         eventStream.add(new Event("b", _t++));
 
         return eventStream;
