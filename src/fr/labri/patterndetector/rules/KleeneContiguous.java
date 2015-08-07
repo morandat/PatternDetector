@@ -12,16 +12,14 @@ public class KleeneContiguous extends AbstractUnaryRule {
 
     public KleeneContiguous(IRule r) {
         super(RuleType.RULE_KLEENE_CONTIGUOUS, KleeneContiguous.Symbol, r);
-
-        try {
-            buildAutomaton();
-        } catch (Exception e) {
-            System.err.println("Can't instantiate rule ! (" + e.getMessage() + ")");
-        }
     }
 
     public void buildAutomaton() throws Exception {
-        IRuleAutomaton base = AutomatonUtils.copy(_r.getAutomaton());
+        if (_rule.getAutomaton() == null) {
+            _rule.buildAutomaton();
+        }
+
+        IRuleAutomaton base = AutomatonUtils.copy(_rule.getAutomaton());
 
         IRuleAutomaton automaton = new RuleAutomaton(this);
 

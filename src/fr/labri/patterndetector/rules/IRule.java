@@ -6,7 +6,7 @@ package fr.labri.patterndetector.rules;
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 
 /**
- * Query/Rule that describes the patterns (complex events) we are interested in.
+ * Query that describes the stream patterns the user is interested in.
  */
 public interface IRule {
 
@@ -27,4 +27,10 @@ public interface IRule {
     IRule setTimeConstraint(TimeConstraint tc);
 
     IRule setSelectionPolicy(SelectionPolicy sp);
+
+    /**
+     * Must be called by the RuleManager before adding a rule.
+     */
+    // TODO maybe put this method in an Automaton Factory class ?
+    void buildAutomaton() throws Exception; // TODO RuleException
 }

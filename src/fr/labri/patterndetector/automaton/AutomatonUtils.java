@@ -21,10 +21,10 @@ public final class AutomatonUtils {
         return automatonCopy;
     }
 
-    private static IState startCopy(IState state, IRuleAutomaton automatonCopy) {
+    private static IState startCopy(IState currentState, IRuleAutomaton automatonCopy) {
         IState stateCopy = new State();
-        stateCopy.setFinal(state.isFinal());
-        stateCopy.setInitial(state.isInitial());
+        stateCopy.setFinal(currentState.isFinal());
+        stateCopy.setInitial(currentState.isInitial());
 
         try {
             if (stateCopy.isInitial() || stateCopy.isFinal()) {
@@ -38,7 +38,7 @@ public final class AutomatonUtils {
                 automatonCopy.registerState(stateCopy);
             }
 
-            state.getTransitions().forEach(t -> {
+            currentState.getTransitions().forEach(t -> {
                 IState target = t.getTarget();
                 try {
                     if (automatonCopy.getStateByLabel(target.getLabel()) == null) {

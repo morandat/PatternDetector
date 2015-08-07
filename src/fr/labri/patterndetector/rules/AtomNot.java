@@ -12,12 +12,6 @@ public class AtomNot extends AbstractRule implements IAtom {
     public AtomNot(String x) {
         super(RuleType.RULE_ATOM_NOT, null);
         _x = x;
-
-        try {
-            buildAutomaton();
-        } catch (Exception e) {
-            System.err.println("Can't instantiate rule ! " + e.getMessage());
-        }
     }
 
     @Override
@@ -32,7 +26,7 @@ public class AtomNot extends AbstractRule implements IAtom {
 
     public void buildAutomaton() throws Exception {
         IState s0 = new State(); // Initial state
-        IState s1 = new State();
+        IState s1 = new State(); // Final state
 
         s0.registerTransition(s0, _x, TransitionType.TRANSITION_DROP);
         s0.registerTransition(s1, Transition.LABEL_NEGATION, TransitionType.TRANSITION_APPEND);

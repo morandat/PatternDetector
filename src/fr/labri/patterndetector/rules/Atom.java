@@ -12,12 +12,6 @@ public class Atom extends AbstractRule implements IAtom {
     public Atom(String x) {
         super(RuleType.RULE_ATOM, null);
         _x = x;
-
-        try {
-            buildAutomaton();
-        } catch (Exception e) {
-            System.err.println("Can't instantiate rule ! " + e.getMessage());
-        }
     }
 
     @Override
@@ -30,9 +24,10 @@ public class Atom extends AbstractRule implements IAtom {
         return _x;
     }
 
+    @Override
     public void buildAutomaton() throws Exception {
         IState s0 = new State(); // Initial state
-        IState s1 = new State();
+        IState s1 = new State(); // Final state
 
         s0.registerTransition(s1, _x, TransitionType.TRANSITION_APPEND);
 

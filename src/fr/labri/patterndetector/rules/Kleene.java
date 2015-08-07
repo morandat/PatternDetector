@@ -7,10 +7,10 @@ import fr.labri.patterndetector.automaton.*;
  */
 
 /**
- * This rule by itself does not have any termination criterion. The automaton therefore does not have any final state.
+ * This rule does not have any termination criterion. The automaton therefore does not have any final state.
  * A way to make this operator terminate is to append an atom (or a rule that terminates) at the end of this rule ;
  * Or to specify a time constraint on the atom.
- * Ex : a++ doesn't terminate but a++ -> b terminates.
+ * Ex : a+ doesn't terminate but a+ -> b, or a+|10| terminates.
  */
 public class Kleene extends AbstractUnaryRule {
 
@@ -20,16 +20,14 @@ public class Kleene extends AbstractUnaryRule {
 
     public Kleene(IRule r) {
         super(RuleType.RULE_KLEENE, Kleene.Symbol, r);
-
-        try {
-            buildAutomaton();
-        } catch (Exception e) {
-            System.err.println("Can't instantiate rule ! (" + e.getMessage() + ")");
-        }
     }
 
     public void buildAutomaton() throws Exception {
-        IRuleAutomaton base = AutomatonUtils.copy(_r.getAutomaton());
+        if (_rule.getAutomaton() == null) {
+            _rule.buildAutomaton();
+        }
+
+        IRuleAutomaton base = AutomatonUtils.copy(_rule.getAutomaton());
 
         IRuleAutomaton automaton = new RuleAutomaton(this);
 

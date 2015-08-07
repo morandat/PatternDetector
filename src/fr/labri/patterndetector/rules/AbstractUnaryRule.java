@@ -5,11 +5,11 @@ package fr.labri.patterndetector.rules;
  */
 public abstract class AbstractUnaryRule extends AbstractRule implements IUnaryRule {
 
-    protected IRule _r;
+    protected IRule _rule;
 
     public AbstractUnaryRule(RuleType type, String symbol, IRule r) {
         super(type, symbol);
-        _r = r;
+        _rule = r;
     }
 
     @Override
@@ -19,11 +19,11 @@ public abstract class AbstractUnaryRule extends AbstractRule implements IUnaryRu
 
     @Override
     public IRule getRule() {
-        return _r;
+        return _rule;
     }
 
     @Override
     public String toString() {
-        return "(" + _r.toString() + ")" + _symbol;
+        return "(" + _rule.toString() + ")" + _symbol;
     }
 }

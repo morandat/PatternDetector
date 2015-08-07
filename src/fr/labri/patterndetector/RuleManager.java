@@ -11,9 +11,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Parses a stream of events to detect patterns corresponding to a given Rule
- */
 public class RuleManager {
 
     private int _ruleId;
@@ -26,10 +23,17 @@ public class RuleManager {
     }
 
     public void addRule(IRule rule) {
+        try {
+            rule.buildAutomaton();
+        } catch (Exception e) {
+            System.err.println("Can't add rule ! (" + e.getMessage() + ")");
+            e.printStackTrace();
+        }
+
         if (rule.getAutomaton() == null) {
             System.err.println("Invalid rule : " + rule);
         } else {
-            rule.setName(rule.getName() == null ? "R" + _ruleId++ : rule.getName() + "-" + _ruleId++);
+            rule.setName(rule.getName() == null ? rule.getClass().getSimpleName() + "-" + _ruleId++ : rule.getName() + "-" + _ruleId++);
             _rules.put(rule, AutomatonUtils.powerset(rule.getAutomaton()));
             System.out.println("* Rule " + rule.getName() + " added : " + rule);
             System.out.println(rule.getName() + " powerset : " + _rules.get(rule));
@@ -39,14 +43,13 @@ public class RuleManager {
     public void detect(Collection<Event> events) {
         System.out.println("\n* Stream : " + events + "\n");
 
-        events.stream().forEach(event ->
-                _rules.values().forEach(automaton -> {
-                    try {
-                        automaton.fire(event);
-                    } catch (Exception e) {
-                        System.err.println(e.getMessage());
-                        e.printStackTrace();
-                    }
-                }));
+        events.stream().forEach(event -> _rules.values().forEach(automaton -> {
+            try {
+                automaton.fire(event);
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+                e.printStackTrace();
+            }
+        }));
     }
 }

@@ -10,4 +10,9 @@ public class Or extends AbstractBinaryRule {
     public Or(IRule left, IRule right) {
         super(RuleType.RULE_OR, Or.Symbol, left, right);
     }
+
+    @Override
+    public void buildAutomaton() {
+
+    }
 }

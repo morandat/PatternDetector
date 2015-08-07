@@ -11,15 +11,16 @@ public class FollowedBy extends AbstractBinaryRule {
 
     public FollowedBy(IRule left, IRule right) {
         super(RuleType.RULE_FOLLOWED_BY, FollowedBy.Symbol, left, right);
-
-        try {
-            buildAutomaton();
-        } catch (Exception e) {
-            System.err.println("Can't instantiate rule ! (" + e.getMessage() + ")");
-        }
     }
 
     public void buildAutomaton() throws Exception {
+        if (_left.getAutomaton() == null) {
+            _left.buildAutomaton();
+        }
+        if (_right.getAutomaton() == null) {
+            _right.buildAutomaton();
+        }
+
         IRuleAutomaton left = AutomatonUtils.copy(_left.getAutomaton());
         IRuleAutomaton right = AutomatonUtils.copy(_right.getAutomaton());
 
