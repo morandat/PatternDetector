@@ -5,7 +5,7 @@ package fr.labri.patterndetector.rules;
  */
 public interface IBinaryRule extends IRule {
 
-    public IRule getLeftRule();
+    IRule getLeftRule();
 
-    public IRule getRightRule();
+    IRule getRightRule();
 }

@@ -45,8 +45,13 @@ public class TestRules {
 
         Collection<Event> events = Generator.generateKleene();
 
+        Runnable task = () -> {
+
+        };
+        new Thread(task).start();
+
         RuleManager ruleManager = new RuleManager();
-        ruleManager.addRule(r11);
+        ruleManager.addRule(r7);
         ruleManager.detect(events);
     }
 }

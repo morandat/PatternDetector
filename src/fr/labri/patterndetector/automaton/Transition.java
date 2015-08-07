@@ -1,5 +1,7 @@
 package fr.labri.patterndetector.automaton;
 
+import fr.labri.patterndetector.rules.TimeConstraint;
+
 /**
  * Created by William Braik on 7/27/2015.
  */
@@ -12,12 +14,22 @@ public class Transition implements ITransition {
     private IState _target;
     private String _label;
     TransitionType _type;
+    TimeConstraint _timeConstraint;
 
     public Transition(IState source, IState target, String label, TransitionType type) {
         _source = source;
         _target = target;
         _label = label;
         _type = type;
+        _timeConstraint = null;
+    }
+
+    public Transition(IState source, IState target, String label, TransitionType type, TimeConstraint timeConstraint) {
+        _source = source;
+        _target = target;
+        _label = label;
+        _type = type;
+        _timeConstraint = timeConstraint;
     }
 
     @Override
@@ -38,6 +50,16 @@ public class Transition implements ITransition {
     @Override
     public TransitionType getType() {
         return _type;
+    }
+
+    @Override
+    public TimeConstraint getTimeConstraint() {
+        return _timeConstraint;
+    }
+
+    @Override
+    public void setTimeConstraint(TimeConstraint timeConstraint) {
+        _timeConstraint = timeConstraint;
     }
 
     @Override

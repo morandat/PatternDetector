@@ -96,6 +96,8 @@ public class State implements IState {
         } else {
             return list.get(0);
         }
+
+        // TODO if the transition has a time constraint, check clocks
     }
 
     @Override

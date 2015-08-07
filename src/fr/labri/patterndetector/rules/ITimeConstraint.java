@@ -7,7 +7,9 @@ import java.util.concurrent.TimeUnit;
  */
 public interface ITimeConstraint {
 
-    public int getValue();
+    int getValue();
 
-    public TimeUnit getUnit();
+    boolean getLowerThan();
+
+    String getEventType();
 }

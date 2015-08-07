@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Pre-generates logs according to various scenarios.
+ * Pre-generates logs for various scenarios.
  */
 public final class Generator {
 

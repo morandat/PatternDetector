@@ -161,6 +161,7 @@ public class RuleAutomaton implements IRuleAutomaton {
     public void reset() {
         _currentState = _initialState;
         _buffer.clear();
+        // TODO reset the clocks
         //System.out.println("Automaton reset");
     }
 

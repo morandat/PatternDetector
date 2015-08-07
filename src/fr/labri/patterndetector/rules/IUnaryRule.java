@@ -5,5 +5,5 @@ package fr.labri.patterndetector.rules;
  */
 public interface IUnaryRule extends IRule {
 
-    public IRule getRule();
+    IRule getRule();
 }
