@@ -1,7 +1,5 @@
 package fr.labri.patterndetector.automaton;
 
-import fr.labri.patterndetector.rules.TimeConstraint;
-
 /**
  * Created by William Braik on 7/27/2015.
  */
@@ -14,22 +12,22 @@ public class Transition implements ITransition {
     private IState _target;
     private String _label;
     TransitionType _type;
-    TimeConstraint _timeConstraint;
+    ClockGuard _clockGuard;
 
     public Transition(IState source, IState target, String label, TransitionType type) {
         _source = source;
         _target = target;
         _label = label;
         _type = type;
-        _timeConstraint = null;
+        _clockGuard = null;
     }
 
-    public Transition(IState source, IState target, String label, TransitionType type, TimeConstraint timeConstraint) {
+    public Transition(IState source, IState target, String label, TransitionType type, ClockGuard clockGuard) {
         _source = source;
         _target = target;
         _label = label;
         _type = type;
-        _timeConstraint = timeConstraint;
+        _clockGuard = clockGuard;
     }
 
     @Override
@@ -53,18 +51,18 @@ public class Transition implements ITransition {
     }
 
     @Override
-    public TimeConstraint getTimeConstraint() {
-        return _timeConstraint;
+    public ClockGuard getClockConstraint() {
+        return _clockGuard;
     }
 
     @Override
-    public void setTimeConstraint(TimeConstraint timeConstraint) {
-        _timeConstraint = timeConstraint;
+    public void setClockConstraint(ClockGuard clockGuard) {
+        _clockGuard = clockGuard;
     }
 
     @Override
     public String toString() {
-        return _source + ":" + _label + " => " + _target + " [" + _type + "]";
+        return _source + ":" + _label + " => " + _target + " [" + _clockGuard + "] [" + _type + "]";
     }
 
     @Override

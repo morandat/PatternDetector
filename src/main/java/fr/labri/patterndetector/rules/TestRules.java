@@ -11,13 +11,16 @@ public class TestRules {
 
     public static void main(String[] args) {
         // 0) a
-        IRule r0 = new Atom("a");
+        IRule r0 = new Atom("a")
+                .setTimeConstraint(new TimeConstraint(10));
 
         // 1) !a
-        IRule r1 = new AtomNot("a");
+        IRule r1 = new AtomNot("a")
+                .setTimeConstraint(new TimeConstraint(10));
 
         // 2) a --> b
-        IRule r2 = new FollowedBy(new Atom("b"), r0);
+        IRule r2 = new FollowedBy(new Atom("b"), r0)
+                .setTimeConstraint(new TimeConstraint(10));
 
         // 4) a && b
         //IRule r4 = new And(new Atom("a"), new Atom("b")); // TODO operator not implemented yet
@@ -44,11 +47,6 @@ public class TestRules {
         IRule r11 = new FollowedBy(r9, new KleeneContiguous(new Atom("x")));
 
         Collection<Event> events = Generator.generateKleene();
-
-        Runnable task = () -> {
-
-        };
-        new Thread(task).start();
 
         RuleManager ruleManager = new RuleManager();
         ruleManager.addRule(r7);

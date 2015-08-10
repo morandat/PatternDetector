@@ -53,7 +53,7 @@ public class FollowedBy extends AbstractBinaryRule {
             }
         });
 
-        if (right.getFinalState() != null) { // If the right component is a Kleene, then it is possible that there is no final state
+        if (right.getFinalState() != null) { // If the right component is Kleene, then the automaton has no final state
             automaton.registerFinalState(right.getFinalState());
         }
 

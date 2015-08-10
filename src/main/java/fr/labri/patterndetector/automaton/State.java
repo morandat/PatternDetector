@@ -16,12 +16,14 @@ public class State implements IState {
     protected Map<String, List<ITransition>> _transitions;
     protected boolean _initial;
     protected boolean _final;
+    protected IRuleAutomaton _automaton;
 
     public State() {
         _label = null;
         _transitions = new HashMap<>();
         _final = false;
         _initial = false;
+        _automaton = null;
     }
 
     @Override
@@ -48,6 +50,11 @@ public class State implements IState {
     }
 
     @Override
+    public IRuleAutomaton getAutomaton() {
+        return _automaton;
+    }
+
+    @Override
     public void setLabel(String label) {
         _label = label;
     }
@@ -60,6 +67,11 @@ public class State implements IState {
     @Override
     public void setFinal(boolean isFinal) {
         _final = isFinal;
+    }
+
+    @Override
+    public void setAutomaton(IRuleAutomaton automaton) {
+        _automaton = automaton;
     }
 
     @Override

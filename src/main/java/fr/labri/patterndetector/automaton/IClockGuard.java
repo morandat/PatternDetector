@@ -1,11 +1,9 @@
-package fr.labri.patterndetector.rules;
-
-import java.util.concurrent.TimeUnit;
+package fr.labri.patterndetector.automaton;
 
 /**
  * Created by william.braik on 08/07/2015.
  */
-public interface ITimeConstraint {
+public interface IClockGuard {
 
     int getValue();
 

@@ -8,6 +8,10 @@ import java.util.*;
 /**
  * Created by William Braik on 6/28/2015.
  */
+
+/**
+ * A type of timed automaton. Contains clocks for each event type
+ */
 public class RuleAutomaton implements IRuleAutomaton {
 
     protected IRule _rule;
@@ -72,6 +76,7 @@ public class RuleAutomaton implements IRuleAutomaton {
         }
         s.setLabel(State.LABEL_INITIAL);
         s.setInitial(true);
+        s.setAutomaton(this);
         _initialState = s;
     }
 
@@ -79,6 +84,7 @@ public class RuleAutomaton implements IRuleAutomaton {
     public void registerState(IState s) {
         s.setLabel(Integer.toString(_states.size()));
         _states.put(s.getLabel(), s);
+        s.setAutomaton(this);
     }
 
     @Override
@@ -88,6 +94,7 @@ public class RuleAutomaton implements IRuleAutomaton {
         }
         s.setLabel(State.LABEL_FINAL);
         s.setFinal(true);
+        s.setAutomaton(this);
         _finalState = s;
     }
 

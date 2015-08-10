@@ -1,23 +1,21 @@
-package fr.labri.patterndetector.rules;
-
-import java.util.concurrent.TimeUnit;
+package fr.labri.patterndetector.automaton;
 
 /**
  * Created by william.braik on 08/07/2015.
  */
-public final class TimeConstraint implements ITimeConstraint {
+public final class ClockGuard implements IClockGuard {
 
     private String _eventType; // to which event types's clock this time constraint applies
     private int _value; // in seconds
     private boolean _lowerThan; // whether the time constraint specifies a min value or max value for the clock
 
-    TimeConstraint(String eventType, int value) {
+    ClockGuard(String eventType, int value) {
         _eventType = eventType;
         _value = value;
         _lowerThan = true;
     }
 
-    TimeConstraint(String eventType, int value, boolean lowerThan) {
+    ClockGuard(String eventType, int value, boolean lowerThan) {
         _eventType = eventType;
         _value = value;
         _lowerThan = lowerThan;
