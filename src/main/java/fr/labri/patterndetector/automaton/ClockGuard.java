@@ -9,12 +9,25 @@ public final class ClockGuard implements IClockGuard {
     private int _value; // in seconds
     private boolean _lowerThan; // whether the time constraint specifies a min value or max value for the clock
 
+    /**
+     * Creates a clock guard with the default comparison operator (lte).
+     *
+     * @param eventType
+     * @param value
+     */
     ClockGuard(String eventType, int value) {
         _eventType = eventType;
         _value = value;
         _lowerThan = true;
     }
 
+    /**
+     * Creates a clock guard with the specified comparison operator.
+     *
+     * @param eventType
+     * @param value
+     * @param lowerThan set true for lte, false for gt
+     */
     ClockGuard(String eventType, int value, boolean lowerThan) {
         _eventType = eventType;
         _value = value;

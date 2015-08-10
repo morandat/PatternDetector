@@ -7,5 +7,5 @@ public interface IEvent {
 
     String getType();
 
-    int getTimestamp();
+    long getTimestamp();
 }

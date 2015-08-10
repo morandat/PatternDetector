@@ -90,6 +90,21 @@ public class State implements IState {
     }
 
     @Override
+    public void registerTransition(IState target, String label, TransitionType type, ClockGuard clockGuard) {
+        ITransition t = new Transition(this, target, label, type, clockGuard);
+
+        if (_transitions.get(label) == null) {
+            List<ITransition> list = new ArrayList<>();
+            list.add(t);
+            _transitions.put(label, list);
+        } else {
+            if (!_transitions.get(label).contains(t)) { // Check duplicate transitions
+                _transitions.get(label).add(t);
+            }
+        }
+    }
+
+    @Override
     public void removeTransition(String label) {
         _transitions.remove(label);
     }
@@ -101,15 +116,17 @@ public class State implements IState {
             list = _transitions.get(Transition.LABEL_NEGATION);
         }
 
+        ITransition t;
+
         if (list == null) {
-            return null;
+            t = null;
         } else if (list.size() > 1) {
             throw new Exception("The automaton is not deterministic !");
         } else {
-            return list.get(0);
+            t = list.get(0);
         }
 
-        // TODO if the transition has a time constraint, check clocks
+        return t;
     }
 
     @Override

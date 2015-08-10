@@ -11,15 +11,15 @@ import java.util.Collection;
  */
 public final class Generator {
 
-    static private int _t = 0;
+    static private long _t = 0;
 
     private Generator() {
     }
 
     public static Collection<Event> generateFollowedBy() {
-
         // ... a ... b ...
 
+        init();
         Collection<Event> eventStream = new ArrayList<>();
 
         eventStream.add(new Event("b", _t++));
@@ -37,9 +37,9 @@ public final class Generator {
     }
 
     public static Collection<Event> generateFollowedByContiguous() {
-
         // ... a b ...
 
+        init();
         Collection<Event> eventStream = new ArrayList<>();
 
         eventStream.add(new Event("c", _t++));
@@ -56,9 +56,9 @@ public final class Generator {
     }
 
     public static Collection<Event> generateKleeneContiguous() {
-
         // ... a a a a a a a ...
 
+        init();
         Collection<Event> eventStream = new ArrayList<>();
 
         eventStream.add(new Event("b", _t++));
@@ -77,9 +77,9 @@ public final class Generator {
     }
 
     public static Collection<Event> generateKleene() {
-
         // ... a .. a .. a .. a .. a .. a .. a ...
 
+        init();
         Collection<Event> eventStream = new ArrayList<>();
 
         eventStream.add(new Event("a", _t++));
@@ -101,5 +101,24 @@ public final class Generator {
         eventStream.add(new Event("b", _t++));
 
         return eventStream;
+    }
+
+    public static Collection<Event> generateStuff() {
+        init();
+        Collection<Event> eventStream = new ArrayList<>();
+
+        eventStream.add(new Event("b", _t++)); // b<1>
+        eventStream.add(new Event("x", _t++)); // x<2>
+        eventStream.add(new Event("y", _t++)); // y<3>
+        eventStream.add(new Event("a", _t++)); // b<4>
+
+        return eventStream;
+    }
+
+    /**
+     * Initialize the generator.
+     */
+    private static void init() {
+        _t = 0;
     }
 }

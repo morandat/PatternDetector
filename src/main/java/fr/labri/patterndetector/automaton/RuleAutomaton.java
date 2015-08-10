@@ -20,11 +20,13 @@ public class RuleAutomaton implements IRuleAutomaton {
     protected Map<String, IState> _states;
     protected IState _currentState;
     protected ArrayList<IEvent> _buffer;
+    protected Map<String, Long> _clocks;
 
     public RuleAutomaton(IRule rule) {
         _rule = rule;
         _states = new HashMap<>();
         _buffer = new ArrayList<>();
+        _clocks = new HashMap<>();
     }
 
     @Override
@@ -106,42 +108,42 @@ public class RuleAutomaton implements IRuleAutomaton {
                 _currentState = _initialState;
             }
 
+            // Update event clock
+            _clocks.put(e.getType(), e.getTimestamp());
+
             //System.out.println("Current state : " + _currentState);
+            ITransition t = _currentState.pickTransition(e);
 
-            if (_currentState.isFinal()) {
-                throw new Exception("Final state has already been reached ! Ignoring : " + e);
-            } else {
-                ITransition t = _currentState.pickTransition(e);
+            // If there is a transition, check its clock guards if any
+            if (t != null && checkClockGuard(e.getTimestamp(), t.getClockConstraint())) {
+                //System.out.println("Transitioning : " + t + " (" + e + ")");
 
-                if (t != null) {
-                    //System.out.println("Transitioning : " + t + " (" + e + ")");
-
-                    // Action to perform on the transition
-                    switch (t.getType()) {
-                        case TRANSITION_APPEND:
-                            _buffer.add(e);
-                            break;
-                        case TRANSITION_OVERWRITE:
-                            _buffer.clear();
-                            _buffer.add(e);
-                            break;
-                        case TRANSITION_DROP:
-                    }
-
-                    // Update current state
-                    _currentState = _currentState.pickTransition(e).getTarget();
-
-                    if (_currentState.isFinal()) {
-                        // If the final state has been reached, post the found pattern and reset the automaton
-                        post(_buffer);
-                        reset();
-                        //System.out.println("Final state reached");
-                    }
-                } else {
-                    //System.out.println("Can't transition ! (" + e + ")");
-                    reset();
+                // Action to perform on the transition
+                switch (t.getType()) {
+                    case TRANSITION_APPEND:
+                        _buffer.add(e);
+                        break;
+                    case TRANSITION_OVERWRITE:
+                        _buffer.clear();
+                        _buffer.add(e);
+                        break;
+                    case TRANSITION_DROP:
                 }
+
+                // Update current state
+                _currentState = t.getTarget();
+
+                if (_currentState.isFinal()) {
+                    // If the final state has been reached, post the found pattern and reset the automaton
+                    post(_buffer);
+                    reset();
+                    //System.out.println("Final state reached");
+                }
+            } else {
+                //System.out.println("Can't transition ! (" + e + ")");
+                reset();
             }
+
         } else {
             throw new Exception("Initial state not set !");
         }
@@ -168,15 +170,32 @@ public class RuleAutomaton implements IRuleAutomaton {
     public void reset() {
         _currentState = _initialState;
         _buffer.clear();
-        // TODO reset the clocks
+        _clocks.clear();
         //System.out.println("Automaton reset");
     }
 
     public void post(Collection<IEvent> pattern) {
         System.out.println("*** PATTERN FOUND : " + pattern + " ***");
-        // TODO some action to perform when a pattern is found
         // TODO post() should be in RuleManager (in RuleAutomaton : _rule.post(); in Rule : _ruleManager.post();)
     }
 
-    // TODO implement logger and sign the logs with the rule name
+    /**
+     * Returns true if the clock guard is met, false otherwise
+     */
+    public boolean checkClockGuard(long currentTime, ClockGuard clockGuard) {
+        if (clockGuard == null) {
+            return true;
+        } else if (_clocks.get(clockGuard.getEventType()) == null) {
+            return false;
+        } else {
+            long timeLast = _clocks.get(clockGuard.getEventType());
+            long timeSinceLast = currentTime - timeLast;
+
+            if (clockGuard.getLowerThan()) {
+                return timeSinceLast <= clockGuard.getValue();
+            } else {
+                return timeSinceLast > clockGuard.getValue();
+            }
+        }
+    }
 }

@@ -29,6 +29,8 @@ public interface IState {
 
     void registerTransition(IState target, String label, TransitionType type);
 
+    void registerTransition(IState target, String label, TransitionType type, ClockGuard clockGuard);
+
     void removeTransition(String label);
 
     ITransition pickTransition(IEvent event) throws Exception; // TODO NotDeterministicException

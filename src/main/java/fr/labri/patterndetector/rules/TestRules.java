@@ -20,7 +20,7 @@ public class TestRules {
 
         // 2) a --> b
         IRule r2 = new FollowedBy(new Atom("b"), r0)
-                .setTimeConstraint(new TimeConstraint(10));
+                .setTimeConstraint(new TimeConstraint(5));
 
         // 4) a && b
         //IRule r4 = new And(new Atom("a"), new Atom("b")); // TODO operator not implemented yet
