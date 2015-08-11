@@ -23,17 +23,11 @@ public class RuleManager {
     }
 
     public void addRule(IRule rule) {
-        try {
-            rule.buildAutomaton();
-        } catch (Exception e) {
-            System.err.println("Can't add rule ! (" + e.getMessage() + ")");
-            e.printStackTrace();
-        }
-
         if (rule.getAutomaton() == null) {
             System.err.println("Invalid rule : " + rule);
         } else {
-            rule.setName(rule.getName() == null ? rule.getClass().getSimpleName() + "-" + _ruleId++ : rule.getName() + "-" + _ruleId++);
+            rule.setName(rule.getName() == null ?
+                    rule.getClass().getSimpleName() + "-" + _ruleId++ : rule.getName() + "-" + _ruleId++);
             _rules.put(rule, AutomatonUtils.powerset(rule.getAutomaton()));
             System.out.println("* Rule " + rule.getName() + " added : " + rule);
             System.out.println(rule.getName() + " powerset : " + _rules.get(rule));

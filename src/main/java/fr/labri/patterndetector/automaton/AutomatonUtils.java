@@ -43,9 +43,9 @@ public final class AutomatonUtils {
                 try {
                     if (automatonCopy.getStateByLabel(target.getLabel()) == null) {
                         target = startCopy(target, automatonCopy);
-                        stateCopy.registerTransition(target, t.getLabel(), t.getType());
+                        stateCopy.registerTransition(target, t.getLabel(), t.getType(), t.getClockConstraint());
                     } else {
-                        stateCopy.registerTransition(automatonCopy.getStateByLabel(target.getLabel()), t.getLabel(), t.getType());
+                        stateCopy.registerTransition(automatonCopy.getStateByLabel(target.getLabel()), t.getLabel(), t.getType(), t.getClockConstraint());
                     }
                 } catch (Exception e) {
                     System.err.println("An error occured during the copy of the automaton (" + e.getMessage() + ")");
@@ -81,6 +81,7 @@ public final class AutomatonUtils {
     private static void startPowerset(Set<IState> currentStateSet, Map<Set<String>, IState> allStateSets, IRuleAutomaton finalAutomaton) {
         Map<String, Set<IState>> targetStateSets = new HashMap<>();
         Map<String, TransitionType> transitionTypes = new HashMap<>();
+        Map<String, ClockGuard> clockGuards = new HashMap<>();
 
         for (IState state : currentStateSet) {
             for (ITransition t : state.getTransitions()) {
@@ -93,6 +94,7 @@ public final class AutomatonUtils {
                     stateSet.add(t.getTarget());
                     targetStateSets.put(t.getLabel(), stateSet);
                     transitionTypes.put(t.getLabel(), t.getType());
+                    clockGuards.put(t.getLabel(), t.getClockConstraint());
                 }
             }
         }
@@ -126,7 +128,7 @@ public final class AutomatonUtils {
             }
 
             IState currentState = allStateSets.get(currentStateSet.stream().map(IState::getLabel).collect(Collectors.toSet()));
-            currentState.registerTransition(targetState, label, transitionTypes.get(label));
+            currentState.registerTransition(targetState, label, transitionTypes.get(label), clockGuards.get(label));
         });
     }
 

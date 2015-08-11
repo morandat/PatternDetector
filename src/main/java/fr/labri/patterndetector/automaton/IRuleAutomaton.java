@@ -28,6 +28,8 @@ public interface IRuleAutomaton {
 
     Collection<IEvent> getBuffer();
 
+    Collection<ITransition> getTransitions();
+
     void registerInitialState(IState s) throws Exception;  //TODO AutomatonException;
 
     void registerState(IState s);

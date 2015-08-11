@@ -24,13 +24,7 @@ public interface IRule {
 
     SelectionPolicy getSelectionPolicy();
 
-    IRule setTimeConstraint(TimeConstraint tc);
+    IRule setTimeConstraint(TimeConstraint timeConstraint);
 
-    IRule setSelectionPolicy(SelectionPolicy sp);
-
-    /**
-     * Must be called by the RuleManager before adding a rule.
-     */
-    // TODO maybe put this method in an Automaton Factory class ?
-    void buildAutomaton() throws Exception; // TODO RuleException
+    IRule setSelectionPolicy(SelectionPolicy selectionPolicy);
 }

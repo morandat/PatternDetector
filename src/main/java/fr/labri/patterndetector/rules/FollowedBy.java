@@ -13,14 +13,20 @@ public class FollowedBy extends AbstractBinaryRule {
         super(RuleType.RULE_FOLLOWED_BY, FollowedBy.Symbol, left, right);
     }
 
-    public void buildAutomaton() throws Exception {
-        if (_left.getAutomaton() == null) {
-            _left.buildAutomaton();
-        }
-        if (_right.getAutomaton() == null) {
-            _right.buildAutomaton();
-        }
+    public FollowedBy(String e, IRule right) {
+        super(RuleType.RULE_FOLLOWED_BY, FollowedBy.Symbol, new Atom(e), right);
+    }
 
+    public FollowedBy(IRule left, String e) {
+        super(RuleType.RULE_FOLLOWED_BY, FollowedBy.Symbol, left, new Atom(e));
+    }
+
+    public FollowedBy(String e1, String e2) {
+        super(RuleType.RULE_FOLLOWED_BY, FollowedBy.Symbol, new Atom(e1), new Atom(e2));
+    }
+
+    @Override
+    public void buildAutomaton() throws Exception {
         IRuleAutomaton left = AutomatonUtils.copy(_left.getAutomaton());
         IRuleAutomaton right = AutomatonUtils.copy(_right.getAutomaton());
         IRuleAutomaton automaton = new RuleAutomaton(this);
@@ -76,5 +82,26 @@ public class FollowedBy extends AbstractBinaryRule {
         }
 
         _automaton = automaton;
+
+        // If there is a time constraint specified on the rule, create corresponding clock constraints
+        createClockConstraints(q, right);
+    }
+
+    /**
+     * // If there is a time constraint specified on the rule, create corresponding clock constraints
+     *
+     * @param q     The original final state of the left automaton of the left rule
+     * @param right The automaton of the right rule
+     */
+    private void createClockConstraints(IState q, IRuleAutomaton right) {
+        if (_timeConstraint != null) {
+            int value = _timeConstraint.getValue();
+
+            q.getTransitions().forEach(t -> t.setClockConstraint(RuleUtils.getRightmostAtom(_left).getEventType(),
+                    value));
+
+            right.getTransitions().forEach(t -> t.setClockConstraint(RuleUtils.getRightmostAtom(_left).getEventType(),
+                    value));
+        }
     }
 }

@@ -61,8 +61,18 @@ public class Transition implements ITransition {
     }
 
     @Override
+    public void setClockConstraint(String eventType, int value) {
+        _clockGuard = new ClockGuard(eventType, value);
+    }
+
+    @Override
+    public void setClockConstraint(String eventType, int value, boolean lowerThan) {
+        _clockGuard = new ClockGuard(eventType, value, lowerThan);
+    }
+
+    @Override
     public String toString() {
-        return _source + ":" + _label + " => " + _target + " [" + _clockGuard + "] [" + _type + "]";
+        return _source + ":" + _label + " => " + _target + " [" + _type + "] [" + _clockGuard + "]";
     }
 
     @Override

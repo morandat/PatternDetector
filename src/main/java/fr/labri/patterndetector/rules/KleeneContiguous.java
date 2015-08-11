@@ -14,11 +14,11 @@ public class KleeneContiguous extends AbstractUnaryRule {
         super(RuleType.RULE_KLEENE_CONTIGUOUS, KleeneContiguous.Symbol, r);
     }
 
-    public void buildAutomaton() throws Exception {
-        if (_rule.getAutomaton() == null) {
-            _rule.buildAutomaton();
-        }
+    public KleeneContiguous(String e) {
+        super(RuleType.RULE_KLEENE_CONTIGUOUS, KleeneContiguous.Symbol, new Atom(e));
+    }
 
+    public void buildAutomaton() throws Exception {
         IRuleAutomaton base = AutomatonUtils.copy(_rule.getAutomaton());
 
         IRuleAutomaton automaton = new RuleAutomaton(this);

@@ -16,4 +16,8 @@ public interface ITransition {
     ClockGuard getClockConstraint();
 
     void setClockConstraint(ClockGuard clockGuard);
+
+    void setClockConstraint(String eventType, int value);
+
+    void setClockConstraint(String eventType, int value, boolean lowerThan);
 }

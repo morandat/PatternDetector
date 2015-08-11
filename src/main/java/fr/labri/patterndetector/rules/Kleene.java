@@ -22,11 +22,11 @@ public class Kleene extends AbstractUnaryRule {
         super(RuleType.RULE_KLEENE, Kleene.Symbol, r);
     }
 
-    public void buildAutomaton() throws Exception {
-        if (_rule.getAutomaton() == null) {
-            _rule.buildAutomaton();
-        }
+    public Kleene(String e) {
+        super(RuleType.RULE_KLEENE, Kleene.Symbol, new Atom(e));
+    }
 
+    public void buildAutomaton() throws Exception {
         IRuleAutomaton base = AutomatonUtils.copy(_rule.getAutomaton());
 
         IRuleAutomaton automaton = new RuleAutomaton(this);

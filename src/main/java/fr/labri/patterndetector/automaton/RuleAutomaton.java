@@ -72,6 +72,15 @@ public class RuleAutomaton implements IRuleAutomaton {
     }
 
     @Override
+    public Collection<ITransition> getTransitions() {
+        Set<ITransition> transitions = new HashSet<>();
+
+        _states.values().forEach(state -> transitions.addAll(state.getTransitions()));
+
+        return transitions;
+    }
+
+    @Override
     public void registerInitialState(IState s) throws Exception {
         if (_initialState != null) {
             throw new Exception("An initial state has already been set !");
@@ -116,7 +125,7 @@ public class RuleAutomaton implements IRuleAutomaton {
 
             // If there is a transition, check its clock guards if any
             if (t != null && checkClockGuard(e.getTimestamp(), t.getClockConstraint())) {
-                //System.out.println("Transitioning : " + t + " (" + e + ")");
+                System.out.println("Transitioning : " + t + " (" + e + ")");
 
                 // Action to perform on the transition
                 switch (t.getType()) {
@@ -137,10 +146,10 @@ public class RuleAutomaton implements IRuleAutomaton {
                     // If the final state has been reached, post the found pattern and reset the automaton
                     post(_buffer);
                     reset();
-                    //System.out.println("Final state reached");
+                    System.out.println("Final state reached");
                 }
             } else {
-                //System.out.println("Can't transition ! (" + e + ")");
+                System.out.println("Can't transition ! (" + e + ")");
                 reset();
             }
 
@@ -171,7 +180,7 @@ public class RuleAutomaton implements IRuleAutomaton {
         _currentState = _initialState;
         _buffer.clear();
         _clocks.clear();
-        //System.out.println("Automaton reset");
+        System.out.println("Automaton reset");
     }
 
     public void post(Collection<IEvent> pattern) {

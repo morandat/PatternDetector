@@ -15,7 +15,7 @@ public final class ClockGuard implements IClockGuard {
      * @param eventType
      * @param value
      */
-    ClockGuard(String eventType, int value) {
+    public ClockGuard(String eventType, int value) {
         _eventType = eventType;
         _value = value;
         _lowerThan = true;
@@ -28,7 +28,7 @@ public final class ClockGuard implements IClockGuard {
      * @param value
      * @param lowerThan set true for lte, false for gt
      */
-    ClockGuard(String eventType, int value, boolean lowerThan) {
+    public ClockGuard(String eventType, int value, boolean lowerThan) {
         _eventType = eventType;
         _value = value;
         _lowerThan = lowerThan;
@@ -51,6 +51,6 @@ public final class ClockGuard implements IClockGuard {
 
     @Override
     public String toString() {
-        return "Clk(" + _eventType + ") " + (_lowerThan ? "< " : "> ") + _value;
+        return "X(" + _eventType + ") " + (_lowerThan ? "< " : "> ") + _value;
     }
 }
