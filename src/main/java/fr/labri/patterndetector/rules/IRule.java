@@ -26,5 +26,7 @@ public interface IRule {
 
     IRule setTimeConstraint(TimeConstraint timeConstraint);
 
+    IRule setTimeConstraint(int value);
+
     IRule setSelectionPolicy(SelectionPolicy selectionPolicy);
 }

@@ -12,15 +12,14 @@ public class TestRules {
     public static void main(String[] args) {
         // 0) a
         IRule r0 = new Atom("a")
-                .setTimeConstraint(new TimeConstraint(10));
+                .setTimeConstraint(5); // has no effect
 
         // 1) !a
-        IRule r1 = new AtomNot("a")
-                .setTimeConstraint(new TimeConstraint(10));
+        IRule r1 = new AtomNot("a");
 
-        // 2) a --> b
+        // 2) b --> a
         IRule r2 = new FollowedBy("b", r0)
-                .setTimeConstraint(new TimeConstraint(5));
+                .setTimeConstraint(5);
 
         // 4) a && b
         //IRule r4 = new And(new Atom("a"), new Atom("b")); // TODO operator not implemented yet
@@ -35,7 +34,11 @@ public class TestRules {
         IRule r7 = new Kleene("a"); // WARNING : this rule doesn't terminate (Kleene)
 
         // 8) a . b
-        IRule r8 = new FollowedByContiguous("a", "b");
+        IRule r8 = new FollowedByContiguous("a", "b").setTimeConstraint(5);
+
+        // 8.1) a . (b --> c)
+        IRule r81 = new FollowedByContiguous("a", new FollowedBy("b", "c").setTimeConstraint(3))
+                .setTimeConstraint(5);
 
         // 9) a+ --> b
         IRule r9 = new FollowedBy(r7, "b");
@@ -47,12 +50,15 @@ public class TestRules {
         IRule r11 = new FollowedBy(r9, new KleeneContiguous("x"));
 
         // 12) a+ --> (b --> c)
-        IRule r12 = new FollowedBy(new Kleene("a"), new FollowedBy("b", "c"));
+        IRule r12 = new FollowedBy(new Kleene("a"), new FollowedBy("b", "c")).setTimeConstraint(5);
+        /* Here the time constraint is ambiguous BECAUSE the rule (a+ -> b) is ambiguous :
+        the events between the last a of a+ and the b could be part of either the Kleene OR the FollowedBy sequences.
+        Because of that, the time constraint "creeps" over the Kleene sequence. */
 
         Collection<Event> events = Generator.generateStuff();
 
         RuleManager ruleManager = new RuleManager();
-        ruleManager.addRule(r2);
+        ruleManager.addRule(r81);
         ruleManager.detect(events);
     }
 }

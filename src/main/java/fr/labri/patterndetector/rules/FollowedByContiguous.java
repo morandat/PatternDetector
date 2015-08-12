@@ -62,8 +62,8 @@ public class FollowedByContiguous extends AbstractBinaryRule {
 
         // add extra stuff to obtain the new automaton (Thompson's construction style)
 
-        // If the left component is NOT a Kleene Automaton
-        // TODO this part is a bit too complex... see if there is a simpler way
+        // If the left component is NOT a Kleene automaton
+        // TODO this part is a bit too complex...
         if (!RuleType.RULE_KLEENE_CONTIGUOUS.equals(_left.getType()) && !RuleType.RULE_KLEENE.equals(_left.getType())) {
         /* For each non-initial and non-final state, if there aren't any outgoing Epsilon or Star transitions,
         outgoing transitions based on those of the initial state (same target, same label, same type) must be added to it.
@@ -108,5 +108,25 @@ public class FollowedByContiguous extends AbstractBinaryRule {
         }
 
         _automaton = automaton;
+
+        createClockConstraints(q);
+    }
+
+    /**
+     * // If there is a time constraint specified on the rule, create corresponding clock constraints
+     *
+     * @param q     The original final state of the left automaton of the left rule
+     */
+    private void createClockConstraints(IState q) {
+        if (_timeConstraint != null) {
+            int value = _timeConstraint.getValue();
+
+            q.getTransitions().forEach(t -> {
+                // An overwrite type of transition is supposed to reset the word so it shouldn't have a clock guard
+                if (!TransitionType.TRANSITION_OVERWRITE.equals(t.getType())) {
+                    t.setClockConstraint(RuleUtils.getRightmostAtom(_left).getEventType(), value);
+                }
+            });
+        }
     }
 }

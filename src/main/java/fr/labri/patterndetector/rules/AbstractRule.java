@@ -56,7 +56,23 @@ public abstract class AbstractRule implements IRule {
     public IRule setTimeConstraint(TimeConstraint timeConstraint) {
         _timeConstraint = timeConstraint;
 
+        // If the rule already has an automaton, it needs to be reconstructed to apply clock constraints
+        // TODO actually we don't need to reconstruct the automaton, just to call createClockConstraints() so make it an abstract method
+        if (_automaton != null) {
+            try {
+                // TODO createClockConstraints()
+                buildAutomaton();
+            } catch (Exception e) {
+                System.err.println("An error occurred while building the automaton (" + e.getMessage() + ")");
+            }
+        }
+
         return this;
+    }
+
+    @Override
+    public IRule setTimeConstraint(int value) {
+        return setTimeConstraint(new TimeConstraint(value));
     }
 
     @Override
