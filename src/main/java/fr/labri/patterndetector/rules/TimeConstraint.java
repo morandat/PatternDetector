@@ -6,9 +6,16 @@ package fr.labri.patterndetector.rules;
 public final class TimeConstraint implements ITimeConstraint {
 
     private int _value; // in seconds
+    private boolean _transitive;
 
     TimeConstraint(int value) {
         _value = value;
+        _transitive = false;
+    }
+
+    TimeConstraint(int value, boolean transitive) {
+        _value = value;
+        _transitive = transitive;
     }
 
     @Override
@@ -19,5 +26,10 @@ public final class TimeConstraint implements ITimeConstraint {
     @Override
     public String toString() {
         return "" + _value;
+    }
+
+    @Override
+    public boolean isTransitive() {
+        return _transitive;
     }
 }

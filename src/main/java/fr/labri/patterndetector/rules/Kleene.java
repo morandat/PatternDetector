@@ -26,6 +26,8 @@ public class Kleene extends AbstractUnaryRule {
         super(RuleType.RULE_KLEENE, Kleene.Symbol, new Atom(e));
     }
 
+    // TODO add a parameter for max buffer size ? ex : a+(2) would return [aa]
+
     public void buildAutomaton() throws Exception {
         IRuleAutomaton base = AutomatonUtils.copy(_rule.getAutomaton());
 

@@ -21,6 +21,9 @@ public class TestRules {
         IRule r2 = new FollowedBy("b", r0)
                 .setTimeConstraint(5);
 
+        // 2.1) a --> a
+        IRule r21 = new FollowedBy("a", "a");
+
         // 4) a && b
         //IRule r4 = new And(new Atom("a"), new Atom("b")); // TODO operator not implemented yet
 
@@ -37,8 +40,12 @@ public class TestRules {
         IRule r8 = new FollowedByContiguous("a", "b").setTimeConstraint(5);
 
         // 8.1) a . (b --> c)
-        IRule r81 = new FollowedByContiguous("a", new FollowedBy("b", "c").setTimeConstraint(3))
-                .setTimeConstraint(5);
+        IRule r81 = new FollowedByContiguous(new FollowedBy("a", "b"), new FollowedBy("c", "d"));
+        //.setTimeConstraint(5, true);
+
+        // 8.2) a . a . c // TODO buggy atm. User should do FollowedByContiguous(KleeneContiguous("a", 2), "c")
+        IRule r82 = new FollowedByContiguous("a", new FollowedByContiguous("a", "b"));
+        //.setTimeConstraint(5, true);
 
         // 9) a+ --> b
         IRule r9 = new FollowedBy(r7, "b");
@@ -58,7 +65,7 @@ public class TestRules {
         Collection<Event> events = Generator.generateStuff();
 
         RuleManager ruleManager = new RuleManager();
-        ruleManager.addRule(r81);
+        ruleManager.addRule(r21);
         ruleManager.detect(events);
     }
 }

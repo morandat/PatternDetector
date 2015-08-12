@@ -76,6 +76,11 @@ public abstract class AbstractRule implements IRule {
     }
 
     @Override
+    public IRule setTimeConstraint(int value, boolean transitive) {
+        return setTimeConstraint(new TimeConstraint(value, transitive));
+    }
+
+    @Override
     public IRule setSelectionPolicy(SelectionPolicy selectionPolicy) {
         _selectionPolicy = selectionPolicy;
 

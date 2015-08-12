@@ -64,7 +64,7 @@ public class RuleAutomaton implements IRuleAutomaton {
     @Override
     public IState getFinalState() {
         return _finalState;
-    }
+    } // TODO if no final state, check if _rule is a Kleene, if yes return pivot state ?
 
     @Override
     public Collection<IEvent> getBuffer() {

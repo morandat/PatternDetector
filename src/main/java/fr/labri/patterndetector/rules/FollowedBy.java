@@ -83,20 +83,25 @@ public class FollowedBy extends AbstractBinaryRule {
 
         _automaton = automaton;
 
-        createClockConstraints(q);
+        createClockConstraints(q, right);
     }
 
     /**
      * // If there is a time constraint specified on the rule, create corresponding clock constraints
      *
-     * @param q The original final state of the left automaton of the left rule
+     * @param q     The original final state of the left automaton of the left rule
+     * @param right The automaton of the right rule
      */
-    private void createClockConstraints(IState q) {
+    private void createClockConstraints(IState q, IRuleAutomaton right) {
         if (_timeConstraint != null) {
             int value = _timeConstraint.getValue();
 
             q.getTransitions().forEach(t -> t.setClockConstraint(RuleUtils.getRightmostAtom(_left).getEventType(),
                     value));
+
+            if (_timeConstraint.isTransitive()) {
+                right.getTransitions().forEach(t -> t.setClockConstraint(RuleUtils.getRightmostAtom(_left).getEventType(), value));
+            }
         }
     }
 }

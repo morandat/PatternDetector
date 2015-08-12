@@ -33,7 +33,7 @@ public class FollowedByContiguous extends AbstractBinaryRule {
 
         IRuleAutomaton automaton = new RuleAutomaton(this);
 
-        // left component
+        // Left component
         automaton.registerInitialState(left.getInitialState());
         left.getStates().values().forEach(automaton::registerState);
 
@@ -47,7 +47,7 @@ public class FollowedByContiguous extends AbstractBinaryRule {
             automaton.registerState(q);
         }
 
-        // right component
+        // Right component
         IState p = right.getInitialState();
         right.getStates().values().forEach(automaton::registerState);
         final IState qFinal = q;
@@ -66,7 +66,7 @@ public class FollowedByContiguous extends AbstractBinaryRule {
         // TODO this part is a bit too complex...
         if (!RuleType.RULE_KLEENE_CONTIGUOUS.equals(_left.getType()) && !RuleType.RULE_KLEENE.equals(_left.getType())) {
         /* For each non-initial and non-final state, if there aren't any outgoing Epsilon or Star transitions,
-        outgoing transitions based on those of the initial state (same target, same label, same type) must be added to it.
+        outgoing transitions of the initial state (same target, same label, same type) must be added to it.
         The type of those transitions has to be changed to OVERWRITE only if they are non-looping. */
             Collection<ITransition> transitionsFromInitial = automaton.getInitialState().getTransitions();
             automaton.getStates().values().forEach(state -> {
@@ -75,9 +75,7 @@ public class FollowedByContiguous extends AbstractBinaryRule {
                             && state.getTransitionByLabel(Transition.LABEL_NEGATION) == null) {
                         transitionsFromInitial.forEach(t -> {
                             try {
-                                if (t.getTarget().getLabel().equals(t.getSource().getLabel())) {
-                                    state.registerTransition(t.getTarget(), t.getLabel(), t.getType());
-                                } else {
+                                if (state.getTransitionByLabel(t.getLabel()) == null) {
                                     state.registerTransition(t.getTarget(), t.getLabel(), TransitionType.TRANSITION_OVERWRITE);
                                 }
                             } catch (Exception e) {
@@ -92,7 +90,7 @@ public class FollowedByContiguous extends AbstractBinaryRule {
                 }
             });
         } else if (RuleType.RULE_KLEENE_CONTIGUOUS.equals(_left.getType())) {
-            // If the left component is a Contiguous Kleene Automaton
+            // If the left component is a Contiguous Kleene Automaton, "discard" the final state by making it reachable via epsilon only
             boolean ok = false;
             for (IState s : left.getStates().values()) {
                 for (ITransition t : s.getTransitions()) {
@@ -109,15 +107,16 @@ public class FollowedByContiguous extends AbstractBinaryRule {
 
         _automaton = automaton;
 
-        createClockConstraints(q);
+        createClockConstraints(q, right);
     }
 
     /**
      * // If there is a time constraint specified on the rule, create corresponding clock constraints
      *
      * @param q     The original final state of the left automaton of the left rule
+     * @param right The automaton of the right rule
      */
-    private void createClockConstraints(IState q) {
+    private void createClockConstraints(IState q, IRuleAutomaton right) {
         if (_timeConstraint != null) {
             int value = _timeConstraint.getValue();
 
@@ -127,6 +126,10 @@ public class FollowedByContiguous extends AbstractBinaryRule {
                     t.setClockConstraint(RuleUtils.getRightmostAtom(_left).getEventType(), value);
                 }
             });
+
+            if (_timeConstraint.isTransitive()) {
+                right.getTransitions().forEach(t -> t.setClockConstraint(RuleUtils.getRightmostAtom(_left).getEventType(), value));
+            }
         }
     }
 }

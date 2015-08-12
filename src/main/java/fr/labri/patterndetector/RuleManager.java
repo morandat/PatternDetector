@@ -28,7 +28,11 @@ public class RuleManager {
         } else {
             rule.setName(rule.getName() == null ?
                     rule.getClass().getSimpleName() + "-" + _ruleId++ : rule.getName() + "-" + _ruleId++);
-            _rules.put(rule, AutomatonUtils.powerset(rule.getAutomaton()));
+
+            IRuleAutomaton powerset = AutomatonUtils.powerset(rule.getAutomaton());
+            check(powerset);
+
+            _rules.put(rule, powerset);
             System.out.println("* Rule " + rule.getName() + " added : " + rule);
             System.out.println(rule.getName() + " powerset : " + _rules.get(rule));
         }
@@ -45,5 +49,11 @@ public class RuleManager {
                 e.printStackTrace();
             }
         }));
+    }
+
+    private void check(IRuleAutomaton automaton) {
+        if (automaton.getFinalState().getTransitions().size() > 0) {
+            System.err.println("RULE AMBIGUITY DETECTED !!!");
+        }
     }
 }

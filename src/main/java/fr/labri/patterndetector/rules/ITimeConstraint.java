@@ -8,4 +8,6 @@ import java.util.concurrent.TimeUnit;
 public interface ITimeConstraint {
 
     int getValue();
+
+    boolean isTransitive();
 }
