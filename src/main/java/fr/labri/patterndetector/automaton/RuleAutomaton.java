@@ -1,6 +1,7 @@
 package fr.labri.patterndetector.automaton;
 
 import fr.labri.patterndetector.IEvent;
+import fr.labri.patterndetector.RuleManager;
 import fr.labri.patterndetector.rules.IRule;
 
 import java.util.*;
@@ -144,7 +145,7 @@ public class RuleAutomaton implements IRuleAutomaton {
 
                 if (_currentState.isFinal()) {
                     // If the final state has been reached, post the found pattern and reset the automaton
-                    post(_buffer);
+                    patternFound(_buffer);
                     reset();
                     System.out.println("Final state reached");
                 }
@@ -183,9 +184,9 @@ public class RuleAutomaton implements IRuleAutomaton {
         System.out.println("Automaton reset");
     }
 
-    public void post(Collection<IEvent> pattern) {
-        System.out.println("*** PATTERN FOUND : " + pattern + " ***");
-        // TODO post() should be in RuleManager (in RuleAutomaton : _rule.post(); in Rule : _ruleManager.post();)
+    @Override
+    public void patternFound(Collection<IEvent> pattern) {
+        RuleManager.getInstance().notifyPattern(pattern);
     }
 
     /**

@@ -7,21 +7,31 @@ import fr.labri.patterndetector.automaton.AutomatonUtils;
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.rules.IRule;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-public class RuleManager {
+public final class RuleManager {
 
-    private int _ruleId;
+    private static RuleManager _instance = null;
+    private int _ruleId = 0;
+    private Map<IRule, IRuleAutomaton> _rules = new HashMap<>(); // Map binding each rule to its automaton
+    private Collection<IEvent> _patternHistory = new ArrayList<>();
 
-    Map<IRule, IRuleAutomaton> _rules; // Map binding each rule to its automaton
+    private RuleManager() {
 
-    public RuleManager() {
-        _ruleId = 0;
-        _rules = new HashMap<>();
     }
 
+    public static RuleManager getInstance() {
+        if (_instance == null) {
+            _instance = new RuleManager();
+        }
+        return _instance;
+    }
+
+    /**
+     * Add a rule to the rule set
+     *
+     * @param rule The rule to add
+     */
     public void addRule(IRule rule) {
         if (rule.getAutomaton() == null) {
             System.err.println("Invalid rule : " + rule);
@@ -38,6 +48,55 @@ public class RuleManager {
         }
     }
 
+    public IRule getRule(String ruleName) {
+        for (IRule rule : _rules.keySet()) {
+            if (rule.getName().equals(ruleName)) {
+                return rule;
+            }
+        }
+
+        return null;
+    }
+
+    public Set<IRule> getRules() {
+        return _rules.keySet();
+    }
+
+    public IRuleAutomaton getRuleAutomaton(String ruleName) {
+        IRule rule = getRule(ruleName);
+
+        if (rule != null) {
+            return _rules.get(rule);
+        } else {
+            return null;
+        }
+    }
+
+    public Collection<IEvent> getPatternHistory() {
+        return _patternHistory;
+    }
+
+    /**
+     * Remove a rule by name
+     *
+     * @param ruleName The name of the rule to remove.
+     */
+    public void removeRule(String ruleName) {
+        _rules.keySet().forEach(rule -> {
+            if (rule.getName().equals(ruleName)) {
+                _rules.remove(rule);
+                System.out.println("* Rule " + rule.getName() + " removed.");
+            }
+        });
+    }
+
+    /**
+     * Remove all rules from the rule set
+     */
+    public void removeAllRules() {
+        _rules.clear();
+    }
+
     public void detect(Collection<Event> events) {
         System.out.println("\n* Stream : " + events + "\n");
 
@@ -51,9 +110,14 @@ public class RuleManager {
         }));
     }
 
+    public void notifyPattern(Collection<IEvent> pattern) {
+        _patternHistory.addAll(pattern);
+        System.out.println("*** PATTERN FOUND : " + pattern + " ***");
+    }
+
     private void check(IRuleAutomaton automaton) {
         if (automaton.getFinalState().getTransitions().size() > 0) {
-            System.err.println("RULE AMBIGUITY DETECTED !!!");
+            System.err.println("RULE IS AMBIGUOUS !");
         }
     }
 }

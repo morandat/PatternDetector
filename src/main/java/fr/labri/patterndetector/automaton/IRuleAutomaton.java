@@ -39,4 +39,11 @@ public interface IRuleAutomaton {
     void fire(IEvent e) throws Exception; //TODO AutomatonException
 
     void reset();
+
+    /**
+     * What to do when a pattern is found (i.e. when a final state is reached)
+     *
+     * @param pattern
+     */
+    void patternFound(Collection<IEvent> pattern);
 }

@@ -43,7 +43,7 @@ public class TestRules {
         IRule r81 = new FollowedByContiguous(new FollowedBy("a", "b"), new FollowedBy("c", "d"));
         //.setTimeConstraint(5, true);
 
-        // 8.2) a . a . c // TODO buggy atm. User should do FollowedByContiguous(KleeneContiguous("a", 2), "c")
+        // 8.2) a . a . c // TODO This operator doesn't work for sequences of the same event. User should use FollowedByContiguous(KleeneContiguous("a", 2), "c")
         IRule r82 = new FollowedByContiguous("a", new FollowedByContiguous("a", "b"));
         //.setTimeConstraint(5, true);
 
@@ -64,7 +64,7 @@ public class TestRules {
 
         Collection<Event> events = Generator.generateStuff();
 
-        RuleManager ruleManager = new RuleManager();
+        RuleManager ruleManager = RuleManager.getInstance();
         ruleManager.addRule(r21);
         ruleManager.detect(events);
     }

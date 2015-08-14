@@ -107,22 +107,9 @@ public final class Generator {
         init();
         Collection<Event> eventStream = new ArrayList<>();
 
-        eventStream.add(new Event("a", 0));
-        eventStream.add(new Event("b", 14));
-        eventStream.add(new Event("a", 10));
-        eventStream.add(new Event("a", 11));
-        eventStream.add(new Event("a", 12));
-        eventStream.add(new Event("b", 14));
-        eventStream.add(new Event("c", 16));
-        eventStream.add(new Event("c", 16));
-        eventStream.add(new Event("d", 16));
-
-        /*eventStream.add(new Event("x", _t++)); // x<1>
-        eventStream.add(new Event("y", _t++)); // y<2>
-        eventStream.add(new Event("y", _t++)); // y<2>
-        eventStream.add(new Event("y", _t++)); // y<2>
-        eventStream.add(new Event("y", _t++)); // y<2>
-        eventStream.add(new Event("a", _t++)); // b<3>*/
+        eventStream.add(new Event("a", _t++));
+        eventStream.add(new Event("a", _t++));
+        eventStream.add(new Event("a", _t++));
 
         return eventStream;
     }

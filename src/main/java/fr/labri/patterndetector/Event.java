@@ -28,4 +28,14 @@ public class Event implements IEvent {
     public String toString() {
         return _type + "<" + _timestamp + ">";
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == null) return false;
+        if (other == this) return true;
+        if (!(other instanceof Event)) return false;
+
+        Event otherTransition = (Event) other;
+        return otherTransition.getType().equals(_type) && otherTransition.getTimestamp() == _timestamp;
+    }
 }
