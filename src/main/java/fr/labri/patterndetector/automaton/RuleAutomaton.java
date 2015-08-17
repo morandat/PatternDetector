@@ -18,6 +18,7 @@ public class RuleAutomaton implements IRuleAutomaton {
     protected IRule _rule;
     protected IState _initialState;
     protected IState _finalState;
+    protected IState _resetState;
     protected Map<String, IState> _states;
     protected IState _currentState;
     protected ArrayList<IEvent> _buffer;
@@ -68,6 +69,11 @@ public class RuleAutomaton implements IRuleAutomaton {
     } // TODO if no final state, check if _rule is a Kleene, if yes return pivot state ?
 
     @Override
+    public IState getResetState() {
+        return _resetState;
+    }
+
+    @Override
     public Collection<IEvent> getBuffer() {
         return _buffer;
     }
@@ -111,6 +117,17 @@ public class RuleAutomaton implements IRuleAutomaton {
     }
 
     @Override
+    public void registerResetState(IState s) throws Exception {
+        if (_resetState != null) {
+            throw new Exception("A reset state has already been set !");
+        }
+        s.setLabel(State.LABEL_RESET);
+        s.setReset(true);
+        s.setAutomaton(this);
+        _resetState = s;
+    }
+
+    @Override
     public void fire(IEvent e) throws Exception {
         if (_initialState != null) {
             // Initialize current state if needed
@@ -148,6 +165,8 @@ public class RuleAutomaton implements IRuleAutomaton {
                     patternFound(_buffer);
                     reset();
                     System.out.println("Final state reached");
+                } else if (_currentState.isReset()) {
+                    reset();
                 }
             } else {
                 System.out.println("Can't transition ! (" + e + ")");
@@ -161,15 +180,18 @@ public class RuleAutomaton implements IRuleAutomaton {
 
     @Override
     public String toString() {
-        StringBuilder transitions = new StringBuilder("[ ");
+        StringBuilder transitions = new StringBuilder("[");
         if (_initialState != null) {
-            transitions.append("(").append(_initialState).append(",").append(_initialState.getTransitions()).append(") ");
+            transitions.append(" (").append(_initialState).append(",").append(_initialState.getTransitions()).append(")");
         }
         for (IState state : _states.values()) {
-            transitions.append("(").append(state).append(",").append(state.getTransitions()).append(") ");
+            transitions.append(" (").append(state).append(",").append(state.getTransitions()).append(")");
+        }
+        if (_resetState != null) {
+            transitions.append(" (").append(_resetState).append(",").append(_resetState.getTransitions()).append(")");
         }
         if (_finalState != null) {
-            transitions.append("(").append(_finalState).append(",").append(_finalState.getTransitions()).append(")");
+            transitions.append(" (").append(_finalState).append(",").append(_finalState.getTransitions()).append(")");
         }
         transitions.append(" ]");
 

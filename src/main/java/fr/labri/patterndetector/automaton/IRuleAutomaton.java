@@ -26,6 +26,8 @@ public interface IRuleAutomaton {
 
     IState getFinalState();
 
+    IState getResetState();
+
     Collection<IEvent> getBuffer();
 
     Collection<ITransition> getTransitions();
@@ -35,6 +37,8 @@ public interface IRuleAutomaton {
     void registerState(IState s);
 
     void registerFinalState(IState s) throws Exception; //TODO AutomatonException;
+
+    void registerResetState(IState s) throws Exception; //TODO AutomatonException
 
     void fire(IEvent e) throws Exception; //TODO AutomatonException
 

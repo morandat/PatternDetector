@@ -24,16 +24,16 @@ public final class AutomatonUtils {
     private static IState startCopy(IState currentState, IRuleAutomaton automatonCopy) {
         IState stateCopy = new State();
         stateCopy.setFinal(currentState.isFinal());
+        stateCopy.setReset(currentState.isReset());
         stateCopy.setInitial(currentState.isInitial());
 
         try {
-            if (stateCopy.isInitial() || stateCopy.isFinal()) {
-                if (stateCopy.isInitial()) {
-                    automatonCopy.registerInitialState(stateCopy);
-                }
-                if (stateCopy.isFinal()) {
-                    automatonCopy.registerFinalState(stateCopy);
-                }
+            if (stateCopy.isInitial()) {
+                automatonCopy.registerInitialState(stateCopy);
+            } else if (stateCopy.isFinal()) {
+                automatonCopy.registerFinalState(stateCopy);
+            } else if (stateCopy.isReset()) {
+                automatonCopy.registerResetState(stateCopy);
             } else {
                 automatonCopy.registerState(stateCopy);
             }
@@ -118,6 +118,13 @@ public final class AutomatonUtils {
                         System.err.println("An error occured during Powerset (" + e.getMessage() + ")");
                         e.printStackTrace();
                     }
+                } else if (isResetStateSet(targetStateSet)) {
+                    try {
+                        finalAutomaton.registerResetState(targetState);
+                    } catch (Exception e) {
+                        System.err.println("An error occured during Powerset (" + e.getMessage() + ")");
+                        e.printStackTrace();
+                    }
                 } else {
                     finalAutomaton.registerState(targetState);
                 }
@@ -177,5 +184,21 @@ public final class AutomatonUtils {
         }
 
         return isFinal;
+    }
+
+    /**
+     * Check if the state set contains at least one accepting state
+     **/
+    private static boolean isResetStateSet(Set<IState> stateSet) {
+        boolean isReset = false;
+
+        for (IState s : stateSet) {
+            if (s.isReset()) {
+                isReset = true;
+                break;
+            }
+        }
+
+        return isReset;
     }
 }

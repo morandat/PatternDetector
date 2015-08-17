@@ -23,7 +23,8 @@ public class Kleene extends AbstractUnaryRule {
     }
 
     public Kleene(String e) {
-        super(RuleType.RULE_KLEENE, Kleene.Symbol, new Atom(e));
+        super(RuleType.RULE_KLEENE, Kleene.Symbol,
+                (e.startsWith("!") ? new AtomNot(e.substring(1)) : new Atom(e)));
     }
 
     // TODO add a parameter for max buffer size ? ex : a+(2) would return [aa]

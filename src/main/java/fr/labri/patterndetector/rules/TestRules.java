@@ -62,10 +62,12 @@ public class TestRules {
         the events between the last a of a+ and the b could be part of either the Kleene OR the FollowedBy sequences.
         Because of that, the time constraint "creeps" over the Kleene sequence. */
 
+        IRule r99 = new FollowedBy(new FollowedBy("a", "!b"), "c");
+
         Collection<Event> events = Generator.generateStuff();
 
         RuleManager ruleManager = RuleManager.getInstance();
-        ruleManager.addRule(r21);
+        ruleManager.addRule(r99);
         ruleManager.detect(events);
     }
 }

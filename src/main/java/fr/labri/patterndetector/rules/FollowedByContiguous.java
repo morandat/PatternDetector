@@ -16,15 +16,21 @@ public class FollowedByContiguous extends AbstractBinaryRule {
     }
 
     public FollowedByContiguous(String e, IRule right) {
-        super(RuleType.RULE_FOLLOWED_BY_CONTIGUOUS, FollowedByContiguous.Symbol, new Atom(e), right);
+        super(RuleType.RULE_FOLLOWED_BY_CONTIGUOUS, FollowedByContiguous.Symbol,
+                (e.startsWith("!") ? new AtomNot(e) : new Atom(e)),
+                right);
     }
 
     public FollowedByContiguous(IRule left, String e) {
-        super(RuleType.RULE_FOLLOWED_BY_CONTIGUOUS, FollowedByContiguous.Symbol, left, new Atom(e));
+        super(RuleType.RULE_FOLLOWED_BY_CONTIGUOUS, FollowedByContiguous.Symbol,
+                left,
+                (e.startsWith("!") ? new AtomNot(e) : new Atom(e)));
     }
 
     public FollowedByContiguous(String e1, String e2) {
-        super(RuleType.RULE_FOLLOWED_BY_CONTIGUOUS, FollowedByContiguous.Symbol, new Atom(e1), new Atom(e2));
+        super(RuleType.RULE_FOLLOWED_BY_CONTIGUOUS, FollowedByContiguous.Symbol,
+                (e1.startsWith("!") ? new AtomNot(e1) : new Atom(e1)),
+                (e2.startsWith("!") ? new AtomNot(e2) : new Atom(e2)));
     }
 
     public void buildAutomaton() throws Exception {
@@ -53,14 +59,18 @@ public class FollowedByContiguous extends AbstractBinaryRule {
         final IState qFinal = q;
         p.getTransitions().forEach(t -> {
             try {
-                qFinal.registerTransition(t.getTarget(), t.getLabel(), t.getType());
+                if (t.getTarget().equals(p)) {
+                    qFinal.registerTransition(qFinal, t.getLabel(), t.getType());
+                } else {
+                    qFinal.registerTransition(t.getTarget(), t.getLabel(), t.getType());
+                }
             } catch (Exception e) {
                 System.err.println("An error occurred while building the automaton (" + e.getMessage() + ")");
             }
         });
         automaton.registerFinalState(right.getFinalState());
 
-        // add extra stuff to obtain the new automaton (Thompson's construction style)
+        // Add extra stuff to obtain the new automaton (Thompson's construction style)
 
         // If the left component is NOT a Kleene automaton
         // TODO this part is a bit too complex...

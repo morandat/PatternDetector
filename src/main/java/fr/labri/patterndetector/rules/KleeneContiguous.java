@@ -15,7 +15,8 @@ public class KleeneContiguous extends AbstractUnaryRule {
     }
 
     public KleeneContiguous(String e) {
-        super(RuleType.RULE_KLEENE_CONTIGUOUS, KleeneContiguous.Symbol, new Atom(e));
+        super(RuleType.RULE_KLEENE_CONTIGUOUS, KleeneContiguous.Symbol,
+                (e.startsWith("!") ? new AtomNot(e.substring(1)) : new Atom(e)));
     }
 
     public void buildAutomaton() throws Exception {

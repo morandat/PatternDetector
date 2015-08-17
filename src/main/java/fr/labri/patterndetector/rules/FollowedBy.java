@@ -14,15 +14,21 @@ public class FollowedBy extends AbstractBinaryRule {
     }
 
     public FollowedBy(String e, IRule right) {
-        super(RuleType.RULE_FOLLOWED_BY, FollowedBy.Symbol, new Atom(e), right);
+        super(RuleType.RULE_FOLLOWED_BY, FollowedBy.Symbol,
+                (e.startsWith("!") ? new AtomNot(e.substring(1)) : new Atom(e)),
+                right);
     }
 
     public FollowedBy(IRule left, String e) {
-        super(RuleType.RULE_FOLLOWED_BY, FollowedBy.Symbol, left, new Atom(e));
+        super(RuleType.RULE_FOLLOWED_BY, FollowedBy.Symbol,
+                left,
+                (e.startsWith("!") ? new AtomNot(e.substring(1)) : new Atom(e)));
     }
 
     public FollowedBy(String e1, String e2) {
-        super(RuleType.RULE_FOLLOWED_BY, FollowedBy.Symbol, new Atom(e1), new Atom(e2));
+        super(RuleType.RULE_FOLLOWED_BY, FollowedBy.Symbol,
+                (e1.startsWith("!") ? new AtomNot(e1.substring(1)) : new Atom(e1)),
+                (e2.startsWith("!") ? new AtomNot(e2.substring(1)) : new Atom(e2)));
     }
 
     @Override
@@ -31,9 +37,13 @@ public class FollowedBy extends AbstractBinaryRule {
         IRuleAutomaton right = AutomatonUtils.copy(_right.getAutomaton());
         IRuleAutomaton automaton = new RuleAutomaton(this);
 
-        // left component
+        // Left component
         automaton.registerInitialState(left.getInitialState());
         left.getStates().values().forEach(automaton::registerState);
+        if (left.getResetState() != null) {
+            automaton.registerResetState(left.getResetState());
+        }
+
         IState q = left.getFinalState();
         if (q == null) {
             // Kleene automata don't have any final state.
@@ -45,14 +55,22 @@ public class FollowedBy extends AbstractBinaryRule {
             automaton.registerState(q);
         }
 
-        // right component
+        // Right component
         // Merge p and q together (copy transitions of p and add them to q)
         IState p = right.getInitialState();
         right.getStates().values().forEach(automaton::registerState);
+        if (right.getResetState() != null) {
+            automaton.registerResetState(right.getResetState());
+        }
+
         final IState qFinal = q;
         p.getTransitions().forEach(t -> {
             try {
-                qFinal.registerTransition(t.getTarget(), t.getLabel(), t.getType());
+                if (t.getTarget().equals(p)) {
+                    qFinal.registerTransition(qFinal, t.getLabel(), t.getType());
+                } else {
+                    qFinal.registerTransition(t.getTarget(), t.getLabel(), t.getType());
+                }
             } catch (Exception e) {
                 System.err.println("An error occurred while building the automaton (" + e.getMessage() + ")");
             }
@@ -62,8 +80,10 @@ public class FollowedBy extends AbstractBinaryRule {
             automaton.registerFinalState(right.getFinalState());
         }
 
-        // add extra stuff to obtain the new automaton (Thompson's construction style)
-        q.registerTransition(q, Transition.LABEL_NEGATION, TransitionType.TRANSITION_DROP);
+        // Add extra stuff to obtain the new automaton (Thompson's construction style)
+        if (q.getTransitionByLabel(Transition.LABEL_NEGATION) == null) { // this check is for AtomNot : its initial state already has a negative transition...
+            q.registerTransition(q, Transition.LABEL_NEGATION, TransitionType.TRANSITION_DROP);
+        }
 
         if (RuleType.RULE_KLEENE_CONTIGUOUS.equals(_left.getType())) {
             // If the left component is a Kleene Automaton
@@ -80,6 +100,9 @@ public class FollowedBy extends AbstractBinaryRule {
                 if (ok) break;
             }
         }
+
+        System.out.println(left);
+        System.out.println(right);
 
         _automaton = automaton;
 
