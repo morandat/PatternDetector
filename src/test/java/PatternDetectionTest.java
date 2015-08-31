@@ -3,7 +3,9 @@ import fr.labri.patterndetector.Generator;
 import fr.labri.patterndetector.IEvent;
 import fr.labri.patterndetector.RuleManager;
 import fr.labri.patterndetector.rules.Atom;
+import fr.labri.patterndetector.rules.FollowedBy;
 import fr.labri.patterndetector.rules.IRule;
+import fr.labri.patterndetector.rules.Kleene;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,9 +40,11 @@ public class PatternDetectionTest {
         ruleManager.detect(Generator.generateStuff());
 
         Collection<IEvent> expected = new ArrayList<>();
-        expected.add(new Event("a", 0));
         expected.add(new Event("a", 1));
         expected.add(new Event("a", 2));
+        expected.add(new Event("a", 3));
+        expected.add(new Event("a", 4));
+        expected.add(new Event("a", 5));
 
         Collection<IEvent> actual = ruleManager.getPatternHistory();
 
@@ -49,16 +53,21 @@ public class PatternDetectionTest {
 
     @Test
     public void testDetect2() {
-        IRule r = new Atom("a");
+        IRule r = new FollowedBy(new FollowedBy(new Kleene("a"), "b"), "c");
 
         RuleManager ruleManager = RuleManager.getInstance();
         ruleManager.addRule(r);
         ruleManager.detect(Generator.generateStuff());
 
         Collection<IEvent> expected = new ArrayList<>();
-        expected.add(new Event("a", 0));
         expected.add(new Event("a", 1));
         expected.add(new Event("a", 2));
+        expected.add(new Event("a", 3));
+        expected.add(new Event("a", 4));
+        expected.add(new Event("a", 5));
+        expected.add(new Event("b", 9));
+        expected.add(new Event("c", 11));
+
 
         Collection<IEvent> actual = ruleManager.getPatternHistory();
 
@@ -70,4 +79,6 @@ public class PatternDetectionTest {
         // TODO check ambiguous rules (test that checking unreachable transitions works)
         Assert.assertTrue(true);
     }
+
+    // TODO tests : complex patterns, time constraints parentheses,
 }

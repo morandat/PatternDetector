@@ -2,6 +2,8 @@ package fr.labri.patterndetector.rules;
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 
+import java.util.Set;
+
 /**
  * Created by William Braik on 6/25/2015.
  */
@@ -12,6 +14,7 @@ public abstract class AbstractRule implements IRule {
     protected String _symbol;
     protected TimeConstraint _timeConstraint;
     protected SelectionPolicy _selectionPolicy;
+    protected Set<IRule> _negationRules;
     protected IRuleAutomaton _automaton;
 
     public AbstractRule(RuleType type, String symbol) {
@@ -19,6 +22,7 @@ public abstract class AbstractRule implements IRule {
         _symbol = symbol;
         _selectionPolicy = null;
         _timeConstraint = null;
+        _negationRules = null;
         _automaton = null;
     }
 

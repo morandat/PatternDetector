@@ -32,6 +32,8 @@ public interface IRuleAutomaton {
 
     Collection<ITransition> getTransitions();
 
+    Set<IRuleAutomaton> getNegationAutomata();
+
     void registerInitialState(IState s) throws Exception;  //TODO AutomatonException;
 
     void registerState(IState s);

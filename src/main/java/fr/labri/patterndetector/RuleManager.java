@@ -11,7 +11,7 @@ import java.util.*;
 
 public final class RuleManager {
 
-    private static RuleManager _instance = null;
+    private static RuleManager _instance = null; // Singleton
     private int _ruleId = 0;
     private Map<IRule, IRuleAutomaton> _rules = new HashMap<>(); // Map binding each rule to its automaton
     private Collection<IEvent> _patternHistory = new ArrayList<>();
@@ -20,6 +20,11 @@ public final class RuleManager {
 
     }
 
+    /**
+     * Get the unique instance of the RuleManager (Singleton)
+     *
+     * @return the instance of RuleManager
+     */
     public static RuleManager getInstance() {
         if (_instance == null) {
             _instance = new RuleManager();
@@ -40,7 +45,7 @@ public final class RuleManager {
                     rule.getClass().getSimpleName() + "-" + _ruleId++ : rule.getName() + "-" + _ruleId++);
 
             IRuleAutomaton powerset = AutomatonUtils.powerset(rule.getAutomaton());
-            check(powerset);
+            checkRuleAutomaton(powerset);
 
             _rules.put(rule, powerset);
             System.out.println("* Rule " + rule.getName() + " added : " + rule);
@@ -110,14 +115,16 @@ public final class RuleManager {
         }));
     }
 
-    public void notifyPattern(Collection<IEvent> pattern) {
-        _patternHistory.addAll(pattern);
+    public void notifyPattern(Collection<IEvent> pattern, IRule rule) {
+        _patternHistory.addAll(pattern); // TODO for testing purposes
         System.out.println("*** PATTERN FOUND : " + pattern + " ***");
     }
 
-    private void check(IRuleAutomaton automaton) {
-        if (automaton.getFinalState().getTransitions().size() > 0) {
-            System.err.println("RULE IS AMBIGUOUS !");
+    private void checkRuleAutomaton(IRuleAutomaton automaton) {
+        if (automaton.getFinalState() == null) {
+            System.err.println("Warning : rule " + automaton.getRuleName() + " doesn't terminate !");
+        } else if (automaton.getFinalState().getTransitions().size() > 0) {
+            System.err.println("Warning : rule " + automaton.getRuleName() + " is ambiguous !");
         }
     }
 }

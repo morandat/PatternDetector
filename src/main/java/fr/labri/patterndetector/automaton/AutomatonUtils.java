@@ -60,7 +60,7 @@ public final class AutomatonUtils {
 
     public static IRuleAutomaton powerset(IRuleAutomaton automaton) {
         // Powerset construction algorithm : remove the epsilon transitions from the NFA to obtain a DFA.
-        IRuleAutomaton finalAutomaton = new RuleAutomaton(automaton.getRule());
+        IRuleAutomaton powersetAutomaton = new RuleAutomaton(automaton.getRule());
         Set<IState> initialStateSet = new HashSet<>();
         initialStateSet.add(automaton.getInitialState());
         IState initialState = new State();
@@ -68,14 +68,14 @@ public final class AutomatonUtils {
         allStateSets.put(initialStateSet.stream().map(IState::getLabel).collect(Collectors.toSet()), initialState);
 
         try {
-            finalAutomaton.registerInitialState(initialState);
-            startPowerset(initialStateSet, allStateSets, finalAutomaton);
+            powersetAutomaton.registerInitialState(initialState);
+            startPowerset(initialStateSet, allStateSets, powersetAutomaton);
         } catch (Exception e) {
             System.err.println("An error occured during Powerset (" + e.getMessage() + ")");
             e.printStackTrace();
         }
 
-        return finalAutomaton;
+        return powersetAutomaton;
     }
 
     private static void startPowerset(Set<IState> currentStateSet, Map<Set<String>, IState> allStateSets, IRuleAutomaton finalAutomaton) {

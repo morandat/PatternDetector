@@ -2,10 +2,12 @@ package fr.labri.patterndetector.rules;
 
 import fr.labri.patterndetector.automaton.*;
 
+import java.util.HashSet;
+
 /**
  * Created by William Braik on 6/25/2015.
  */
-public class FollowedBy extends AbstractBinaryRule {
+public class FollowedBy extends AbstractBinaryRule implements INotContiguous {
 
     public static final String Symbol = "-->";
 
@@ -32,10 +34,18 @@ public class FollowedBy extends AbstractBinaryRule {
     }
 
     @Override
+    public void addRuleNegation(IRule rule) {
+        if (_negationRules == null)
+            _negationRules = new HashSet<>();
+
+        _negationRules.add(rule);
+    }
+
+    @Override
     public void buildAutomaton() throws Exception {
         IRuleAutomaton left = AutomatonUtils.copy(_left.getAutomaton());
         IRuleAutomaton right = AutomatonUtils.copy(_right.getAutomaton());
-        IRuleAutomaton automaton = new RuleAutomaton(this);
+        IRuleAutomaton automaton = new RuleAutomaton(this, _negationRules);
 
         // Left component
         automaton.registerInitialState(left.getInitialState());
@@ -101,8 +111,8 @@ public class FollowedBy extends AbstractBinaryRule {
             }
         }
 
-        System.out.println(left);
-        System.out.println(right);
+        //System.out.println(left);
+        //System.out.println(right);
 
         _automaton = automaton;
 
@@ -112,7 +122,7 @@ public class FollowedBy extends AbstractBinaryRule {
     /**
      * // If there is a time constraint specified on the rule, create corresponding clock constraints
      *
-     * @param q     The original final state of the left automaton of the left rule
+     * @param q     The original final state of the left automaton
      * @param right The automaton of the right rule
      */
     private void createClockConstraints(IState q, IRuleAutomaton right) {

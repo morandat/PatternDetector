@@ -2,6 +2,8 @@ package fr.labri.patterndetector.rules;
 
 import fr.labri.patterndetector.automaton.*;
 
+import java.util.HashSet;
+
 /**
  * Created by william.braik on 10/07/2015.
  */
@@ -12,7 +14,7 @@ import fr.labri.patterndetector.automaton.*;
  * Or to specify a time constraint on the atom.
  * Ex : a+ doesn't terminate but a+ -> b, or a+|10| terminates.
  */
-public class Kleene extends AbstractUnaryRule {
+public class Kleene extends AbstractUnaryRule implements INotContiguous {
 
     public static final String Symbol = "+";
 
@@ -27,12 +29,18 @@ public class Kleene extends AbstractUnaryRule {
                 (e.startsWith("!") ? new AtomNot(e.substring(1)) : new Atom(e)));
     }
 
-    // TODO add a parameter for max buffer size ? ex : a+(2) would return [aa]
+    @Override
+    public void addRuleNegation(IRule rule) {
+        if (_negationRules == null)
+            _negationRules = new HashSet<>();
+
+        _negationRules.add(rule);
+    }
 
     public void buildAutomaton() throws Exception {
         IRuleAutomaton base = AutomatonUtils.copy(_rule.getAutomaton());
 
-        IRuleAutomaton automaton = new RuleAutomaton(this);
+        IRuleAutomaton automaton = new RuleAutomaton(this, _negationRules);
 
         // base component
         automaton.registerInitialState(base.getInitialState());

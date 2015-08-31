@@ -20,6 +20,8 @@ public class TestRules {
         // 2) b --> a
         IRule r2 = new FollowedBy("b", r0)
                 .setTimeConstraint(5);
+        // No "c" between b and a
+        //EventFilter f2 = new EventFilter(pattern -> pattern.stream().map(IEvent::getType).noneMatch(e -> e.equals("c")));
 
         // 2.1) a --> a
         IRule r21 = new FollowedBy("a", "a");
@@ -34,7 +36,8 @@ public class TestRules {
         IRule r6 = new KleeneContiguous("a");
 
         // 7) a+
-        IRule r7 = new Kleene("a"); // WARNING : this rule doesn't terminate (Kleene)
+        Kleene r7 = new Kleene("a"); // WARNING : this rule doesn't terminate (Kleene)
+        r7.addRuleNegation(new Atom("c"));
 
         // 8) a . b
         IRule r8 = new FollowedByContiguous("a", "b").setTimeConstraint(5);
@@ -67,7 +70,7 @@ public class TestRules {
         Collection<Event> events = Generator.generateStuff();
 
         RuleManager ruleManager = RuleManager.getInstance();
-        ruleManager.addRule(r99);
+        ruleManager.addRule(r7);
         ruleManager.detect(events);
     }
 }

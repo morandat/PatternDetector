@@ -23,12 +23,27 @@ public class RuleAutomaton implements IRuleAutomaton {
     protected IState _currentState;
     protected ArrayList<IEvent> _buffer;
     protected Map<String, Long> _clocks;
+    protected Set<IRuleAutomaton> _negationAutomata;
 
     public RuleAutomaton(IRule rule) {
         _rule = rule;
         _states = new HashMap<>();
         _buffer = new ArrayList<>();
         _clocks = new HashMap<>();
+        _negationAutomata = null;
+    }
+
+    public RuleAutomaton(IRule rule, Set<IRule> negationRules) {
+        _rule = rule;
+        _states = new HashMap<>();
+        _buffer = new ArrayList<>();
+        _clocks = new HashMap<>();
+        _negationAutomata = new HashSet<>();
+        negationRules.forEach(nr -> {
+            IRuleAutomaton negationAutomaton = nr.getAutomaton();
+            _negationAutomata.add(negationAutomaton);
+            System.out.println("NEGATION AUTOMATON ADDED : " + negationAutomaton);
+        });
     }
 
     @Override
@@ -85,6 +100,11 @@ public class RuleAutomaton implements IRuleAutomaton {
         _states.values().forEach(state -> transitions.addAll(state.getTransitions()));
 
         return transitions;
+    }
+
+    @Override
+    public Set<IRuleAutomaton> getNegationAutomata() {
+        return _negationAutomata;
     }
 
     @Override
@@ -179,26 +199,6 @@ public class RuleAutomaton implements IRuleAutomaton {
     }
 
     @Override
-    public String toString() {
-        StringBuilder transitions = new StringBuilder("[");
-        if (_initialState != null) {
-            transitions.append(" (").append(_initialState).append(",").append(_initialState.getTransitions()).append(")");
-        }
-        for (IState state : _states.values()) {
-            transitions.append(" (").append(state).append(",").append(state.getTransitions()).append(")");
-        }
-        if (_resetState != null) {
-            transitions.append(" (").append(_resetState).append(",").append(_resetState.getTransitions()).append(")");
-        }
-        if (_finalState != null) {
-            transitions.append(" (").append(_finalState).append(",").append(_finalState.getTransitions()).append(")");
-        }
-        transitions.append(" ]");
-
-        return transitions.toString();
-    }
-
-    @Override
     public void reset() {
         _currentState = _initialState;
         _buffer.clear();
@@ -208,7 +208,7 @@ public class RuleAutomaton implements IRuleAutomaton {
 
     @Override
     public void patternFound(Collection<IEvent> pattern) {
-        RuleManager.getInstance().notifyPattern(pattern);
+        RuleManager.getInstance().notifyPattern(pattern, _rule);
     }
 
     /**
@@ -229,5 +229,25 @@ public class RuleAutomaton implements IRuleAutomaton {
                 return timeSinceLast > clockGuard.getValue();
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder transitions = new StringBuilder("[");
+        if (_initialState != null) {
+            transitions.append(" (").append(_initialState).append(",").append(_initialState.getTransitions()).append(")");
+        }
+        for (IState state : _states.values()) {
+            transitions.append(" (").append(state).append(",").append(state.getTransitions()).append(")");
+        }
+        if (_resetState != null) {
+            transitions.append(" (").append(_resetState).append(",").append(_resetState.getTransitions()).append(")");
+        }
+        if (_finalState != null) {
+            transitions.append(" (").append(_finalState).append(",").append(_finalState.getTransitions()).append(")");
+        }
+        transitions.append(" ]");
+
+        return transitions.toString();
     }
 }
