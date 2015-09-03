@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -82,6 +83,7 @@ public final class AutomatonUtils {
         Map<String, Set<IState>> targetStateSets = new HashMap<>();
         Map<String, TransitionType> transitionTypes = new HashMap<>();
         Map<String, ClockGuard> clockGuards = new HashMap<>();
+        Map<String, Map<String, Predicate<Integer>>> predicates = new HashMap<>();
 
         for (IState state : currentStateSet) {
             for (ITransition t : state.getTransitions()) {
@@ -95,6 +97,7 @@ public final class AutomatonUtils {
                     targetStateSets.put(t.getLabel(), stateSet);
                     transitionTypes.put(t.getLabel(), t.getType());
                     clockGuards.put(t.getLabel(), t.getClockConstraint());
+                    predicates.put(t.getLabel(), t.getPredicates());
                 }
             }
         }
@@ -135,7 +138,7 @@ public final class AutomatonUtils {
             }
 
             IState currentState = allStateSets.get(currentStateSet.stream().map(IState::getLabel).collect(Collectors.toSet()));
-            currentState.registerTransition(targetState, label, transitionTypes.get(label), clockGuards.get(label));
+            currentState.registerTransition(targetState, label, transitionTypes.get(label), clockGuards.get(label), predicates.get(label));
         });
     }
 

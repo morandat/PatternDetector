@@ -25,7 +25,7 @@ public class PatternDetectionTest {
 
     @Before
     public void initializeRuleManager() {
-        System.out.println("*** Executing Test : " + _name.getMethodName() + " ***");
+        System.out.println("\n*** EXECUTING TEST : " + _name.getMethodName() + " ***");
         RuleManager ruleManager = RuleManager.getInstance();
         ruleManager.removeAllRules();
         ruleManager.getPatternHistory().clear();
@@ -67,7 +67,6 @@ public class PatternDetectionTest {
         expected.add(new Event("a", 5));
         expected.add(new Event("b", 9));
         expected.add(new Event("c", 11));
-
 
         Collection<IEvent> actual = ruleManager.getPatternHistory();
 

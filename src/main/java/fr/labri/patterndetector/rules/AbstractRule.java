@@ -16,6 +16,7 @@ public abstract class AbstractRule implements IRule {
     protected SelectionPolicy _selectionPolicy;
     protected Set<IRule> _negationRules;
     protected IRuleAutomaton _automaton;
+    protected int _maxSeqSize;
 
     public AbstractRule(RuleType type, String symbol) {
         _type = type;
@@ -24,6 +25,7 @@ public abstract class AbstractRule implements IRule {
         _timeConstraint = null;
         _negationRules = null;
         _automaton = null;
+        _maxSeqSize = 0;
     }
 
     @Override
@@ -92,7 +94,7 @@ public abstract class AbstractRule implements IRule {
     }
 
     /**
-     * Lazily calls buildAutomaton()
+     * Lazily calls the buildAutomaton() method
      *
      * @return The automaton that executes the rule.
      */
@@ -112,6 +114,6 @@ public abstract class AbstractRule implements IRule {
     /**
      * Must be called by the RuleManager before adding a rule.
      */
-    // TODO maybe put this method in an Automaton Factory class ?
+    // TODO maybe put this method in an AutomatonFactory class ?
     public abstract void buildAutomaton() throws Exception; // TODO RuleException
 }

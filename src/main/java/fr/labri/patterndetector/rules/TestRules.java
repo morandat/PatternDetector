@@ -12,7 +12,8 @@ public class TestRules {
     public static void main(String[] args) {
         // 0) a
         IRule r0 = new Atom("a")
-                .setTimeConstraint(5); // has no effect
+                .setPredicateOnField("age", age -> age > 18)
+                .setPredicateOnField("height", h -> h > 170);
 
         // 1) !a
         IRule r1 = new AtomNot("a");
@@ -67,10 +68,10 @@ public class TestRules {
 
         IRule r99 = new FollowedBy(new FollowedBy("a", "!b"), "c");
 
-        Collection<Event> events = Generator.generateStuff();
+        Collection<IEvent> events = Generator.generateStuff();
 
         RuleManager ruleManager = RuleManager.getInstance();
-        ruleManager.addRule(r7);
+        ruleManager.addRule(r0);
         ruleManager.detect(events);
     }
 }

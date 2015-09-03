@@ -13,7 +13,7 @@ public final class RuleManager {
 
     private static RuleManager _instance = null; // Singleton
     private int _ruleId = 0;
-    private Map<IRule, IRuleAutomaton> _rules = new HashMap<>(); // Map binding each rule to its automaton
+    private Map<IRule, IRuleAutomaton> _ruleAutomata = new HashMap<>(); // Map binding each rule to its automaton
     private Collection<IEvent> _patternHistory = new ArrayList<>();
 
     private RuleManager() {
@@ -47,14 +47,14 @@ public final class RuleManager {
             IRuleAutomaton powerset = AutomatonUtils.powerset(rule.getAutomaton());
             checkRuleAutomaton(powerset);
 
-            _rules.put(rule, powerset);
+            _ruleAutomata.put(rule, powerset);
             System.out.println("* Rule " + rule.getName() + " added : " + rule);
-            System.out.println(rule.getName() + " powerset : " + _rules.get(rule));
+            System.out.println(rule.getName() + "'s powerset : " + _ruleAutomata.get(rule));
         }
     }
 
     public IRule getRule(String ruleName) {
-        for (IRule rule : _rules.keySet()) {
+        for (IRule rule : _ruleAutomata.keySet()) {
             if (rule.getName().equals(ruleName)) {
                 return rule;
             }
@@ -64,14 +64,14 @@ public final class RuleManager {
     }
 
     public Set<IRule> getRules() {
-        return _rules.keySet();
+        return _ruleAutomata.keySet();
     }
 
     public IRuleAutomaton getRuleAutomaton(String ruleName) {
         IRule rule = getRule(ruleName);
 
         if (rule != null) {
-            return _rules.get(rule);
+            return _ruleAutomata.get(rule);
         } else {
             return null;
         }
@@ -87,9 +87,9 @@ public final class RuleManager {
      * @param ruleName The name of the rule to remove.
      */
     public void removeRule(String ruleName) {
-        _rules.keySet().forEach(rule -> {
+        _ruleAutomata.keySet().forEach(rule -> {
             if (rule.getName().equals(ruleName)) {
-                _rules.remove(rule);
+                _ruleAutomata.remove(rule);
                 System.out.println("* Rule " + rule.getName() + " removed.");
             }
         });
@@ -99,13 +99,13 @@ public final class RuleManager {
      * Remove all rules from the rule set
      */
     public void removeAllRules() {
-        _rules.clear();
+        _ruleAutomata.clear();
     }
 
-    public void detect(Collection<Event> events) {
+    public void detect(Collection<IEvent> events) {
         System.out.println("\n* Stream : " + events + "\n");
 
-        events.stream().forEach(event -> _rules.values().forEach(automaton -> {
+        events.stream().forEach(event -> _ruleAutomata.values().forEach(automaton -> {
             try {
                 automaton.fire(event);
             } catch (Exception e) {

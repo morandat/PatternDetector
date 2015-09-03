@@ -5,6 +5,7 @@ import fr.labri.patterndetector.RuleManager;
 import fr.labri.patterndetector.rules.IRule;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * Created by William Braik on 6/28/2015.
@@ -39,11 +40,14 @@ public class RuleAutomaton implements IRuleAutomaton {
         _buffer = new ArrayList<>();
         _clocks = new HashMap<>();
         _negationAutomata = new HashSet<>();
-        negationRules.forEach(nr -> {
-            IRuleAutomaton negationAutomaton = nr.getAutomaton();
-            _negationAutomata.add(negationAutomaton);
-            System.out.println("NEGATION AUTOMATON ADDED : " + negationAutomaton);
-        });
+
+        if (negationRules != null) {
+            negationRules.forEach(nr -> {
+                IRuleAutomaton negationAutomaton = nr.getAutomaton();
+                _negationAutomata.add(negationAutomaton);
+                System.out.println("NEGATION AUTOMATON ADDED : " + negationAutomaton);
+            });
+        }
     }
 
     @Override
@@ -162,7 +166,9 @@ public class RuleAutomaton implements IRuleAutomaton {
             ITransition t = _currentState.pickTransition(e);
 
             // If there is a transition, check its clock guards if any
-            if (t != null && checkClockGuard(e.getTimestamp(), t.getClockConstraint())) {
+            if (t != null
+                    && checkClockGuard(e.getTimestamp(), t.getClockConstraint())
+                    && testPredicates(e.getPayload(), t.getPredicates())) {
                 System.out.println("Transitioning : " + t + " (" + e + ")");
 
                 // Action to perform on the transition
@@ -228,6 +234,29 @@ public class RuleAutomaton implements IRuleAutomaton {
             } else {
                 return timeSinceLast > clockGuard.getValue();
             }
+        }
+    }
+
+    public boolean testPredicates(Map<String, Integer> payload, Map<String, Predicate<Integer>> predicates) {
+        if (payload == null || predicates == null) {
+            return true;
+        } else {
+            boolean ok = true;
+
+            for (Map.Entry<String, Predicate<Integer>> entry : predicates.entrySet()) {
+                String field = entry.getKey();
+                Predicate<Integer> predicate = entry.getValue();
+                Integer value = payload.get(field);
+
+                /* If the event misses a field that is required by a predicate, then value will be null,
+                and predicate.test() will return false which is the expected behaviour */
+                ok = (predicate.test(value) && ok);
+
+                if (!ok)
+                    return false;
+            }
+
+            return ok;
         }
     }
 

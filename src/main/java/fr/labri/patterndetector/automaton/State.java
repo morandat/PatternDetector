@@ -3,6 +3,7 @@ package fr.labri.patterndetector.automaton;
 import fr.labri.patterndetector.IEvent;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * Created by William Braik on 6/28/2015.
@@ -105,6 +106,36 @@ public class State implements IState {
     @Override
     public void registerTransition(IState target, String label, TransitionType type, ClockGuard clockGuard) {
         ITransition t = new Transition(this, target, label, type, clockGuard);
+
+        if (_transitions.get(label) == null) {
+            List<ITransition> list = new ArrayList<>();
+            list.add(t);
+            _transitions.put(label, list);
+        } else {
+            if (!_transitions.get(label).contains(t)) { // Check duplicate transitions
+                _transitions.get(label).add(t);
+            }
+        }
+    }
+
+    @Override
+    public void registerTransition(IState target, String label, TransitionType type, Map<String, Predicate<Integer>> predicates) {
+        ITransition t = new Transition(this, target, label, type, predicates);
+
+        if (_transitions.get(label) == null) {
+            List<ITransition> list = new ArrayList<>();
+            list.add(t);
+            _transitions.put(label, list);
+        } else {
+            if (!_transitions.get(label).contains(t)) { // Check duplicate transitions
+                _transitions.get(label).add(t);
+            }
+        }
+    }
+
+    @Override
+    public void registerTransition(IState target, String label, TransitionType type, ClockGuard clockGuard, Map<String, Predicate<Integer>> predicates) {
+        ITransition t = new Transition(this, target, label, type, clockGuard, predicates);
 
         if (_transitions.get(label) == null) {
             List<ITransition> list = new ArrayList<>();

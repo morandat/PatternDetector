@@ -103,23 +103,26 @@ public final class Generator {
         return eventStream;
     }
 
-    public static Collection<Event> generateStuff() {
+    public static Collection<IEvent> generateStuff() {
         init();
-        Collection<Event> eventStream = new ArrayList<>();
+        Collection<IEvent> eventStream = new ArrayList<>();
 
-        eventStream.add(new Event("x", _t++));
+        eventStream.add(new Event("a", _t++).addData("age", 20).addData("height", 175));
+        eventStream.add(new Event("a", _t++).addData("age", 13).addData("height", 200));
+        eventStream.add(new Event("a", _t++).addData("age", 10));
+        /*eventStream.add(new Event("a", _t++));
         eventStream.add(new Event("a", _t++));
         eventStream.add(new Event("a", _t++));
         eventStream.add(new Event("a", _t++));
         eventStream.add(new Event("a", _t++));
-        eventStream.add(new Event("a", _t++));
+        eventStream.add(new Event("b", _t++));
         eventStream.add(new Event("x", _t++));
         eventStream.add(new Event("y", _t++));
         eventStream.add(new Event("c", _t++));
         eventStream.add(new Event("b", _t++));
         eventStream.add(new Event("z", _t++));
         eventStream.add(new Event("c", _t++));
-        eventStream.add(new Event("y", _t++));
+        eventStream.add(new Event("y", _t++));*/
 
         return eventStream;
     }

@@ -1,5 +1,8 @@
 package fr.labri.patterndetector.automaton;
 
+import java.util.Map;
+import java.util.function.Predicate;
+
 /**
  * Created by William Braik on 7/27/2015.
  */
@@ -13,6 +16,7 @@ public class Transition implements ITransition {
     private String _label;
     TransitionType _type;
     ClockGuard _clockGuard;
+    Map<String, Predicate<Integer>> _predicates;
 
     public Transition(IState source, IState target, String label, TransitionType type) {
         _source = source;
@@ -28,6 +32,23 @@ public class Transition implements ITransition {
         _label = label;
         _type = type;
         _clockGuard = clockGuard;
+    }
+
+    public Transition(IState source, IState target, String label, TransitionType type, Map<String, Predicate<Integer>> predicates) {
+        _source = source;
+        _target = target;
+        _label = label;
+        _type = type;
+        _predicates = predicates;
+    }
+
+    public Transition(IState source, IState target, String label, TransitionType type, ClockGuard clockGuard, Map<String, Predicate<Integer>> predicates) {
+        _source = source;
+        _target = target;
+        _label = label;
+        _type = type;
+        _clockGuard = clockGuard;
+        _predicates = predicates;
     }
 
     @Override
@@ -56,6 +77,16 @@ public class Transition implements ITransition {
     }
 
     @Override
+    public Predicate<Integer> getPredicateOnField(String field) {
+        return _predicates.get(field);
+    }
+
+    @Override
+    public Map<String, Predicate<Integer>> getPredicates() {
+        return _predicates;
+    }
+
+    @Override
     public void setClockConstraint(ClockGuard clockGuard) {
         _clockGuard = clockGuard;
     }
@@ -68,6 +99,16 @@ public class Transition implements ITransition {
     @Override
     public void setClockConstraint(String eventType, int value, boolean lowerThan) {
         _clockGuard = new ClockGuard(eventType, value, lowerThan);
+    }
+
+    @Override
+    public void setPredicateOnField(String field, Predicate<Integer> predicate) {
+        _predicates.put(field, predicate);
+    }
+
+    @Override
+    public void setPredicates(Map<String, Predicate<Integer>> predicates) {
+        _predicates = predicates;
     }
 
     @Override

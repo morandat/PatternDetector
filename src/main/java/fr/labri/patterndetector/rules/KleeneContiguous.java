@@ -6,7 +6,7 @@ import fr.labri.patterndetector.automaton.*;
  * Created by william.braik on 10/07/2015.
  */
 
-public class KleeneContiguous extends AbstractUnaryRule {
+public class KleeneContiguous extends AbstractUnaryRule implements IKleene {
 
     public static final String Symbol = "+.";
 
@@ -17,6 +17,12 @@ public class KleeneContiguous extends AbstractUnaryRule {
     public KleeneContiguous(String e) {
         super(RuleType.RULE_KLEENE_CONTIGUOUS, KleeneContiguous.Symbol,
                 (e.startsWith("!") ? new AtomNot(e.substring(1)) : new Atom(e)));
+    }
+
+    public IRule setMaxSeqSize(int maxSeqSize) {
+        _maxSeqSize = maxSeqSize;
+
+        return this;
     }
 
     public void buildAutomaton() throws Exception {

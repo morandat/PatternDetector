@@ -14,7 +14,7 @@ import java.util.HashSet;
  * Or to specify a time constraint on the atom.
  * Ex : a+ doesn't terminate but a+ -> b, or a+|10| terminates.
  */
-public class Kleene extends AbstractUnaryRule implements INotContiguous {
+public class Kleene extends AbstractUnaryRule implements INotContiguous, IKleene {
 
     public static final String Symbol = "+";
 
@@ -35,6 +35,12 @@ public class Kleene extends AbstractUnaryRule implements INotContiguous {
             _negationRules = new HashSet<>();
 
         _negationRules.add(rule);
+    }
+
+    public IRule setMaxSeqSize(int maxSeqSize) {
+        _maxSeqSize = maxSeqSize;
+
+        return this;
     }
 
     public void buildAutomaton() throws Exception {

@@ -72,7 +72,7 @@ public class FollowedByContiguous extends AbstractBinaryRule {
 
         // Add extra stuff to obtain the new automaton (Thompson's construction style)
 
-        // If the left component is NOT a Kleene automaton
+        // If the left component is NOT a Kleene automaton (contiguous or not)
         // TODO this part is a bit too complex...
         if (!RuleType.RULE_KLEENE_CONTIGUOUS.equals(_left.getType()) && !RuleType.RULE_KLEENE.equals(_left.getType())) {
         /* For each non-initial and non-final state, if there aren't any outgoing Epsilon or Star transitions,
@@ -100,7 +100,7 @@ public class FollowedByContiguous extends AbstractBinaryRule {
                 }
             });
         } else if (RuleType.RULE_KLEENE_CONTIGUOUS.equals(_left.getType())) {
-            // If the left component is a Contiguous Kleene Automaton, "discard" the final state by making it reachable via epsilon only
+            // If the left component IS a Contiguous Kleene Automaton, "discard" the final state by making it reachable via epsilon only
             boolean ok = false;
             for (IState s : left.getStates().values()) {
                 for (ITransition t : s.getTransitions()) {
