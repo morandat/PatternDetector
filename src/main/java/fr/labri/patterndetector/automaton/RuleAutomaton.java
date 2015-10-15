@@ -25,6 +25,7 @@ public class RuleAutomaton implements IRuleAutomaton {
     protected ArrayList<IEvent> _buffer;
     protected Map<String, Long> _clocks;
     protected Set<IRuleAutomaton> _negationAutomata;
+    protected int _maxBufferSize;
 
     public RuleAutomaton(IRule rule) {
         _rule = rule;
@@ -32,6 +33,7 @@ public class RuleAutomaton implements IRuleAutomaton {
         _buffer = new ArrayList<>();
         _clocks = new HashMap<>();
         _negationAutomata = null;
+        _maxBufferSize = 0;
     }
 
     public RuleAutomaton(IRule rule, Set<IRule> negationRules) {
@@ -40,6 +42,7 @@ public class RuleAutomaton implements IRuleAutomaton {
         _buffer = new ArrayList<>();
         _clocks = new HashMap<>();
         _negationAutomata = new HashSet<>();
+        _maxBufferSize = 0;
 
         if (negationRules != null) {
             negationRules.forEach(nr -> {
@@ -109,6 +112,16 @@ public class RuleAutomaton implements IRuleAutomaton {
     @Override
     public Set<IRuleAutomaton> getNegationAutomata() {
         return _negationAutomata;
+    }
+
+    @Override
+    public int getMaxBufferSize() {
+        return _maxBufferSize;
+    }
+
+    @Override
+    public void setMaxBufferSize(int maxBufferSize) {
+        _maxBufferSize = maxBufferSize;
     }
 
     @Override
@@ -186,7 +199,7 @@ public class RuleAutomaton implements IRuleAutomaton {
                 // Update current state
                 _currentState = t.getTarget();
 
-                if (_currentState.isFinal()) {
+                if (_currentState.isFinal() || (_maxBufferSize == _buffer.size())) {
                     // If the final state has been reached, post the found pattern and reset the automaton
                     patternFound(_buffer);
                     reset();

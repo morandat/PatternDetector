@@ -47,6 +47,7 @@ public class Kleene extends AbstractUnaryRule implements INotContiguous, IKleene
         IRuleAutomaton base = AutomatonUtils.copy(_rule.getAutomaton());
 
         IRuleAutomaton automaton = new RuleAutomaton(this, _negationRules);
+        automaton.setMaxBufferSize(_maxSeqSize);
 
         // base component
         automaton.registerInitialState(base.getInitialState());

@@ -33,6 +33,7 @@ public class FollowedByContiguous extends AbstractBinaryRule {
                 (e2.startsWith("!") ? new AtomNot(e2) : new Atom(e2)));
     }
 
+    @Override
     public void buildAutomaton() throws Exception {
         IRuleAutomaton left = AutomatonUtils.copy(_left.getAutomaton());
         IRuleAutomaton right = AutomatonUtils.copy(_right.getAutomaton());
@@ -46,6 +47,7 @@ public class FollowedByContiguous extends AbstractBinaryRule {
         IState q = left.getFinalState();
         if (q == null) {
             // Kleene automata don't have any final state.
+            // TODO unsafe cast
             Kleene k = (Kleene) _left;
             q = left.getStateByLabel(k.getPivotStateLabel());
         } else {
@@ -54,6 +56,7 @@ public class FollowedByContiguous extends AbstractBinaryRule {
         }
 
         // Right component
+        // Merge p and q together (copy transitions of p and add them to q)
         IState p = right.getInitialState();
         right.getStates().values().forEach(automaton::registerState);
         final IState qFinal = q;
@@ -68,7 +71,10 @@ public class FollowedByContiguous extends AbstractBinaryRule {
                 System.err.println("An error occurred while building the automaton (" + e.getMessage() + ")");
             }
         });
-        automaton.registerFinalState(right.getFinalState());
+
+        if (right.getFinalState() != null) { // If the right component is Kleene, then the automaton has no final state
+            automaton.registerFinalState(right.getFinalState());
+        }
 
         // Add extra stuff to obtain the new automaton (Thompson's construction style)
 

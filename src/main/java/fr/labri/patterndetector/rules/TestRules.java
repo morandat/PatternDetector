@@ -34,7 +34,8 @@ public class TestRules {
         //IRule r5 = new Or(new Atom("a"), new Atom("b")); // TODO operator not implemented yet (syntactic sugar ?)
 
         // 6) a+.
-        IRule r6 = new KleeneContiguous("a");
+        IRule r6 = new KleeneContiguous("a")
+                .setMaxSeqSize(5);
 
         // 7) a+
         Kleene r7 = new Kleene("a"); // WARNING : this rule doesn't terminate (Kleene)
@@ -66,12 +67,12 @@ public class TestRules {
         the events between the last a of a+ and the b could be part of either the Kleene OR the FollowedBy sequences.
         Because of that, the time constraint "creeps" over the Kleene sequence. */
 
-        IRule r99 = new FollowedBy(new FollowedBy("a", "!b"), "c");
+        IRule r99 = new FollowedBy(new Kleene("View"), new Atom("Exit"));
 
         Collection<IEvent> events = Generator.generateStuff();
 
         RuleManager ruleManager = RuleManager.getInstance();
-        ruleManager.addRule(r0);
+        ruleManager.addRule(r99);
         ruleManager.detect(events);
     }
 }

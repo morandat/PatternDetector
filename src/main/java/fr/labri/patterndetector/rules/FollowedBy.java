@@ -45,14 +45,16 @@ public class FollowedBy extends AbstractBinaryRule implements INotContiguous {
     public void buildAutomaton() throws Exception {
         IRuleAutomaton left = AutomatonUtils.copy(_left.getAutomaton());
         IRuleAutomaton right = AutomatonUtils.copy(_right.getAutomaton());
+
         IRuleAutomaton automaton = new RuleAutomaton(this, _negationRules);
 
         // Left component
         automaton.registerInitialState(left.getInitialState());
         left.getStates().values().forEach(automaton::registerState);
-        if (left.getResetState() != null) {
+
+        /*if (left.getResetState() != null) {
             automaton.registerResetState(left.getResetState());
-        }
+        }*/
 
         IState q = left.getFinalState();
         if (q == null) {
@@ -69,9 +71,9 @@ public class FollowedBy extends AbstractBinaryRule implements INotContiguous {
         // Merge p and q together (copy transitions of p and add them to q)
         IState p = right.getInitialState();
         right.getStates().values().forEach(automaton::registerState);
-        if (right.getResetState() != null) {
+        /*if (right.getResetState() != null) {
             automaton.registerResetState(right.getResetState());
-        }
+        }*/
 
         final IState qFinal = q;
         p.getTransitions().forEach(t -> {

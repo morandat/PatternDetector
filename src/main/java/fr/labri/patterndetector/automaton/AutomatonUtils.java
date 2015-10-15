@@ -17,6 +17,7 @@ public final class AutomatonUtils {
 
     public static IRuleAutomaton copy(IRuleAutomaton automaton) {
         IRuleAutomaton automatonCopy = new RuleAutomaton(automaton.getRule());
+        automatonCopy.setMaxBufferSize(automaton.getMaxBufferSize());
         startCopy(automaton.getInitialState(), automatonCopy);
 
         return automatonCopy;
@@ -62,6 +63,7 @@ public final class AutomatonUtils {
     public static IRuleAutomaton powerset(IRuleAutomaton automaton) {
         // Powerset construction algorithm : remove the epsilon transitions from the NFA to obtain a DFA.
         IRuleAutomaton powersetAutomaton = new RuleAutomaton(automaton.getRule());
+        powersetAutomaton.setMaxBufferSize(automaton.getMaxBufferSize());
         Set<IState> initialStateSet = new HashSet<>();
         initialStateSet.add(automaton.getInitialState());
         IState initialState = new State();

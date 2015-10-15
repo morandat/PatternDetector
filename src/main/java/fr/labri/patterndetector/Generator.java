@@ -110,6 +110,15 @@ public final class Generator {
         eventStream.add(new Event("a", _t++).addData("age", 20).addData("height", 175));
         eventStream.add(new Event("a", _t++).addData("age", 13).addData("height", 200));
         eventStream.add(new Event("a", _t++).addData("age", 10));
+        eventStream.add(new Event("a", _t++).addData("age", 10));
+        eventStream.add(new Event("a", _t++).addData("age", 10));
+        eventStream.add(new Event("a", _t++).addData("age", 10));
+        eventStream.add(new Event("a", _t++).addData("age", 10));
+        eventStream.add(new Event("a", _t++).addData("age", 10));
+        eventStream.add(new Event("a", _t++).addData("age", 10));
+        eventStream.add(new Event("a", _t++).addData("age", 10));
+        eventStream.add(new Event("a", _t++).addData("age", 10));
+        eventStream.add(new Event("a", _t++).addData("age", 10));
         /*eventStream.add(new Event("a", _t++));
         eventStream.add(new Event("a", _t++));
         eventStream.add(new Event("a", _t++));
