@@ -6,6 +6,9 @@ import java.util.Collection;
 
 /**
  * Created by William Braik on 6/22/2015.
+ * <p>
+ * Main class for quick testing.
+ * Use the JUnit test suite for more formal testing.
  */
 public class TestRules {
 
@@ -27,39 +30,14 @@ public class TestRules {
         // 2.1) a --> a
         IRule r21 = new FollowedBy("a", "a");
 
-        // 4) a && b
-        //IRule r4 = new And(new Atom("a"), new Atom("b")); // TODO operator not implemented yet
-
-        // 5) a || b
-        //IRule r5 = new Or(new Atom("a"), new Atom("b")); // TODO operator not implemented yet (syntactic sugar ?)
-
-        // 6) a+.
-        IRule r6 = new KleeneContiguous("a")
-                .setMaxSeqSize(5);
-
         // 7) a+
-        Kleene r7 = new Kleene("a"); // WARNING : this rule doesn't terminate (Kleene)
-        r7.addRuleNegation(new Atom("c"));
-
-        // 8) a . b
-        IRule r8 = new FollowedByContiguous("a", "b").setTimeConstraint(5);
-
-        // 8.1) a . (b --> c)
-        IRule r81 = new FollowedByContiguous(new FollowedBy("a", "b"), new FollowedBy("c", "d"));
-        //.setTimeConstraint(5, true);
-
-        // 8.2) a . a . c // TODO This operator doesn't work for sequences of the same event. User should use FollowedByContiguous(KleeneContiguous("a", 2), "c")
-        IRule r82 = new FollowedByContiguous("a", new FollowedByContiguous("a", "b"));
-        //.setTimeConstraint(5, true);
+        Kleene r7 = new Kleene("View"); // WARNING : this rule doesn't terminate (Kleene)
 
         // 9) a+ --> b
         IRule r9 = new FollowedBy(r7, "b");
 
         // 10) a --> b+
         IRule r10 = new FollowedBy("a", new Kleene("b")); // WARNING : this rule doesn't terminate because the right component is a Kleene
-
-        // 11) (a+ --> b) --> x+.
-        IRule r11 = new FollowedBy(r9, new KleeneContiguous("x"));
 
         // 12) a+ --> (b --> c)
         IRule r12 = new FollowedBy(new Kleene("a"), new FollowedBy("b", "c")).setTimeConstraint(5);

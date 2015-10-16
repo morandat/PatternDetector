@@ -1,31 +1,29 @@
 package fr.labri.patterndetector.rules;
 
+import fr.labri.patterndetector.automaton.AutomatonUtils;
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Created by William Braik on 6/25/2015.
+ * <p>
+ * Operator which binds atoms or sub-patterns together to form patterns.
  */
 public abstract class AbstractRule implements IRule {
 
     protected String _name;
-    protected RuleType _type;
     protected String _symbol;
     protected TimeConstraint _timeConstraint;
-    protected SelectionPolicy _selectionPolicy;
-    protected Set<IRule> _negationRules;
+    protected String _connectionStateLabel;
     protected IRuleAutomaton _automaton;
-    protected int _maxSeqSize;
 
-    public AbstractRule(RuleType type, String symbol) {
-        _type = type;
+    public AbstractRule(String symbol) {
         _symbol = symbol;
-        _selectionPolicy = null;
         _timeConstraint = null;
-        _negationRules = null;
+        _connectionStateLabel = null;
         _automaton = null;
-        _maxSeqSize = 0;
     }
 
     @Override
@@ -39,11 +37,6 @@ public abstract class AbstractRule implements IRule {
     }
 
     @Override
-    public RuleType getType() {
-        return _type;
-    }
-
-    @Override
     public String getSymbol() {
         return _symbol;
     }
@@ -54,8 +47,8 @@ public abstract class AbstractRule implements IRule {
     }
 
     @Override
-    public SelectionPolicy getSelectionPolicy() {
-        return _selectionPolicy;
+    public String getConnectionStateLabel() {
+        return _connectionStateLabel;
     }
 
     @Override
@@ -87,18 +80,6 @@ public abstract class AbstractRule implements IRule {
     }
 
     @Override
-    public IRule setSelectionPolicy(SelectionPolicy selectionPolicy) {
-        _selectionPolicy = selectionPolicy;
-
-        return this;
-    }
-
-    /**
-     * Lazily calls the buildAutomaton() method
-     *
-     * @return The automaton that executes the rule.
-     */
-    @Override
     public final IRuleAutomaton getAutomaton() {
         if (_automaton == null) {
             try {
@@ -111,9 +92,6 @@ public abstract class AbstractRule implements IRule {
         return _automaton;
     }
 
-    /**
-     * Must be called by the RuleManager before adding a rule.
-     */
-    // TODO maybe put this method in an AutomatonFactory class ?
+    // TODO put this method in an AutomatonFactory class ?
     public abstract void buildAutomaton() throws Exception; // TODO RuleException
 }

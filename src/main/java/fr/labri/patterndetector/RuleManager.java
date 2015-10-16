@@ -12,100 +12,114 @@ import java.util.*;
 public final class RuleManager {
 
     private static RuleManager _instance = null; // Singleton
-    private int _ruleId = 0;
-    private Map<IRule, IRuleAutomaton> _ruleAutomata = new HashMap<>(); // Map binding each rule to its automaton
-    private Collection<IEvent> _patternHistory = new ArrayList<>();
+
+    private int _ruleCounter = 0; // Internal rule counter, used to build rule IDs
+    private Map<String, IRule> _rules = new HashMap<>(); // Maps names to rules
+    private Map<String, IRuleAutomaton> _automata = new HashMap<>(); // Maps rule names to automata
+    private Collection<IEvent> _lastPattern = new ArrayList<>(); // Last detected pattern
 
     private RuleManager() {
-
     }
 
     /**
-     * Get the unique instance of the RuleManager (Singleton)
+     * Get the singleton instance of RuleManager.
      *
-     * @return the instance of RuleManager
+     * @return The instance of RuleManager.
      */
     public static RuleManager getInstance() {
         if (_instance == null) {
             _instance = new RuleManager();
         }
+
         return _instance;
     }
 
     /**
-     * Add a rule to the rule set
+     * Add a rule to the rule set (only if it is valid).
      *
-     * @param rule The rule to add
+     * @param rule The rule to add.
      */
     public void addRule(IRule rule) {
-        if (rule.getAutomaton() == null) {
+        if (rule.getAutomaton() == null) { // Could not obtain the rule's automaton, invalid rule
             System.err.println("Invalid rule : " + rule);
         } else {
             rule.setName(rule.getName() == null ?
-                    rule.getClass().getSimpleName() + "-" + _ruleId++ : rule.getName() + "-" + _ruleId++);
+                    rule.getClass().getSimpleName() + "-" + _ruleCounter++
+                    : rule.getName() + "-" + _ruleCounter++);
 
             IRuleAutomaton powerset = AutomatonUtils.powerset(rule.getAutomaton());
-            checkRuleAutomaton(powerset);
+            _automata.put(rule.getName(), powerset);
 
-            _ruleAutomata.put(rule, powerset);
-            System.out.println("* Rule " + rule.getName() + " added : " + rule);
-            System.out.println(rule.getName() + "'s powerset : " + _ruleAutomata.get(rule));
-        }
-    }
-
-    public IRule getRule(String ruleName) {
-        for (IRule rule : _ruleAutomata.keySet()) {
-            if (rule.getName().equals(ruleName)) {
-                return rule;
+            try {
+                checkRuleAutomaton(powerset);
+            } catch (Exception e) {
+                System.err.println("Invalid rule " + rule.getName() + " (" + rule + ") : " + e.getMessage());
             }
+
+            // If the rule is valid, add it to the rule set
+            _rules.put(rule.getName(), rule);
+            System.out.println("* Rule " + rule.getName() + " (" + rule + ") " + "added : " + rule);
+            System.out.println("Powerset : " + powerset);
         }
-
-        return null;
-    }
-
-    public Set<IRule> getRules() {
-        return _ruleAutomata.keySet();
-    }
-
-    public IRuleAutomaton getRuleAutomaton(String ruleName) {
-        IRule rule = getRule(ruleName);
-
-        if (rule != null) {
-            return _ruleAutomata.get(rule);
-        } else {
-            return null;
-        }
-    }
-
-    public Collection<IEvent> getPatternHistory() {
-        return _patternHistory;
     }
 
     /**
-     * Remove a rule by name
+     * Get a rule by its name.
+     *
+     * @param ruleName The name of the rule to get.
+     * @return The rule.
+     */
+    public IRule getRuleByName(String ruleName) {
+        return _rules.get(ruleName);
+    }
+
+    /**
+     * Get an automaton by its rule name.
+     *
+     * @param ruleName The name of the rule.
+     * @return The rule's automaton.
+     */
+    public IRuleAutomaton getRuleAutomatonByName(String ruleName) {
+        return _automata.get(ruleName);
+    }
+
+    /**
+     * Get the last detected pattern.
+     *
+     * @return The last detected pattern.
+     */
+    public Collection<IEvent> getLastPattern() {
+        return _lastPattern;
+    }
+
+    /**
+     * Remove a rule by its name.
      *
      * @param ruleName The name of the rule to remove.
      */
     public void removeRule(String ruleName) {
-        _ruleAutomata.keySet().forEach(rule -> {
-            if (rule.getName().equals(ruleName)) {
-                _ruleAutomata.remove(rule);
-                System.out.println("* Rule " + rule.getName() + " removed.");
-            }
-        });
+        _rules.remove(ruleName);
+        _automata.remove(ruleName);
     }
 
     /**
-     * Remove all rules from the rule set
+     * Remove all rules from the rule set.
      */
     public void removeAllRules() {
-        _ruleAutomata.clear();
+        _rules.clear();
+        _automata.clear();
     }
 
+    /**
+     * Detect patterns in a stream of events.
+     *
+     * @param events The stream of events.
+     */
     public void detect(Collection<IEvent> events) {
         System.out.println("\n* Stream : " + events + "\n");
 
-        events.stream().forEach(event -> _ruleAutomata.values().forEach(automaton -> {
+        // Each rule's automaton fires the events in the order of the stream
+        events.stream().forEach(event -> _automata.values().forEach(automaton -> {
             try {
                 automaton.fire(event);
             } catch (Exception e) {
@@ -115,16 +129,34 @@ public final class RuleManager {
         }));
     }
 
+    /**
+     * A rule's automaton calls this method to notify the detection of a pattern to the RuleManager.
+     *
+     * @param pattern The pattern found.
+     * @param rule    The rule which found the pattern.
+     */
     public void notifyPattern(Collection<IEvent> pattern, IRule rule) {
-        _patternHistory.addAll(pattern); // TODO for testing purposes
-        System.out.println("*** PATTERN FOUND : " + pattern + " ***");
+        _lastPattern.clear();
+        _lastPattern.addAll(pattern);
+        System.out.println("*** PATTERN FOUND BY " + rule.getName() + " (" + rule + ") " + " : " + pattern + " ***");
     }
 
-    private void checkRuleAutomaton(IRuleAutomaton automaton) {
+    /**
+     * Check whether a rule's automaton is valid.
+     *
+     * @param automaton The rule's automaton to check.
+     * @throws Exception
+     */
+    private void checkRuleAutomaton(IRuleAutomaton automaton) throws Exception {
         if (automaton.getFinalState() == null) {
-            System.err.println("Warning : rule " + automaton.getRuleName() + " doesn't terminate !");
+            throw new Exception("Rule doesn't terminate !");
         } else if (automaton.getFinalState().getTransitions().size() > 0) {
-            System.err.println("Warning : rule " + automaton.getRuleName() + " is ambiguous !");
+            throw new Exception("Rule is ambiguous !");
         }
+    }
+
+    @Override
+    public String toString() {
+        return _rules.toString();
     }
 }

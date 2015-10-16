@@ -24,33 +24,12 @@ public class RuleAutomaton implements IRuleAutomaton {
     protected IState _currentState;
     protected ArrayList<IEvent> _buffer;
     protected Map<String, Long> _clocks;
-    protected Set<IRuleAutomaton> _negationAutomata;
-    protected int _maxBufferSize;
 
     public RuleAutomaton(IRule rule) {
         _rule = rule;
         _states = new HashMap<>();
         _buffer = new ArrayList<>();
         _clocks = new HashMap<>();
-        _negationAutomata = null;
-        _maxBufferSize = 0;
-    }
-
-    public RuleAutomaton(IRule rule, Set<IRule> negationRules) {
-        _rule = rule;
-        _states = new HashMap<>();
-        _buffer = new ArrayList<>();
-        _clocks = new HashMap<>();
-        _negationAutomata = new HashSet<>();
-        _maxBufferSize = 0;
-
-        if (negationRules != null) {
-            negationRules.forEach(nr -> {
-                IRuleAutomaton negationAutomaton = nr.getAutomaton();
-                _negationAutomata.add(negationAutomaton);
-                System.out.println("NEGATION AUTOMATON ADDED : " + negationAutomaton);
-            });
-        }
     }
 
     @Override
@@ -88,7 +67,7 @@ public class RuleAutomaton implements IRuleAutomaton {
     @Override
     public IState getFinalState() {
         return _finalState;
-    } // TODO if no final state, check if _rule is a Kleene, if yes return pivot state ?
+    }
 
     @Override
     public IState getResetState() {
@@ -110,21 +89,6 @@ public class RuleAutomaton implements IRuleAutomaton {
     }
 
     @Override
-    public Set<IRuleAutomaton> getNegationAutomata() {
-        return _negationAutomata;
-    }
-
-    @Override
-    public int getMaxBufferSize() {
-        return _maxBufferSize;
-    }
-
-    @Override
-    public void setMaxBufferSize(int maxBufferSize) {
-        _maxBufferSize = maxBufferSize;
-    }
-
-    @Override
     public void registerInitialState(IState s) throws Exception {
         if (_initialState != null) {
             throw new Exception("An initial state has already been set !");
@@ -138,8 +102,10 @@ public class RuleAutomaton implements IRuleAutomaton {
     @Override
     public void registerState(IState s) {
         s.setLabel(Integer.toString(_states.size()));
-        _states.put(s.getLabel(), s);
+        s.setInitial(false);
+        s.setFinal(false);
         s.setAutomaton(this);
+        _states.put(s.getLabel(), s);
     }
 
     @Override
@@ -189,17 +155,13 @@ public class RuleAutomaton implements IRuleAutomaton {
                     case TRANSITION_APPEND:
                         _buffer.add(e);
                         break;
-                    case TRANSITION_OVERWRITE:
-                        _buffer.clear();
-                        _buffer.add(e);
-                        break;
                     case TRANSITION_DROP:
                 }
 
                 // Update current state
                 _currentState = t.getTarget();
 
-                if (_currentState.isFinal() || (_maxBufferSize == _buffer.size())) {
+                if (_currentState.isFinal()) {
                     // If the final state has been reached, post the found pattern and reset the automaton
                     patternFound(_buffer);
                     reset();

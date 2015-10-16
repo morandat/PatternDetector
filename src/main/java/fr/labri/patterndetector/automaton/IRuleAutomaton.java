@@ -32,12 +32,6 @@ public interface IRuleAutomaton {
 
     Collection<ITransition> getTransitions();
 
-    Set<IRuleAutomaton> getNegationAutomata();
-
-    int getMaxBufferSize();
-
-    void setMaxBufferSize(int maxBufferSize);
-
     void registerInitialState(IState s) throws Exception;  //TODO AutomatonException;
 
     void registerState(IState s);

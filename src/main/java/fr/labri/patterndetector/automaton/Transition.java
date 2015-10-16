@@ -113,7 +113,7 @@ public class Transition implements ITransition {
 
     @Override
     public String toString() {
-        return _source + ":" + _label + " => " + _target + " [" + _type + "] {" + _clockGuard + "}";
+        return _source + ":" + _label + " => " + _target + " [" + _type + "]" + (_clockGuard == null ? "" : " {" + _clockGuard + "}");
     }
 
     @Override

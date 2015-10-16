@@ -8,8 +8,8 @@ public abstract class AbstractBinaryRule extends AbstractRule implements IBinary
     protected IRule _left;
     protected IRule _right;
 
-    public AbstractBinaryRule(RuleType type, String symbol, IRule left, IRule right) {
-        super(type, symbol);
+    public AbstractBinaryRule(String symbol, IRule left, IRule right) {
+        super(symbol);
         _left = left;
         _right = right;
     }

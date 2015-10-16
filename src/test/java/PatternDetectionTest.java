@@ -28,7 +28,7 @@ public class PatternDetectionTest {
         System.out.println("\n*** EXECUTING TEST : " + _name.getMethodName() + " ***");
         RuleManager ruleManager = RuleManager.getInstance();
         ruleManager.removeAllRules();
-        ruleManager.getPatternHistory().clear();
+        ruleManager.getLastPattern().clear();
     }
 
     @Test
@@ -46,7 +46,7 @@ public class PatternDetectionTest {
         expected.add(new Event("a", 4));
         expected.add(new Event("a", 5));
 
-        Collection<IEvent> actual = ruleManager.getPatternHistory();
+        Collection<IEvent> actual = ruleManager.getLastPattern();
 
         Assert.assertEquals(expected, actual);
     }
@@ -68,16 +68,14 @@ public class PatternDetectionTest {
         expected.add(new Event("b", 9));
         expected.add(new Event("c", 11));
 
-        Collection<IEvent> actual = ruleManager.getPatternHistory();
+        Collection<IEvent> actual = ruleManager.getLastPattern();
 
         Assert.assertEquals(expected, actual);
     }
 
     @Test
     public void testRuleAmbiguity() {
-        // TODO check ambiguous rules (test that checking unreachable transitions works)
+        // TODO
         Assert.assertTrue(true);
     }
-
-    // TODO tests : complex patterns, time constraints parentheses,
 }

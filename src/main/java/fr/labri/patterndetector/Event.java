@@ -8,9 +8,9 @@ import java.util.Map;
  */
 public class Event implements IEvent {
 
-    String _type;
-    long _timestamp;
-    Map<String, Integer> _payload; // some data (aka payload) attached to the event.
+    String _type; // Type of event (ex: View, Add...)
+    long _timestamp; // Time of occurence of the event
+    Map<String, Integer> _payload; // Some data (or payload) attached to the event. Maps field names to values
 
     public Event(String type, long timestamp) {
         _type = type;
@@ -52,7 +52,7 @@ public class Event implements IEvent {
 
     @Override
     public String toString() {
-        return _type + "<" + _timestamp + ">" + _payload;
+        return _type + "<" + _timestamp + ">" + (_payload == null ? "" : " {" + _payload + "}");
     }
 
     @Override
@@ -61,7 +61,7 @@ public class Event implements IEvent {
         if (other == this) return true;
         if (!(other instanceof Event)) return false;
 
-        Event otherTransition = (Event) other;
-        return otherTransition.getType().equals(_type) && otherTransition.getTimestamp() == _timestamp;
+        Event otherEvent = (Event) other;
+        return otherEvent.getType().equals(_type) && otherEvent.getTimestamp() == _timestamp;
     }
 }

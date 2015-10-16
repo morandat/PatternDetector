@@ -14,60 +14,47 @@ import java.util.HashSet;
  * Or to specify a time constraint on the atom.
  * Ex : a+ doesn't terminate but a+ -> b, or a+|10| terminates.
  */
-public class Kleene extends AbstractUnaryRule implements INotContiguous, IKleene {
+public class Kleene extends AbstractUnaryRule {
 
     public static final String Symbol = "+";
 
-    private String _pivotStateLabel;
-
     public Kleene(IRule r) {
-        super(RuleType.RULE_KLEENE, Kleene.Symbol, r);
+        super(Kleene.Symbol, r);
     }
 
     public Kleene(String e) {
-        super(RuleType.RULE_KLEENE, Kleene.Symbol,
+        super(Kleene.Symbol,
                 (e.startsWith("!") ? new AtomNot(e.substring(1)) : new Atom(e)));
-    }
-
-    @Override
-    public void addRuleNegation(IRule rule) {
-        if (_negationRules == null)
-            _negationRules = new HashSet<>();
-
-        _negationRules.add(rule);
-    }
-
-    public IRule setMaxSeqSize(int maxSeqSize) {
-        _maxSeqSize = maxSeqSize;
-
-        return this;
     }
 
     public void buildAutomaton() throws Exception {
         IRuleAutomaton base = AutomatonUtils.copy(_rule.getAutomaton());
 
-        IRuleAutomaton automaton = new RuleAutomaton(this, _negationRules);
-        automaton.setMaxBufferSize(_maxSeqSize);
+        IRuleAutomaton automaton = new RuleAutomaton(this);
 
-        // base component
-        automaton.registerInitialState(base.getInitialState());
+        // The initial state of the base component becomes the initial state of the Kleene automaton.
+        IState baseInitialState = base.getInitialState();
+        automaton.registerInitialState(baseInitialState);
+
+        // The rest of the base component's states become states of the Kleene automaton.
         base.getStates().values().forEach(automaton::registerState);
-        IState q = base.getFinalState();
-        q.setFinal(false);
-        automaton.registerState(q);
 
-        // add extra stuff to obtain the new automaton (Thompson's construction style)
+        // The final state of the base component becomes a state of the Kleene automaton.
+        IState baseFinalState = base.getFinalState();
+        automaton.registerState(baseFinalState);
+
+        // Add extra stuff to obtain the final Kleene automaton
+
+        // State for ignoring irrelevant events occuring between left and right.
         IState s = new State();
-        q.registerTransition(s, Transition.LABEL_EPSILON, TransitionType.TRANSITION_DROP);
+        baseFinalState.registerTransition(s, Transition.LABEL_EPSILON, TransitionType.TRANSITION_DROP);
         s.registerTransition(s, Transition.LABEL_NEGATION, TransitionType.TRANSITION_DROP);
-        s.registerTransition(automaton.getInitialState(), Transition.LABEL_EPSILON, TransitionType.TRANSITION_DROP);
+        s.registerTransition(baseInitialState, Transition.LABEL_EPSILON, TransitionType.TRANSITION_DROP);
         automaton.registerState(s);
+        _connectionStateLabel = s.getLabel();
 
-        _pivotStateLabel = s.getLabel();
+        //System.err.println(automaton); // TODO for debug
+
         _automaton = automaton;
-    }
-
-    public String getPivotStateLabel() {
-        return _pivotStateLabel;
     }
 }

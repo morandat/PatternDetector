@@ -8,21 +8,23 @@ import java.util.function.Predicate;
 
 /**
  * Created by William Braik on 6/27/2015.
+ * <p>
+ * The elementary component of a pattern, which represents an event of a given type.
  */
 public class Atom extends AbstractRule implements IAtom {
 
-    protected String _x;
-    protected Map<String, Predicate<Integer>> _predicates;
+    protected String _eventType;
+    protected Map<String, Predicate<Integer>> _predicates; // Maps fields of the event's payload to predicates
 
-    public Atom(String x) {
-        super(RuleType.RULE_ATOM, null);
-        _x = x;
+    public Atom(String eventType) {
+        super(null);
+        _eventType = eventType;
         _predicates = new HashMap<>();
     }
 
     @Override
     public String getEventType() {
-        return _x;
+        return _eventType;
     }
 
     @Override
@@ -34,19 +36,20 @@ public class Atom extends AbstractRule implements IAtom {
 
     @Override
     public String toString() {
-        return _x;
+        return _eventType;
     }
 
     @Override
     public void buildAutomaton() throws Exception {
-        IState s0 = new State(); // Initial state
-        IState s1 = new State(); // Final state
+        IState i = new State(); // Initial state
+        IState f = new State(); // Final state
 
-        s0.registerTransition(s1, _x, TransitionType.TRANSITION_APPEND, _predicates);
+        i.registerTransition(f, _eventType, TransitionType.TRANSITION_APPEND, _predicates);
 
         IRuleAutomaton automaton = new RuleAutomaton(this);
-        automaton.registerInitialState(s0);
-        automaton.registerFinalState(s1);
+        automaton.registerInitialState(i);
+        automaton.registerFinalState(f);
+        _connectionStateLabel = f.getLabel();
 
         _automaton = automaton;
     }
