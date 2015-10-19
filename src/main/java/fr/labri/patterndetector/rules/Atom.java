@@ -13,7 +13,7 @@ import java.util.function.Predicate;
  */
 public class Atom extends AbstractRule implements IAtom {
 
-    protected String _eventType;
+    protected String _eventType; // The event type
     protected Map<String, Predicate<Integer>> _predicates; // Maps fields of the event's payload to predicates
 
     public Atom(String eventType) {

@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 /**
  * Created by William Braik on 7/23/2015.
+ * <p>
+ * Automaton utility methods.
  */
 public final class AutomatonUtils {
 
@@ -25,7 +27,6 @@ public final class AutomatonUtils {
     private static IState startCopy(IState currentState, IRuleAutomaton automatonCopy) {
         IState stateCopy = new State();
         stateCopy.setFinal(currentState.isFinal());
-        stateCopy.setReset(currentState.isReset());
         stateCopy.setInitial(currentState.isInitial());
 
         try {
@@ -33,8 +34,6 @@ public final class AutomatonUtils {
                 automatonCopy.registerInitialState(stateCopy);
             } else if (stateCopy.isFinal()) {
                 automatonCopy.registerFinalState(stateCopy);
-            } else if (stateCopy.isReset()) {
-                automatonCopy.registerResetState(stateCopy);
             } else {
                 automatonCopy.registerState(stateCopy);
             }
@@ -59,8 +58,10 @@ public final class AutomatonUtils {
         return stateCopy;
     }
 
+    /**
+     * Powerset construction algorithm : transform a NFA into a DFA.
+     */
     public static IRuleAutomaton powerset(IRuleAutomaton automaton) {
-        // Powerset construction algorithm : remove the epsilon transitions from the NFA to obtain a DFA.
         IRuleAutomaton powersetAutomaton = new RuleAutomaton(automaton.getRule());
         Set<IState> initialStateSet = new HashSet<>();
         initialStateSet.add(automaton.getInitialState());
@@ -117,13 +118,6 @@ public final class AutomatonUtils {
                 if (isFinalStateSet(targetStateSet)) {
                     try {
                         finalAutomaton.registerFinalState(targetState);
-                    } catch (Exception e) {
-                        System.err.println("An error occured during Powerset (" + e.getMessage() + ")");
-                        e.printStackTrace();
-                    }
-                } else if (isResetStateSet(targetStateSet)) {
-                    try {
-                        finalAutomaton.registerResetState(targetState);
                     } catch (Exception e) {
                         System.err.println("An error occured during Powerset (" + e.getMessage() + ")");
                         e.printStackTrace();
@@ -187,21 +181,5 @@ public final class AutomatonUtils {
         }
 
         return isFinal;
-    }
-
-    /**
-     * Check if the state set contains at least one accepting state
-     **/
-    private static boolean isResetStateSet(Set<IState> stateSet) {
-        boolean isReset = false;
-
-        for (IState s : stateSet) {
-            if (s.isReset()) {
-                isReset = true;
-                break;
-            }
-        }
-
-        return isReset;
     }
 }

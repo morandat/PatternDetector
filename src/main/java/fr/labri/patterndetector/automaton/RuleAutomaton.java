@@ -125,7 +125,6 @@ public class RuleAutomaton implements IRuleAutomaton {
             throw new Exception("A reset state has already been set !");
         }
         s.setLabel(State.LABEL_RESET);
-        s.setReset(true);
         s.setAutomaton(this);
         _resetState = s;
     }
@@ -166,8 +165,6 @@ public class RuleAutomaton implements IRuleAutomaton {
                     patternFound(_buffer);
                     reset();
                     System.out.println("Final state reached");
-                } else if (_currentState.isReset()) {
-                    reset();
                 }
             } else {
                 System.out.println("Can't transition ! (" + e + ")");

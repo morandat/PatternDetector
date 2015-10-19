@@ -2,20 +2,15 @@ package fr.labri.patterndetector.rules;
 
 /**
  * Created by william.braik on 08/07/2015.
+ * <p>
+ * A time constraint to be specified for a rule.
  */
 public final class TimeConstraint implements ITimeConstraint {
 
     private int _value; // in seconds
-    private boolean _transitive;
 
     TimeConstraint(int value) {
         _value = value;
-        _transitive = false;
-    }
-
-    TimeConstraint(int value, boolean transitive) {
-        _value = value;
-        _transitive = transitive;
     }
 
     @Override
@@ -26,10 +21,5 @@ public final class TimeConstraint implements ITimeConstraint {
     @Override
     public String toString() {
         return "" + _value;
-    }
-
-    @Override
-    public boolean isTransitive() {
-        return _transitive;
     }
 }

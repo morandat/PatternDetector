@@ -18,7 +18,6 @@ public class State implements IState {
     protected Map<String, List<ITransition>> _transitions;
     protected boolean _initial;
     protected boolean _final;
-    protected boolean _reset;
     protected IRuleAutomaton _automaton;
 
     public State() {
@@ -26,7 +25,6 @@ public class State implements IState {
         _transitions = new HashMap<>();
         _final = false;
         _initial = false;
-        _reset = false;
         _automaton = null;
     }
 
@@ -54,11 +52,6 @@ public class State implements IState {
     }
 
     @Override
-    public boolean isReset() {
-        return _reset;
-    }
-
-    @Override
     public IRuleAutomaton getAutomaton() {
         return _automaton;
     }
@@ -76,11 +69,6 @@ public class State implements IState {
     @Override
     public void setFinal(boolean isFinal) {
         _final = isFinal;
-    }
-
-    @Override
-    public void setReset(boolean reset) {
-        _reset = reset;
     }
 
     @Override
@@ -200,7 +188,6 @@ public class State implements IState {
 
         State otherState = (State) other;
         return otherState.getLabel().equals(_label) && otherState.isInitial() == _initial
-                && otherState.isFinal() == _final && otherState.isReset() == _reset
-                && otherState.getTransitions().equals(getTransitions());
+                && otherState.isFinal() == _final && otherState.getTransitions().equals(getTransitions());
     }
 }

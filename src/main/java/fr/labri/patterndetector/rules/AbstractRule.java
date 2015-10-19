@@ -75,11 +75,6 @@ public abstract class AbstractRule implements IRule {
     }
 
     @Override
-    public IRule setTimeConstraint(int value, boolean transitive) {
-        return setTimeConstraint(new TimeConstraint(value, transitive));
-    }
-
-    @Override
     public final IRuleAutomaton getAutomaton() {
         if (_automaton == null) {
             try {

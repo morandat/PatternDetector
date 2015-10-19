@@ -68,13 +68,4 @@ public interface IRule {
      * @return The rule itself.
      */
     IRule setTimeConstraint(int value);
-
-    /**
-     * Specify a time constraint for the rule.
-     *
-     * @param value      The value of the time constraint to specify for the rule.
-     * @param transitive Whether the time constraint should be transitive.
-     * @return The rule itself
-     */
-    IRule setTimeConstraint(int value, boolean transitive);
 }

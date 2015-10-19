@@ -19,8 +19,6 @@ public interface IState {
 
     boolean isFinal();
 
-    boolean isReset();
-
     IRuleAutomaton getAutomaton();
 
     void setLabel(String label);
@@ -28,8 +26,6 @@ public interface IState {
     void setInitial(boolean initial);
 
     void setFinal(boolean isFinal);
-
-    void setReset(boolean reset);
 
     void setAutomaton(IRuleAutomaton automaton);
 

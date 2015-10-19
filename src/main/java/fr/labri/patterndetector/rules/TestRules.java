@@ -24,8 +24,6 @@ public class TestRules {
         // 2) b --> a
         IRule r2 = new FollowedBy("b", r0)
                 .setTimeConstraint(5);
-        // No "c" between b and a
-        //EventFilter f2 = new EventFilter(pattern -> pattern.stream().map(IEvent::getType).noneMatch(e -> e.equals("c")));
 
         // 2.1) a --> a
         IRule r21 = new FollowedBy("a", "a");
@@ -50,7 +48,7 @@ public class TestRules {
         Collection<IEvent> events = Generator.generateStuff();
 
         RuleManager ruleManager = RuleManager.getInstance();
-        ruleManager.addRule(r99);
+        ruleManager.addRule(r0);
         ruleManager.detect(events);
     }
 }

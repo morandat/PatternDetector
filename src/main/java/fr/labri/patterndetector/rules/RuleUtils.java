@@ -2,6 +2,8 @@ package fr.labri.patterndetector.rules;
 
 /**
  * Created by william.braik on 11/08/2015.
+ * <p>
+ * Rule utility methods.
  */
 public final class RuleUtils {
 
