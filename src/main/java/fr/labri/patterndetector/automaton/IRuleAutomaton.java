@@ -9,6 +9,9 @@ import java.util.Set;
 
 /**
  * Created by William Braik on 6/28/2015.
+ * <p>
+ * A rule's automaton.
+ * A type of timed automaton. Contains clocks for each event type.
  */
 public interface IRuleAutomaton {
 
@@ -26,9 +29,7 @@ public interface IRuleAutomaton {
 
     IState getFinalState();
 
-    IState getResetState();
-
-    Collection<IEvent> getBuffer();
+    Collection<IEvent> getMatchBuffer();
 
     Collection<ITransition> getTransitions();
 
@@ -38,14 +39,12 @@ public interface IRuleAutomaton {
 
     void registerFinalState(IState s) throws Exception; //TODO AutomatonException;
 
-    void registerResetState(IState s) throws Exception; //TODO AutomatonException
-
     void fire(IEvent e) throws Exception; //TODO AutomatonException
 
     void reset();
 
     /**
-     * What to do when a pattern is found (i.e. when a final state is reached)
+     * Action performed when a pattern is found (i.e. when the final state is reached)
      *
      * @param pattern
      */

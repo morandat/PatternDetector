@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 public class Transition implements ITransition {
 
     public static final String LABEL_EPSILON = "$";
-    public static final String LABEL_NEGATION = "*";
+    public static final String LABEL_STAR = "*";
 
     private IState _source;
     private IState _target;

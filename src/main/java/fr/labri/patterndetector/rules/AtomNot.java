@@ -45,7 +45,7 @@ public class AtomNot extends AbstractRule implements IAtom {
         IState f = new State(); // Final state
 
         i.registerTransition(i, _eventType, TransitionType.TRANSITION_DROP);
-        i.registerTransition(f, Transition.LABEL_NEGATION, TransitionType.TRANSITION_APPEND, _predicates);
+        i.registerTransition(f, Transition.LABEL_STAR, TransitionType.TRANSITION_APPEND, _predicates);
 
         IRuleAutomaton automaton = new RuleAutomaton(this);
         automaton.registerInitialState(i);

@@ -138,7 +138,7 @@ public final class RuleManager {
     public void notifyPattern(Collection<IEvent> pattern, IRule rule) {
         _lastPattern.clear();
         _lastPattern.addAll(pattern);
-        System.out.println("*** PATTERN FOUND BY " + rule.getName() + " (" + rule + ") " + " : " + pattern + " ***");
+        System.out.println("*** PATTERN FOUND BY " + rule.getName() + " (" + rule + ")" + " : " + pattern + " ***");
     }
 
     /**

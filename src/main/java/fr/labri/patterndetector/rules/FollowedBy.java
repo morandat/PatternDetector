@@ -2,8 +2,6 @@ package fr.labri.patterndetector.rules;
 
 import fr.labri.patterndetector.automaton.*;
 
-import java.util.HashSet;
-
 /**
  * Created by William Braik on 6/25/2015.
  */
@@ -43,7 +41,7 @@ public class FollowedBy extends AbstractBinaryRule {
 
         IRuleAutomaton automaton = new RuleAutomaton(this);
 
-        /* Left component */
+        /* --- Left component --- */
 
         // The initial state of the left component becomes the initial state of the FollowedBy automaton.
         automaton.registerInitialState(left.getInitialState());
@@ -57,7 +55,7 @@ public class FollowedBy extends AbstractBinaryRule {
             automaton.registerState(leftConnectionState);
         }
 
-        /* Right component */
+        /* --- Right component --- */
 
         // The initial state of the right component becomes a state of the FollowedBy automaton.
         IState rightInitialState = right.getInitialState();
@@ -71,28 +69,28 @@ public class FollowedBy extends AbstractBinaryRule {
         automaton.registerFinalState(rightConnectionState);
         _connectionStateLabel = rightConnectionState.getLabel();
 
-        // Add extra stuff to obtain the final FollowedBy automaton
+        /* --- Add extra stuff to obtain the final FollowedBy automaton. --- */
 
         // State for ignoring irrelevant events occuring between left and right.
         State s = new State();
-        // If the left automaton is Kleene, then the negation transition is already on its connection state.
-        if (_right instanceof Kleene) {
-            s.registerTransition(s, Transition.LABEL_NEGATION, TransitionType.TRANSITION_DROP);
+
+        // If the left automaton is Kleene, then the negation transition is already on the connection state.
+        if (_left instanceof Kleene) {
+            s.registerStarTransition(s, TransitionType.TRANSITION_DROP);
         }
+
         automaton.registerState(s);
 
         // Connect the left component's connection state to s, and s to the right component's initial state, with epsilon transitions.
-        leftConnectionState.registerTransition(s, Transition.LABEL_EPSILON, TransitionType.TRANSITION_DROP);
-        s.registerTransition(rightInitialState, Transition.LABEL_EPSILON, TransitionType.TRANSITION_DROP);
+        leftConnectionState.registerEpsilonTransition(s);
+        s.registerEpsilonTransition(rightInitialState);
 
         _automaton = automaton;
 
         System.err.println(automaton); // TODO for debug
 
-        // If a time constraint was specified for the rule, create corresponding clock constraints.
-        if (_timeConstraint != null) {
-            createClockConstraints(leftConnectionState);
-        }
+        // Create clock constraints.
+        createClockConstraints(leftConnectionState);
     }
 
     /**
@@ -101,9 +99,11 @@ public class FollowedBy extends AbstractBinaryRule {
      * @param leftConnectionState The connection state of the left automaton.
      */
     private void createClockConstraints(IState leftConnectionState) {
-        int value = _timeConstraint.getValue();
+        if (_timeConstraint != null) {
+            int value = _timeConstraint.getValue();
 
-        leftConnectionState.getTransitions().forEach(t ->
-                t.setClockConstraint(RuleUtils.getRightmostAtom(_left).getEventType(), value));
+            leftConnectionState.getTransitions().forEach(t ->
+                    t.setClockConstraint(RuleUtils.getRightmostAtom(_left).getEventType(), value));
+        }
     }
 }

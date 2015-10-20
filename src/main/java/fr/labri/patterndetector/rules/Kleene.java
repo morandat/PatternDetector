@@ -2,8 +2,6 @@ package fr.labri.patterndetector.rules;
 
 import fr.labri.patterndetector.automaton.*;
 
-import java.util.HashSet;
-
 /**
  * Created by william.braik on 10/07/2015.
  */
@@ -43,13 +41,13 @@ public class Kleene extends AbstractUnaryRule {
         IState baseFinalState = base.getFinalState();
         automaton.registerState(baseFinalState);
 
-        // Add extra stuff to obtain the final Kleene automaton
+        /* --- Add extra stuff to obtain the final Kleene automaton --- */
 
         // State for ignoring irrelevant events occuring between left and right.
         IState s = new State();
-        baseFinalState.registerTransition(s, Transition.LABEL_EPSILON, TransitionType.TRANSITION_DROP);
-        s.registerTransition(s, Transition.LABEL_NEGATION, TransitionType.TRANSITION_DROP);
-        s.registerTransition(baseInitialState, Transition.LABEL_EPSILON, TransitionType.TRANSITION_DROP);
+        baseFinalState.registerEpsilonTransition(s);
+        s.registerStarTransition(s, TransitionType.TRANSITION_DROP);
+        s.registerEpsilonTransition(baseInitialState);
         automaton.registerState(s);
         _connectionStateLabel = s.getLabel();
 

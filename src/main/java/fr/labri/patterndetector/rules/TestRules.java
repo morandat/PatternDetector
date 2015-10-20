@@ -48,7 +48,7 @@ public class TestRules {
         Collection<IEvent> events = Generator.generateStuff();
 
         RuleManager ruleManager = RuleManager.getInstance();
-        ruleManager.addRule(r0);
+        ruleManager.addRule(r2);
         ruleManager.detect(events);
     }
 }
