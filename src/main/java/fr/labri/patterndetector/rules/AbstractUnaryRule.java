@@ -7,14 +7,9 @@ public abstract class AbstractUnaryRule extends AbstractRule implements IUnaryRu
 
     protected IRule _rule;
 
-    public AbstractUnaryRule(RuleType type, String symbol, IRule r) {
-        super(type, symbol);
+    public AbstractUnaryRule(String symbol, IRule r) {
+        super(symbol);
         _rule = r;
-    }
-
-    @Override
-    public RuleType getType() {
-        return _type;
     }
 
     @Override

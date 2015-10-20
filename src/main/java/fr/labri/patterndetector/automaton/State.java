@@ -7,18 +7,18 @@ import java.util.function.Predicate;
 
 /**
  * Created by William Braik on 6/28/2015.
+ * <p>
+ * A state of a rule's automaton. Can be initial, final, or regular.
  */
 public class State implements IState {
 
     public static final String LABEL_FINAL = "F";
     public static final String LABEL_INITIAL = "I";
-    public static final String LABEL_RESET = "R";
 
     protected String _label;
     protected Map<String, List<ITransition>> _transitions;
     protected boolean _initial;
     protected boolean _final;
-    protected boolean _reset;
     protected IRuleAutomaton _automaton;
 
     public State() {
@@ -26,7 +26,6 @@ public class State implements IState {
         _transitions = new HashMap<>();
         _final = false;
         _initial = false;
-        _reset = false;
         _automaton = null;
     }
 
@@ -54,11 +53,6 @@ public class State implements IState {
     }
 
     @Override
-    public boolean isReset() {
-        return _reset;
-    }
-
-    @Override
     public IRuleAutomaton getAutomaton() {
         return _automaton;
     }
@@ -79,11 +73,6 @@ public class State implements IState {
     }
 
     @Override
-    public void setReset(boolean reset) {
-        _reset = reset;
-    }
-
-    @Override
     public void setAutomaton(IRuleAutomaton automaton) {
         _automaton = automaton;
     }
@@ -98,6 +87,7 @@ public class State implements IState {
             _transitions.put(label, list);
         } else {
             if (!_transitions.get(label).contains(t)) { // Check duplicate transitions
+                // TODO throw DuplicateTransitionException
                 _transitions.get(label).add(t);
             }
         }
@@ -113,6 +103,7 @@ public class State implements IState {
             _transitions.put(label, list);
         } else {
             if (!_transitions.get(label).contains(t)) { // Check duplicate transitions
+                // TODO throw DuplicateTransitionException
                 _transitions.get(label).add(t);
             }
         }
@@ -128,6 +119,7 @@ public class State implements IState {
             _transitions.put(label, list);
         } else {
             if (!_transitions.get(label).contains(t)) { // Check duplicate transitions
+                // TODO throw DuplicateTransitionException
                 _transitions.get(label).add(t);
             }
         }
@@ -143,6 +135,41 @@ public class State implements IState {
             _transitions.put(label, list);
         } else {
             if (!_transitions.get(label).contains(t)) { // Check duplicate transitions
+                // TODO throw DuplicateTransitionException
+                _transitions.get(label).add(t);
+            }
+        }
+    }
+
+    @Override
+    public void registerEpsilonTransition(IState target) {
+        String label = Transition.LABEL_EPSILON;
+        ITransition t = new Transition(this, target, label, TransitionType.TRANSITION_DROP);
+
+        if (_transitions.get(label) == null) {
+            List<ITransition> list = new ArrayList<>();
+            list.add(t);
+            _transitions.put(label, list);
+        } else {
+            if (!_transitions.get(label).contains(t)) { // Check duplicate transitions
+                // TODO throw DuplicateTransitionException
+                _transitions.get(label).add(t);
+            }
+        }
+    }
+
+    @Override
+    public void registerStarTransition(IState target, TransitionType type) {
+        String label = Transition.LABEL_STAR;
+        ITransition t = new Transition(this, target, label, type);
+
+        if (_transitions.get(label) == null) {
+            List<ITransition> list = new ArrayList<>();
+            list.add(t);
+            _transitions.put(label, list);
+        } else {
+            if (!_transitions.get(label).contains(t)) { // Check duplicate transitions
+                // TODO throw DuplicateTransitionException
                 _transitions.get(label).add(t);
             }
         }
@@ -157,7 +184,7 @@ public class State implements IState {
     public ITransition pickTransition(IEvent event) throws Exception {
         List<ITransition> list = _transitions.get(event.getType());
         if (list == null) {
-            list = _transitions.get(Transition.LABEL_NEGATION);
+            list = _transitions.get(Transition.LABEL_STAR);
         }
 
         ITransition t;
@@ -200,7 +227,6 @@ public class State implements IState {
 
         State otherState = (State) other;
         return otherState.getLabel().equals(_label) && otherState.isInitial() == _initial
-                && otherState.isFinal() == _final && otherState.isReset() == _reset
-                && otherState.getTransitions().equals(getTransitions());
+                && otherState.isFinal() == _final && otherState.getTransitions().equals(getTransitions());
     }
 }

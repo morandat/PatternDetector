@@ -9,45 +9,26 @@ import java.util.function.Predicate;
 
 /**
  * Created by William Braik on 6/28/2015.
+ * <p>
+ * A rule's automaton.
+ * A type of timed automaton. Contains clocks for each event type.
  */
 
-/**
- * A type of timed automaton. Contains clocks for each event type
- */
 public class RuleAutomaton implements IRuleAutomaton {
 
     protected IRule _rule;
     protected IState _initialState;
     protected IState _finalState;
-    protected IState _resetState;
     protected Map<String, IState> _states;
     protected IState _currentState;
-    protected ArrayList<IEvent> _buffer;
+    protected ArrayList<IEvent> _matchBuffer;
     protected Map<String, Long> _clocks;
-    protected Set<IRuleAutomaton> _negationAutomata;
 
     public RuleAutomaton(IRule rule) {
         _rule = rule;
         _states = new HashMap<>();
-        _buffer = new ArrayList<>();
+        _matchBuffer = new ArrayList<>();
         _clocks = new HashMap<>();
-        _negationAutomata = null;
-    }
-
-    public RuleAutomaton(IRule rule, Set<IRule> negationRules) {
-        _rule = rule;
-        _states = new HashMap<>();
-        _buffer = new ArrayList<>();
-        _clocks = new HashMap<>();
-        _negationAutomata = new HashSet<>();
-
-        if (negationRules != null) {
-            negationRules.forEach(nr -> {
-                IRuleAutomaton negationAutomaton = nr.getAutomaton();
-                _negationAutomata.add(negationAutomaton);
-                System.out.println("NEGATION AUTOMATON ADDED : " + negationAutomaton);
-            });
-        }
     }
 
     @Override
@@ -85,16 +66,11 @@ public class RuleAutomaton implements IRuleAutomaton {
     @Override
     public IState getFinalState() {
         return _finalState;
-    } // TODO if no final state, check if _rule is a Kleene, if yes return pivot state ?
-
-    @Override
-    public IState getResetState() {
-        return _resetState;
     }
 
     @Override
-    public Collection<IEvent> getBuffer() {
-        return _buffer;
+    public Collection<IEvent> getMatchBuffer() {
+        return _matchBuffer;
     }
 
     @Override
@@ -104,11 +80,6 @@ public class RuleAutomaton implements IRuleAutomaton {
         _states.values().forEach(state -> transitions.addAll(state.getTransitions()));
 
         return transitions;
-    }
-
-    @Override
-    public Set<IRuleAutomaton> getNegationAutomata() {
-        return _negationAutomata;
     }
 
     @Override
@@ -125,8 +96,10 @@ public class RuleAutomaton implements IRuleAutomaton {
     @Override
     public void registerState(IState s) {
         s.setLabel(Integer.toString(_states.size()));
-        _states.put(s.getLabel(), s);
+        s.setInitial(false);
+        s.setFinal(false);
         s.setAutomaton(this);
+        _states.put(s.getLabel(), s);
     }
 
     @Override
@@ -141,17 +114,6 @@ public class RuleAutomaton implements IRuleAutomaton {
     }
 
     @Override
-    public void registerResetState(IState s) throws Exception {
-        if (_resetState != null) {
-            throw new Exception("A reset state has already been set !");
-        }
-        s.setLabel(State.LABEL_RESET);
-        s.setReset(true);
-        s.setAutomaton(this);
-        _resetState = s;
-    }
-
-    @Override
     public void fire(IEvent e) throws Exception {
         if (_initialState != null) {
             // Initialize current state if needed
@@ -162,7 +124,6 @@ public class RuleAutomaton implements IRuleAutomaton {
             // Update event clock
             _clocks.put(e.getType(), e.getTimestamp());
 
-            //System.out.println("Current state : " + _currentState);
             ITransition t = _currentState.pickTransition(e);
 
             // If there is a transition, check its clock guards if any
@@ -174,11 +135,7 @@ public class RuleAutomaton implements IRuleAutomaton {
                 // Action to perform on the transition
                 switch (t.getType()) {
                     case TRANSITION_APPEND:
-                        _buffer.add(e);
-                        break;
-                    case TRANSITION_OVERWRITE:
-                        _buffer.clear();
-                        _buffer.add(e);
+                        _matchBuffer.add(e);
                         break;
                     case TRANSITION_DROP:
                 }
@@ -188,11 +145,9 @@ public class RuleAutomaton implements IRuleAutomaton {
 
                 if (_currentState.isFinal()) {
                     // If the final state has been reached, post the found pattern and reset the automaton
-                    patternFound(_buffer);
+                    patternFound(_matchBuffer);
                     reset();
                     System.out.println("Final state reached");
-                } else if (_currentState.isReset()) {
-                    reset();
                 }
             } else {
                 System.out.println("Can't transition ! (" + e + ")");
@@ -207,7 +162,7 @@ public class RuleAutomaton implements IRuleAutomaton {
     @Override
     public void reset() {
         _currentState = _initialState;
-        _buffer.clear();
+        _matchBuffer.clear();
         _clocks.clear();
         System.out.println("Automaton reset");
     }
@@ -241,22 +196,19 @@ public class RuleAutomaton implements IRuleAutomaton {
         if (payload == null || predicates == null) {
             return true;
         } else {
-            boolean ok = true;
-
             for (Map.Entry<String, Predicate<Integer>> entry : predicates.entrySet()) {
                 String field = entry.getKey();
                 Predicate<Integer> predicate = entry.getValue();
                 Integer value = payload.get(field);
 
                 /* If the event misses a field that is required by a predicate, then value will be null,
-                and predicate.test() will return false which is the expected behaviour */
-                ok = (predicate.test(value) && ok);
+                and predicate.test() will return false (which is the expected behaviour). */
 
-                if (!ok)
+                if (!predicate.test(value))
                     return false;
             }
 
-            return ok;
+            return true;
         }
     }
 
@@ -268,9 +220,6 @@ public class RuleAutomaton implements IRuleAutomaton {
         }
         for (IState state : _states.values()) {
             transitions.append(" (").append(state).append(",").append(state.getTransitions()).append(")");
-        }
-        if (_resetState != null) {
-            transitions.append(" (").append(_resetState).append(",").append(_resetState.getTransitions()).append(")");
         }
         if (_finalState != null) {
             transitions.append(" (").append(_finalState).append(",").append(_finalState.getTransitions()).append(")");

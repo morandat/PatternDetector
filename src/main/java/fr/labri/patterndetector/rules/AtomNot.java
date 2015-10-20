@@ -8,22 +8,24 @@ import java.util.function.Predicate;
 
 /**
  * Created by william.braik on 08/07/2015.
+ * <p>
+ * An atom that represents an event of any type except a give type.
  */
 public class AtomNot extends AbstractRule implements IAtom {
 
-    protected String _x; // This atom represents all event types except x
-    protected Map<String, Predicate<Integer>> _predicates;
+    protected String _eventType; // The atom represents an event of any type except this type;
+    protected Map<String, Predicate<Integer>> _predicates; // Maps fields of the event's payload to predicates
 
 
-    public AtomNot(String x) {
-        super(RuleType.RULE_ATOM_NOT, null);
-        _x = x;
+    public AtomNot(String eventType) {
+        super(null);
+        _eventType = eventType;
         _predicates = new HashMap<>();
     }
 
     @Override
     public String getEventType() {
-        return _x;
+        return _eventType;
     }
 
     @Override
@@ -35,19 +37,20 @@ public class AtomNot extends AbstractRule implements IAtom {
 
     @Override
     public String toString() {
-        return "!" + _x;
+        return "!" + _eventType;
     }
 
     public void buildAutomaton() throws Exception {
-        IState s0 = new State(); // Initial state
-        IState s1 = new State(); // Final state
+        IState i = new State(); // Initial state
+        IState f = new State(); // Final state
 
-        s0.registerTransition(s0, _x, TransitionType.TRANSITION_DROP);
-        s0.registerTransition(s1, Transition.LABEL_NEGATION, TransitionType.TRANSITION_APPEND, _predicates);
+        i.registerTransition(i, _eventType, TransitionType.TRANSITION_DROP);
+        i.registerTransition(f, Transition.LABEL_STAR, TransitionType.TRANSITION_APPEND, _predicates);
 
         IRuleAutomaton automaton = new RuleAutomaton(this);
-        automaton.registerInitialState(s0);
-        automaton.registerFinalState(s1);
+        automaton.registerInitialState(i);
+        automaton.registerFinalState(f);
+        _connectionStateLabel = f.getLabel();
 
         _automaton = automaton;
     }

@@ -14,9 +14,9 @@ public interface IEvent {
     Map<String, Integer> getPayload();
 
     /**
-     * Add a key-valued data field to the event's payload
+     * Add new data to the event's payload
      *
-     * @param key   The key
+     * @param key   The field name
      * @param value The value
      * @return The event itself
      */
