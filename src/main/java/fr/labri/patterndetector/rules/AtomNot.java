@@ -29,7 +29,7 @@ public class AtomNot extends AbstractRule implements IAtom {
     }
 
     @Override
-    public IAtom setPredicateOnField(String field, Predicate<Integer> predicate) {
+    public IAtom setPredicate(String field, Predicate<Integer> predicate) {
         _predicates.put(field, predicate);
 
         return this;

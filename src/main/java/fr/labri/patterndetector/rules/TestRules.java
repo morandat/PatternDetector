@@ -15,8 +15,8 @@ public class TestRules {
     public static void main(String[] args) {
         // 0) a
         IRule r0 = new Atom("a")
-                .setPredicateOnField("age", age -> age > 18)
-                .setPredicateOnField("height", h -> h > 170);
+                .setPredicate("age", age -> age > 18)
+                .setPredicate("height", h -> h > 170);
 
         // 1) !a
         IRule r1 = new AtomNot("a");

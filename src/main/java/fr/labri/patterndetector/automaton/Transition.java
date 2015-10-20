@@ -77,13 +77,23 @@ public class Transition implements ITransition {
     }
 
     @Override
-    public Predicate<Integer> getPredicateOnField(String field) {
+    public Predicate<Integer> getPredicate(String field) {
         return _predicates.get(field);
     }
 
     @Override
     public Map<String, Predicate<Integer>> getPredicates() {
         return _predicates;
+    }
+
+    @Override
+    public boolean isEpsilon() {
+        return _label.equals(Transition.LABEL_EPSILON);
+    }
+
+    @Override
+    public boolean isStar() {
+        return _label.equals(Transition.LABEL_STAR);
     }
 
     @Override
@@ -102,7 +112,7 @@ public class Transition implements ITransition {
     }
 
     @Override
-    public void setPredicateOnField(String field, Predicate<Integer> predicate) {
+    public void setPredicate(String field, Predicate<Integer> predicate) {
         _predicates.put(field, predicate);
     }
 

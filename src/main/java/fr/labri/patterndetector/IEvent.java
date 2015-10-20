@@ -20,5 +20,5 @@ public interface IEvent {
      * @param value The value
      * @return The event itself
      */
-    IEvent addData(String key, Integer value);
+    IEvent setData(String key, Integer value);
 }

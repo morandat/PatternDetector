@@ -18,9 +18,13 @@ public interface ITransition {
 
     ClockGuard getClockConstraint();
 
-    Predicate<Integer> getPredicateOnField(String field);
+    Predicate<Integer> getPredicate(String field);
 
     Map<String, Predicate<Integer>> getPredicates();
+
+    boolean isEpsilon();
+
+    boolean isStar();
 
     void setClockConstraint(ClockGuard clockGuard);
 
@@ -28,7 +32,7 @@ public interface ITransition {
 
     void setClockConstraint(String eventType, int value, boolean lowerThan);
 
-    void setPredicateOnField(String field, Predicate<Integer> predicate); // TODO replace Integer by generic type '?'
+    void setPredicate(String field, Predicate<Integer> predicate); // TODO replace Integer by generic type '?'
 
     void setPredicates(Map<String, Predicate<Integer>> predicates);
 }

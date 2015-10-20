@@ -40,7 +40,7 @@ public class Event implements IEvent {
     }
 
     @Override
-    public IEvent addData(String key, Integer value) {
+    public IEvent setData(String key, Integer value) {
         if (_payload == null) {
             _payload = new HashMap<>();
         }

@@ -23,5 +23,5 @@ public interface IAtom extends IRule {
      * @param predicate The predicate of the field.
      * @return The atom itself.
      */
-    IAtom setPredicateOnField(String field, Predicate<Integer> predicate); // TODO replace Integer by generic type '?'
+    IAtom setPredicate(String field, Predicate<Integer> predicate); // TODO replace Integer by generic type '?'
 }

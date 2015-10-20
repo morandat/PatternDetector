@@ -119,8 +119,8 @@ public final class Generator {
         eventStream.add(new Event("Exit", _t++));
         eventStream.add(new Event("b", 10));
         eventStream.add(new Event("a", 16)
-                .addData("age", 21)
-                .addData("height", 175));
+                .setData("age", 21)
+                .setData("height", 175));
 
         return eventStream;
     }

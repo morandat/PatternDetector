@@ -37,11 +37,6 @@ public class RuleAutomaton implements IRuleAutomaton {
     }
 
     @Override
-    public String getRuleName() {
-        return _rule.getName();
-    }
-
-    @Override
     public IState getCurrentState() {
         return _currentState;
     }
@@ -121,14 +116,11 @@ public class RuleAutomaton implements IRuleAutomaton {
                 _currentState = _initialState;
             }
 
-            // Update event clock
-            _clocks.put(e.getType(), e.getTimestamp());
-
             ITransition t = _currentState.pickTransition(e);
 
             // If there is a transition, check its clock guards if any
             if (t != null
-                    && checkClockGuard(e.getTimestamp(), t.getClockConstraint())
+                    && testClockGuard(e.getTimestamp(), t.getClockConstraint())
                     && testPredicates(e.getPayload(), t.getPredicates())) {
                 System.out.println("Transitioning : " + t + " (" + e + ")");
 
@@ -136,6 +128,8 @@ public class RuleAutomaton implements IRuleAutomaton {
                 switch (t.getType()) {
                     case TRANSITION_APPEND:
                         _matchBuffer.add(e);
+                        // Update event clock
+                        _clocks.put(e.getType(), e.getTimestamp());
                         break;
                     case TRANSITION_DROP:
                 }
@@ -173,9 +167,9 @@ public class RuleAutomaton implements IRuleAutomaton {
     }
 
     /**
-     * Returns true if the clock guard is met, false otherwise
+     * Returns true if the clock guard passes, false otherwise
      */
-    public boolean checkClockGuard(long currentTime, ClockGuard clockGuard) {
+    public boolean testClockGuard(long currentTime, ClockGuard clockGuard) {
         if (clockGuard == null) {
             return true;
         } else if (_clocks.get(clockGuard.getEventType()) == null) {
@@ -192,24 +186,33 @@ public class RuleAutomaton implements IRuleAutomaton {
         }
     }
 
+    /**
+     * Returns true if the predicates pass, false otherwise
+     */
     public boolean testPredicates(Map<String, Integer> payload, Map<String, Predicate<Integer>> predicates) {
-        if (payload == null || predicates == null) {
-            return true;
-        } else {
-            for (Map.Entry<String, Predicate<Integer>> entry : predicates.entrySet()) {
-                String field = entry.getKey();
-                Predicate<Integer> predicate = entry.getValue();
-                Integer value = payload.get(field);
-
-                /* If the event misses a field that is required by a predicate, then value will be null,
-                and predicate.test() will return false (which is the expected behaviour). */
-
-                if (!predicate.test(value))
-                    return false;
-            }
-
+        // No predicates to test
+        if (predicates == null) {
             return true;
         }
+
+        // Some predicates to test, but no data
+        if (payload == null) {
+            return false;
+        }
+
+        // Some predicates to test, and some data
+        for (Map.Entry<String, Predicate<Integer>> entry : predicates.entrySet()) {
+            String field = entry.getKey();
+            Predicate<Integer> predicate = entry.getValue();
+            Integer value = payload.get(field);
+
+            /* If the payload misses a field that is required by a predicate, then ''value'' will be null,
+            and ''predicate.test(null)'' will return false (which is the expected behaviour). */
+            if (!predicate.test(value))
+                return false;
+        }
+
+        return true;
     }
 
     @Override

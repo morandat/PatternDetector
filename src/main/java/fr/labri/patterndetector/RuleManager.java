@@ -51,7 +51,7 @@ public final class RuleManager {
             _automata.put(rule.getName(), powerset);
 
             try {
-                checkRuleAutomaton(powerset);
+                validateRuleAutomaton(powerset);
             } catch (Exception e) {
                 System.err.println("Invalid rule " + rule.getName() + " (" + rule + ") : " + e.getMessage());
             }
@@ -142,12 +142,12 @@ public final class RuleManager {
     }
 
     /**
-     * Check whether a rule's automaton is valid.
+     * Check the validity of a rule automaton.
      *
-     * @param automaton The rule's automaton to check.
+     * @param automaton The automaton to validate.
      * @throws Exception
      */
-    private void checkRuleAutomaton(IRuleAutomaton automaton) throws Exception {
+    private void validateRuleAutomaton(IRuleAutomaton automaton) throws Exception {
         if (automaton.getFinalState() == null) {
             throw new Exception("Rule doesn't terminate !");
         } else if (automaton.getFinalState().getTransitions().size() > 0) {

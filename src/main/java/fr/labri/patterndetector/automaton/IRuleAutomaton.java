@@ -17,8 +17,6 @@ public interface IRuleAutomaton {
 
     IRule getRule();
 
-    String getRuleName();
-
     IState getCurrentState();
 
     IState getInitialState();
