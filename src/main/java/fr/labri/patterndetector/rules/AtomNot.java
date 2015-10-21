@@ -9,13 +9,13 @@ import java.util.function.Predicate;
 /**
  * Created by william.braik on 08/07/2015.
  * <p>
- * An atom that represents an event of any type except a give type.
+ * The complement of an atom.
+ * Given an event type x, it represents an event of any type besides x.
  */
 public class AtomNot extends AbstractRule implements IAtom {
 
-    protected String _eventType; // The atom represents an event of any type except this type;
+    protected String _eventType; // Given an event type x, this atom represents an event of any type besides x
     protected Map<String, Predicate<Integer>> _predicates; // Maps fields of the event's payload to predicates
-
 
     public AtomNot(String eventType) {
         super(null);

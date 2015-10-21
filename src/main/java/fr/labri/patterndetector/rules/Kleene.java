@@ -4,13 +4,13 @@ import fr.labri.patterndetector.automaton.*;
 
 /**
  * Created by william.braik on 10/07/2015.
- */
-
-/**
- * This rule does not have any termination criterion. The automaton therefore does not have any final state.
- * A way to make this operator terminate is to append an atom (or a rule that terminates) at the end of this rule ;
- * Or to specify a time constraint on the atom.
- * Ex : a+ doesn't terminate but a+ -> b, or a+|10| terminates.
+ * <p>
+ * The Kleene rule captures at least one occurrence of an event type.
+ * Because the stream of events is infinite, it does not have any termination criterion by default.
+ * Therefore, the corresponding Kleene automaton does not have any final state.
+ * However, Kleene can be connected to other rules using the FollowedBy operator.
+ * In that case, Kleene terminates as soon as the following rule begins.
+ * TODO It can also be used on its own, if a window is specified for the pattern.
  */
 public class Kleene extends AbstractUnaryRule {
 

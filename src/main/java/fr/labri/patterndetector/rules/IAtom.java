@@ -5,7 +5,7 @@ import java.util.function.Predicate;
 /**
  * Created by William Braik on 6/27/2015.
  * <p>
- * The elementary component of a pattern, which represents an event of a given type.
+ * Base interface for atoms.
  */
 public interface IAtom extends IRule {
 

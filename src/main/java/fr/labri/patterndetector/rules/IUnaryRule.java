@@ -3,7 +3,7 @@ package fr.labri.patterndetector.rules;
 /**
  * Created by William Braik on 6/28/2015.
  * <p>
- * Rules / operators with arity one (Kleene).
+ * Base interface for unary rules.
  */
 public interface IUnaryRule extends IRule {
 

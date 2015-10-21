@@ -4,6 +4,9 @@ import fr.labri.patterndetector.automaton.*;
 
 /**
  * Created by William Braik on 6/25/2015.
+ * <p>
+ * The FollowedBy rule captures the occurrence of a rule (left operand), followed by another rule (right operand).
+ * TODO In the case where the left side is matched The selection policy (first, each, or last) determines which of the captured events on the left side are selected.
  */
 public class FollowedBy extends AbstractBinaryRule {
 

@@ -9,7 +9,9 @@ import java.util.function.Predicate;
 /**
  * Created by William Braik on 6/27/2015.
  * <p>
- * The elementary component of a pattern, which represents an event of a given type.
+ * The atom is the most elementary rule.
+ * It represents the occurrence of a given event type.
+ * Atoms can be used within FollowedBy and Kleene rules, to specify more complex rules.
  */
 public class Atom extends AbstractRule implements IAtom {
 
