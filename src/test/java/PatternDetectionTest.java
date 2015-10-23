@@ -1,7 +1,7 @@
-import fr.labri.patterndetector.automaton.executor.Event;
-import fr.labri.patterndetector.automaton.executor.Generator;
-import fr.labri.patterndetector.automaton.executor.IEvent;
-import fr.labri.patterndetector.automaton.executor.RuleManager;
+import fr.labri.patterndetector.executor.Event;
+import fr.labri.patterndetector.executor.Generator;
+import fr.labri.patterndetector.executor.IEvent;
+import fr.labri.patterndetector.executor.RuleManager;
 import fr.labri.patterndetector.rules.Atom;
 import fr.labri.patterndetector.rules.FollowedBy;
 import fr.labri.patterndetector.rules.IRule;

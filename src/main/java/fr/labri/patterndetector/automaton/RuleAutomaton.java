@@ -1,7 +1,7 @@
 package fr.labri.patterndetector.automaton;
 
-import fr.labri.patterndetector.automaton.executor.IEvent;
-import fr.labri.patterndetector.automaton.executor.RuleManager;
+import fr.labri.patterndetector.executor.IEvent;
+import fr.labri.patterndetector.executor.RuleManager;
 import fr.labri.patterndetector.rules.IRule;
 
 import java.util.*;

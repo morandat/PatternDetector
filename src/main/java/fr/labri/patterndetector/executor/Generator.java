@@ -1,4 +1,4 @@
-package fr.labri.patterndetector.automaton.executor;
+package fr.labri.patterndetector.executor;
 /**
  * Created by William Braik on 6/23/2015.
  */

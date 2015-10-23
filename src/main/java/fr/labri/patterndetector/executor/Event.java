@@ -1,4 +1,4 @@
-package fr.labri.patterndetector.automaton.executor;
+package fr.labri.patterndetector.executor;
 
 import java.util.HashMap;
 import java.util.Map;

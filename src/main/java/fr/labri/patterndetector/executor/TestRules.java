@@ -1,4 +1,4 @@
-package fr.labri.patterndetector.automaton.executor;
+package fr.labri.patterndetector.executor;
 
 import fr.labri.patterndetector.rules.*;
 
