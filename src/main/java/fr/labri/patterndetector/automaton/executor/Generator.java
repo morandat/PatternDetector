@@ -1,4 +1,4 @@
-package fr.labri.patterndetector;
+package fr.labri.patterndetector.automaton.executor;
 /**
  * Created by William Braik on 6/23/2015.
  */
@@ -114,13 +114,12 @@ public final class Generator {
         init();
         Collection<IEvent> eventStream = new ArrayList<>();
 
-        eventStream.add(new Event("View", _t++));
-        eventStream.add(new Event("View", _t++));
-        eventStream.add(new Event("Exit", _t++));
-        eventStream.add(new Event("b", 10));
-        eventStream.add(new Event("a", 16)
-                .setData("age", 21)
-                .setData("height", 175));
+        eventStream.add(new Event("a", _t++));
+        eventStream.add(new Event("a", _t++));
+        eventStream.add(new Event("a", _t++));
+        eventStream.add(new Event("b", _t++));
+        eventStream.add(new Event("c", _t++));
+        eventStream.add(new Event("a", _t++));
 
         return eventStream;
     }

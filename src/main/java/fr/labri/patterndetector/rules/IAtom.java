@@ -7,7 +7,7 @@ import java.util.function.Predicate;
  * <p>
  * Base interface for atoms.
  */
-public interface IAtom extends IRule {
+public interface IAtom extends ITerminalRule {
 
     /**
      * Get the type of the event represented by the atom.

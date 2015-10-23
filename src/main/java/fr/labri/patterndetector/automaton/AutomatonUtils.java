@@ -31,11 +31,11 @@ public final class AutomatonUtils {
 
         try {
             if (stateCopy.isInitial()) {
-                automatonCopy.registerInitialState(stateCopy);
+                automatonCopy.setInitialState(stateCopy);
             } else if (stateCopy.isFinal()) {
-                automatonCopy.registerFinalState(stateCopy);
+                automatonCopy.setFinalState(stateCopy);
             } else {
-                automatonCopy.registerState(stateCopy);
+                automatonCopy.addState(stateCopy);
             }
 
             currentState.getTransitions().forEach(t -> {
@@ -70,7 +70,7 @@ public final class AutomatonUtils {
         allStateSets.put(initialStateSet.stream().map(IState::getLabel).collect(Collectors.toSet()), initialState);
 
         try {
-            powersetAutomaton.registerInitialState(initialState);
+            powersetAutomaton.setInitialState(initialState);
             startPowerset(initialStateSet, allStateSets, powersetAutomaton);
         } catch (Exception e) {
             System.err.println("An error occured during Powerset (" + e.getMessage() + ")");
@@ -117,13 +117,13 @@ public final class AutomatonUtils {
 
                 if (isFinalStateSet(targetStateSet)) {
                     try {
-                        finalAutomaton.registerFinalState(targetState);
+                        finalAutomaton.setFinalState(targetState);
                     } catch (Exception e) {
                         System.err.println("An error occured during Powerset (" + e.getMessage() + ")");
                         e.printStackTrace();
                     }
                 } else {
-                    finalAutomaton.registerState(targetState);
+                    finalAutomaton.addState(targetState);
                 }
 
                 allStateSets.put(targetStateSet.stream().map(IState::getLabel).collect(Collectors.toSet()), targetState);

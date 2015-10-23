@@ -36,8 +36,8 @@ public class FollowedBy extends AbstractBinaryRule {
 
     @Override
     public void buildAutomaton() throws Exception {
-        IRuleAutomaton leftAutomaton = AutomatonUtils.copy(_left.getAutomaton());
-        IRuleAutomaton rightAutomaton = AutomatonUtils.copy(_right.getAutomaton());
+        IRuleAutomaton leftAutomaton = _leftChild.getAutomaton().copy();
+        IRuleAutomaton rightAutomaton = _rightChild.getAutomaton().copy();
 
         //System.err.println(left); // TODO for debug
         //System.err.println(right); // TODO for debug
@@ -47,30 +47,31 @@ public class FollowedBy extends AbstractBinaryRule {
         /* --- Left component --- */
 
         // The initial state of the left component becomes the initial state of the FollowedBy automaton.
-        automaton.registerInitialState(leftAutomaton.getInitialState());
-
-        // The rest of the left component's states become states of the FollowedBy automaton.
-        leftAutomaton.getStates().values().forEach(automaton::registerState);
+        automaton.setInitialState(leftAutomaton.getInitialState());
 
         // The connection state of the left component becomes a state of the FollowedBy automaton.
-        IState leftConnectionState = leftAutomaton.getStateByLabel(_left.getConnectionStateLabel());
+        IState leftConnectionState = leftAutomaton.getStateByLabel(_leftChild.getConnectionStateLabel());
+        // If the connection state is a final state, register it as a basic state
         if (State.LABEL_FINAL.equals(leftConnectionState.getLabel())) {
-            automaton.registerState(leftConnectionState);
+            automaton.addState(leftConnectionState);
         }
+
+        // The rest of the left component's states become states of the FollowedBy automaton.
+        leftAutomaton.getStates().values().forEach(automaton::addState);
 
         /* --- Right component --- */
 
         // The initial state of the right component becomes a state of the FollowedBy automaton.
         IState rightInitialState = rightAutomaton.getInitialState();
-        automaton.registerState(rightInitialState);
-
-        // The rest of the right component's states become states of the FollowedBy automaton.
-        rightAutomaton.getStates().values().forEach(automaton::registerState);
+        automaton.addState(rightInitialState);
 
         // The final state of the FollowedBy automaton is the connection state of the right component's automaton.
-        IState rightConnectionState = rightAutomaton.getStateByLabel(_right.getConnectionStateLabel());
-        automaton.registerFinalState(rightConnectionState);
+        IState rightConnectionState = rightAutomaton.getStateByLabel(_rightChild.getConnectionStateLabel());
+        automaton.setFinalState(rightConnectionState);
         _connectionStateLabel = rightConnectionState.getLabel();
+
+        // The rest of the right component's states become states of the FollowedBy automaton.
+        rightAutomaton.getStates().values().forEach(automaton::addState);
 
         /* --- Add extra stuff to obtain the final FollowedBy automaton. --- */
 
@@ -78,11 +79,11 @@ public class FollowedBy extends AbstractBinaryRule {
         State s = new State();
 
         // If the left automaton is Kleene, then the negation transition is already on the connection state.
-        if (_left instanceof Kleene) {
+        if (!(_leftChild instanceof Kleene)) { // TODO this code is ugly
             s.registerStarTransition(s, TransitionType.TRANSITION_DROP);
         }
 
-        automaton.registerState(s);
+        automaton.addState(s);
 
         // Connect the left component's connection state to s, and s to the right component's initial state,
         // with epsilon transitions.
@@ -108,10 +109,18 @@ public class FollowedBy extends AbstractBinaryRule {
             int value = _timeConstraint.getValue();
 
             leftConnectionState.getTransitions().forEach(t ->
-                    t.setClockConstraint(RuleUtils.getRightmostAtom(_left).getEventType(), value));
+                    t.setClockConstraint(RuleUtils.getRightmostAtom(_leftChild).getEventType(), value));
 
             rightAutomaton.getTransitions().forEach(t ->
-                    t.setClockConstraint(RuleUtils.getRightmostAtom(_left).getEventType(), value));
+                    t.setClockConstraint(RuleUtils.getRightmostAtom(_leftChild).getEventType(), value));
         }
+    }
+
+    @Override
+    public void accept(RuleVisitor visitor) {
+        //_leftChild.accept(visitor); // TODO do we need this?
+        //_rightChild.accept(visitor);
+
+        visitor.visit(this);
     }
 }

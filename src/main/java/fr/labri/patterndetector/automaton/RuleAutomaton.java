@@ -1,7 +1,7 @@
 package fr.labri.patterndetector.automaton;
 
-import fr.labri.patterndetector.IEvent;
-import fr.labri.patterndetector.RuleManager;
+import fr.labri.patterndetector.automaton.executor.IEvent;
+import fr.labri.patterndetector.automaton.executor.RuleManager;
 import fr.labri.patterndetector.rules.IRule;
 
 import java.util.*;
@@ -78,7 +78,7 @@ public class RuleAutomaton implements IRuleAutomaton {
     }
 
     @Override
-    public void registerInitialState(IState s) throws Exception {
+    public void setInitialState(IState s) throws Exception {
         if (_initialState != null) {
             throw new Exception("An initial state has already been set !");
         }
@@ -89,7 +89,7 @@ public class RuleAutomaton implements IRuleAutomaton {
     }
 
     @Override
-    public void registerState(IState s) {
+    public void addState(IState s) {
         s.setLabel(Integer.toString(_states.size()));
         s.setInitial(false);
         s.setFinal(false);
@@ -98,7 +98,7 @@ public class RuleAutomaton implements IRuleAutomaton {
     }
 
     @Override
-    public void registerFinalState(IState s) throws Exception {
+    public void setFinalState(IState s) throws Exception {
         if (_finalState != null) {
             throw new Exception("A final state has already been set !");
         }

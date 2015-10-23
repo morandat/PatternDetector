@@ -1,10 +1,6 @@
 package fr.labri.patterndetector.rules;
 
-import fr.labri.patterndetector.automaton.AutomatonUtils;
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by William Braik on 6/25/2015.
@@ -63,6 +59,7 @@ public abstract class AbstractRule implements IRule {
                 buildAutomaton();
             } catch (Exception e) {
                 System.err.println("An error occurred while building the automaton (" + e.getMessage() + ")");
+                e.printStackTrace();
             }
         }
 
@@ -81,6 +78,7 @@ public abstract class AbstractRule implements IRule {
                 buildAutomaton();
             } catch (Exception e) {
                 System.err.println("An error occurred while building the automaton (" + e.getMessage() + ")");
+                e.printStackTrace();
             }
         }
 

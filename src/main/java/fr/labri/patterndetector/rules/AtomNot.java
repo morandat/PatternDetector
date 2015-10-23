@@ -48,10 +48,15 @@ public class AtomNot extends AbstractRule implements IAtom {
         i.registerTransition(f, Transition.LABEL_STAR, TransitionType.TRANSITION_APPEND, _predicates);
 
         IRuleAutomaton automaton = new RuleAutomaton(this);
-        automaton.registerInitialState(i);
-        automaton.registerFinalState(f);
+        automaton.setInitialState(i);
+        automaton.setFinalState(f);
         _connectionStateLabel = f.getLabel();
 
         _automaton = automaton;
+    }
+
+    @Override
+    public void accept(RuleVisitor visitor) {
+        visitor.visit(this);
     }
 }

@@ -1,9 +1,8 @@
-package fr.labri.patterndetector;
+package fr.labri.patterndetector.automaton.executor;
 /**
  * Created by William Braik on 6/22/2015.
  */
 
-import fr.labri.patterndetector.automaton.AutomatonUtils;
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.rules.IRule;
 
@@ -39,28 +38,29 @@ public final class RuleManager {
      *
      * @param rule The rule to add.
      */
-    public void addRule(IRule rule) {
+    public void addRule(IRule rule) { // TODO throw InvalidRuleException
         if (rule.getAutomaton() == null) { // Could not obtain the rule's automaton, invalid rule
-            System.err.println("Invalid rule : " + rule);
-        } else {
-            rule.setName(rule.getName() == null ?
-                    rule.getClass().getSimpleName() + "-" + _ruleCounter++
-                    : rule.getName() + "-" + _ruleCounter++);
-
-            IRuleAutomaton powerset = AutomatonUtils.powerset(rule.getAutomaton());
-            _automata.put(rule.getName(), powerset);
-
-            try {
-                validateRuleAutomaton(powerset);
-            } catch (Exception e) {
-                System.err.println("Invalid rule " + rule.getName() + " (" + rule + ") : " + e.getMessage());
-            }
-
-            // If the rule is valid, add it to the rule set
-            _rules.put(rule.getName(), rule);
-            System.out.println("* Rule " + rule.getName() + " (" + rule + ") " + "added : " + rule);
-            System.out.println("Powerset : " + powerset);
+            throw new RuntimeException("Invalid rule : " + rule);
         }
+
+        rule.setName(rule.getName() == null ?
+                rule.getClass().getSimpleName() + "-" + _ruleCounter++
+                : rule.getName() + "-" + _ruleCounter++);
+
+        IRuleAutomaton powerset = rule.getAutomaton().powerset();
+
+        try {
+            validateRuleAutomaton(powerset);
+        } catch (Exception e) { // FIXME remove catch block
+            throw new RuntimeException("Invalid rule " + rule.getName() + " (" + rule + ") : " + e.getMessage());
+        }
+
+        // If the rule is valid, add it to the rule set
+        _rules.put(rule.getName(), rule);
+        _automata.put(rule.getName(), powerset);
+
+        System.out.println("* Rule " + rule.getName() + " (" + rule + ") " + "added : " + rule);
+        System.out.println("Powerset : " + powerset);
     }
 
     /**
@@ -147,7 +147,7 @@ public final class RuleManager {
      * @param automaton The automaton to validate.
      * @throws Exception
      */
-    private void validateRuleAutomaton(IRuleAutomaton automaton) throws Exception {
+    private void validateRuleAutomaton(IRuleAutomaton automaton) throws Exception { //TODO vraie exception
         if (automaton.getFinalState() == null) {
             throw new Exception("Rule doesn't terminate !");
         } else if (automaton.getFinalState().getTransitions().size() > 0) {
