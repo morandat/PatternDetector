@@ -3,6 +3,7 @@ package fr.labri.patterndetector.executor;
 import fr.labri.patterndetector.rules.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by William Braik on 6/22/2015.
@@ -43,11 +44,11 @@ public class TestRules {
 
         IRule r99 = new FollowedBy(new Kleene("View"), new Atom("Exit"));
 
-        /*Collection<IEvent> events = Generator.generateStuff();
+        Collection<IEvent> events = Generator.generateStuff();
 
-        RuleManager ruleManager = RuleManager.getInstance();
+        RuleManager ruleManager = new RuleManager();
         ruleManager.addRule(r2);
-        ruleManager.detect(events);*/
+        ruleManager.detect(events);
     }
 
     class DefaultTraversal extends RuleVisitor {
@@ -80,7 +81,7 @@ public class TestRules {
         new DefaultTraversal() {
             @Override
             public void visit(IRule rule) {
-                System.out.println(rule.getName());
+                System.out.println("*** VISITOR ::: " + rule.getName() + " ***");
             }
         }.startVisit(root);
     }

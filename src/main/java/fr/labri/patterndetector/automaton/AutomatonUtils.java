@@ -1,5 +1,8 @@
 package fr.labri.patterndetector.automaton;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -13,6 +16,7 @@ import java.util.stream.Collectors;
  * Automaton utility methods.
  */
 public final class AutomatonUtils {
+    private final static Logger logger = LoggerFactory.getLogger(AutomatonUtils.class);
 
     private AutomatonUtils() {
     }
@@ -48,11 +52,11 @@ public final class AutomatonUtils {
                         stateCopy.registerTransition(automatonCopy.getStateByLabel(target.getLabel()), t.getLabel(), t.getType(), t.getClockConstraint());
                     }
                 } catch (Exception e) {
-                    System.err.println("An error occured during the copy of the automaton (" + e.getMessage() + ")");
+                    logger.error("An error occured during the copy of the automaton (" + e.getMessage() + ")");
                 }
             });
         } catch (Exception e) {
-            System.err.println("An error occured during the copy of the automaton (" + e.getMessage() + ")");
+            logger.error("An error occured during the copy of the automaton (" + e.getMessage() + ")");
         }
 
         return stateCopy;
@@ -73,8 +77,7 @@ public final class AutomatonUtils {
             powersetAutomaton.setInitialState(initialState);
             startPowerset(initialStateSet, allStateSets, powersetAutomaton);
         } catch (Exception e) {
-            System.err.println("An error occured during Powerset (" + e.getMessage() + ")");
-            e.printStackTrace();
+            logger.error("An error occured during Powerset (" + e.getMessage() + ")");
         }
 
         return powersetAutomaton;
@@ -119,8 +122,7 @@ public final class AutomatonUtils {
                     try {
                         finalAutomaton.setFinalState(targetState);
                     } catch (Exception e) {
-                        System.err.println("An error occured during Powerset (" + e.getMessage() + ")");
-                        e.printStackTrace();
+                        logger.error("An error occured during Powerset (" + e.getMessage() + ")");
                     }
                 } else {
                     finalAutomaton.addState(targetState);

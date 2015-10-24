@@ -1,6 +1,8 @@
 package fr.labri.patterndetector.rules;
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by William Braik on 6/25/2015.
@@ -9,6 +11,7 @@ import fr.labri.patterndetector.automaton.IRuleAutomaton;
  */
 public abstract class AbstractRule implements IRule {
 
+    protected final Logger logger = LoggerFactory.getLogger(getClass()); // TODO getClass() = ? for subclasses
     protected String _name;
     protected String _symbol;
     protected TimeConstraint _timeConstraint;
@@ -58,8 +61,7 @@ public abstract class AbstractRule implements IRule {
                 // TODO createClockConstraints()
                 buildAutomaton();
             } catch (Exception e) {
-                System.err.println("An error occurred while building the automaton (" + e.getMessage() + ")");
-                e.printStackTrace();
+                logger.error("An error occurred while building the automaton (" + e.getMessage() + ")");
             }
         }
 
@@ -77,8 +79,7 @@ public abstract class AbstractRule implements IRule {
             try {
                 buildAutomaton();
             } catch (Exception e) {
-                System.err.println("An error occurred while building the automaton (" + e.getMessage() + ")");
-                e.printStackTrace();
+                logger.error("An error occurred while building the automaton (" + e.getMessage() + ")");
             }
         }
 

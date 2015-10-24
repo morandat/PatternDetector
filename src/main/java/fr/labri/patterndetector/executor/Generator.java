@@ -17,7 +17,7 @@ public final class Generator {
     }
 
     /**
-     * Initialize the generator. Must be called at the start of every generation method.
+     * Initialize the generator. Must be called in the beginning of every 'generateX' method.
      */
     private static void init() {
         _t = 0;

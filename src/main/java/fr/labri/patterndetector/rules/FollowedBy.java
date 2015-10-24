@@ -39,9 +39,6 @@ public class FollowedBy extends AbstractBinaryRule {
         IRuleAutomaton leftAutomaton = _leftChild.getAutomaton().copy();
         IRuleAutomaton rightAutomaton = _rightChild.getAutomaton().copy();
 
-        //System.err.println(left); // TODO for debug
-        //System.err.println(right); // TODO for debug
-
         IRuleAutomaton automaton = new RuleAutomaton(this);
 
         /* --- Left component --- */
@@ -92,7 +89,7 @@ public class FollowedBy extends AbstractBinaryRule {
 
         _automaton = automaton;
 
-        System.err.println(automaton); // TODO for debug
+        logger.debug(automaton.toString());
 
         // Create clock constraints.
         createClockConstraints(leftConnectionState, rightAutomaton);

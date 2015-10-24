@@ -1,36 +1,31 @@
 package fr.labri.patterndetector.executor;
 /**
  * Created by William Braik on 6/22/2015.
+ * <p>
+ * Keeps references to the active rules and dispatches events to the rule automata.
+ * TODO Triggers an action when a pattern is observed by an automaton.
  */
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.rules.IRule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public final class RuleManager {
+public final class RuleManager implements IPatternObserver {
 
-    private static RuleManager _instance = null; // Singleton
+    private final Logger logger = LoggerFactory.getLogger(RuleManager.class);
+    private int _ruleCounter; // Internal rule counter, used to build rule IDs
+    private Map<String, IRule> _rules; // Maps rule names to the rules themselves
+    private Map<String, IRuleAutomaton> _automata; // Maps rule names to rule automata
+    private Collection<IEvent> _lastPattern; // Last detected pattern
 
-    private int _ruleCounter = 0; // Internal rule counter, used to build rule IDs
-    private Map<String, IRule> _rules = new HashMap<>(); // Maps names to rules
-    private Map<String, IRuleAutomaton> _automata = new HashMap<>(); // Maps rule names to automata
-    private Collection<IEvent> _lastPattern = new ArrayList<>(); // Last detected pattern
-
-    private RuleManager() {
-    }
-
-    /**
-     * Get the singleton instance of RuleManager.
-     *
-     * @return The instance of RuleManager.
-     */
-    public static RuleManager getInstance() {
-        if (_instance == null) {
-            _instance = new RuleManager();
-        }
-
-        return _instance;
+    public RuleManager() {
+        _ruleCounter = 0;
+        _rules = new HashMap<>();
+        _automata = new HashMap<>();
+        _lastPattern = new ArrayList<>();
     }
 
     /**
@@ -57,10 +52,11 @@ public final class RuleManager {
 
         // If the rule is valid, add it to the rule set
         _rules.put(rule.getName(), rule);
+        powerset.registerPatternObserver(this);
         _automata.put(rule.getName(), powerset);
 
-        System.out.println("* Rule " + rule.getName() + " (" + rule + ") " + "added : " + rule);
-        System.out.println("Powerset : " + powerset);
+        logger.info("Rule " + rule.getName() + " added : " + rule);
+        logger.debug("Powerset : " + powerset);
     }
 
     /**
@@ -116,29 +112,16 @@ public final class RuleManager {
      * @param events The stream of events.
      */
     public void detect(Collection<IEvent> events) {
-        System.out.println("\n* Stream : " + events + "\n");
+        logger.info("Detecting patterns in stream : " + events);
 
-        // Each rule's automaton fires the events in the order of the stream
+        // Each rule automaton fires the events in the order of the stream
         events.stream().forEach(event -> _automata.values().forEach(automaton -> {
             try {
                 automaton.fire(event);
             } catch (Exception e) {
-                System.err.println(e.getMessage());
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         }));
-    }
-
-    /**
-     * A rule's automaton calls this method to notify the detection of a pattern to the RuleManager.
-     *
-     * @param pattern The pattern found.
-     * @param rule    The rule which found the pattern.
-     */
-    public void notifyPattern(Collection<IEvent> pattern, IRule rule) {
-        _lastPattern.clear();
-        _lastPattern.addAll(pattern);
-        System.out.println("*** PATTERN FOUND BY " + rule.getName() + " (" + rule + ")" + " : " + pattern + " ***");
     }
 
     /**
@@ -153,6 +136,16 @@ public final class RuleManager {
         } else if (automaton.getFinalState().getTransitions().size() > 0) {
             throw new Exception("Rule is ambiguous !");
         }
+    }
+
+    @Override
+    public void notifyPattern(IRuleAutomaton ruleAutomaton, Collection<IEvent> pattern) {
+        _lastPattern.clear();
+        _lastPattern.addAll(pattern);
+        IRule rule = ruleAutomaton.getRule();
+
+        logger.info("Pattern found by " + rule.getName() + " : " + rule);
+        logger.info("Pattern found : " + pattern);
     }
 
     @Override

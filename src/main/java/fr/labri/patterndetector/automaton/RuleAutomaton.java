@@ -1,8 +1,11 @@
 package fr.labri.patterndetector.automaton;
 
 import fr.labri.patterndetector.executor.IEvent;
+import fr.labri.patterndetector.executor.IPatternObserver;
 import fr.labri.patterndetector.executor.RuleManager;
 import fr.labri.patterndetector.rules.IRule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -16,6 +19,7 @@ import java.util.function.Predicate;
 
 public class RuleAutomaton implements IRuleAutomaton {
 
+    private final Logger logger = LoggerFactory.getLogger(RuleAutomaton.class);
     protected IRule _rule;
     protected IState _initialState;
     protected IState _finalState;
@@ -23,12 +27,14 @@ public class RuleAutomaton implements IRuleAutomaton {
     protected IState _currentState;
     protected ArrayList<IEvent> _matchBuffer;
     protected Map<String, Long> _clocks;
+    protected Collection<IPatternObserver> _observers; // Pattern observers to be notified when a pattern is detected.
 
     public RuleAutomaton(IRule rule) {
         _rule = rule;
         _states = new HashMap<>();
         _matchBuffer = new ArrayList<>();
         _clocks = new HashMap<>();
+        _observers = new ArrayList<>();
     }
 
     @Override
@@ -80,7 +86,7 @@ public class RuleAutomaton implements IRuleAutomaton {
     @Override
     public void setInitialState(IState s) throws Exception {
         if (_initialState != null) {
-            throw new Exception("An initial state has already been set !");
+            throw new Exception("An initial state has already been set");
         }
         s.setLabel(State.LABEL_INITIAL);
         s.setInitial(true);
@@ -100,7 +106,7 @@ public class RuleAutomaton implements IRuleAutomaton {
     @Override
     public void setFinalState(IState s) throws Exception {
         if (_finalState != null) {
-            throw new Exception("A final state has already been set !");
+            throw new Exception("A final state has already been set");
         }
         s.setLabel(State.LABEL_FINAL);
         s.setFinal(true);
@@ -122,7 +128,8 @@ public class RuleAutomaton implements IRuleAutomaton {
             if (t != null
                     && testClockGuard(e.getTimestamp(), t.getClockConstraint())
                     && testPredicates(e.getPayload(), t.getPredicates())) {
-                System.out.println("Transitioning : " + t + " (" + e + ")");
+
+                logger.info("Transitioning : " + t + " (" + e + ")");
 
                 // Action to perform on the transition
                 switch (t.getType()) {
@@ -138,18 +145,20 @@ public class RuleAutomaton implements IRuleAutomaton {
                 _currentState = t.getTarget();
 
                 if (_currentState.isFinal()) {
+                    logger.info("Final state reached");
+
                     // If the final state has been reached, post the found pattern and reset the automaton
                     patternFound(_matchBuffer);
                     reset();
-                    System.out.println("Final state reached");
                 }
             } else {
-                System.out.println("Can't transition ! (" + e + ")");
+                logger.info("Can't transition (" + e + ")");
+
                 reset();
             }
 
         } else {
-            throw new Exception("Initial state not set !");
+            throw new Exception("Initial state not set");
         }
     }
 
@@ -158,12 +167,18 @@ public class RuleAutomaton implements IRuleAutomaton {
         _currentState = _initialState;
         _matchBuffer.clear();
         _clocks.clear();
-        System.out.println("Automaton reset");
+
+        logger.info("Automaton reset");
+    }
+
+    @Override
+    public void registerPatternObserver(IPatternObserver observer) {
+        _observers.add(observer);
     }
 
     @Override
     public void patternFound(Collection<IEvent> pattern) {
-        RuleManager.getInstance().notifyPattern(pattern, _rule);
+        _observers.forEach(observer -> observer.notifyPattern(this, pattern)); // Notify observers
     }
 
     /**

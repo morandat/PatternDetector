@@ -51,9 +51,9 @@ public class Kleene extends AbstractUnaryRule {
         s.registerEpsilonTransition(baseInitialState);
         automaton.addState(s);
 
-        //System.err.println(automaton); // TODO for debug
-
         _automaton = automaton;
+
+        logger.debug(automaton.toString());
     }
 
     @Override

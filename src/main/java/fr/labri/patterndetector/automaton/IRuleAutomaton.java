@@ -1,6 +1,7 @@
 package fr.labri.patterndetector.automaton;
 
 import fr.labri.patterndetector.executor.IEvent;
+import fr.labri.patterndetector.executor.IPatternObserver;
 import fr.labri.patterndetector.rules.IRule;
 
 import java.util.Collection;
@@ -41,6 +42,20 @@ public interface IRuleAutomaton {
     void reset();
 
     /**
+     * Register a pattern observer.
+     *
+     * @param observer The pattern observer to register.
+     */
+    void registerPatternObserver(IPatternObserver observer);
+
+    /**
+     * Action performed when a pattern is found (i.e. when the final state is reached)
+     *
+     * @param pattern
+     */
+    void patternFound(Collection<IEvent> pattern);
+
+    /**
      * @return The corresponding powerset automaton of this automaton.
      */
     default IRuleAutomaton powerset() {
@@ -53,11 +68,4 @@ public interface IRuleAutomaton {
     default IRuleAutomaton copy() {
         return AutomatonUtils.copy(this);
     }
-
-    /**
-     * Action performed when a pattern is found (i.e. when the final state is reached)
-     *
-     * @param pattern
-     */
-    void patternFound(Collection<IEvent> pattern);
 }
