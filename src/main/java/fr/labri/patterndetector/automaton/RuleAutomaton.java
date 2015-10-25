@@ -1,8 +1,8 @@
 package fr.labri.patterndetector.automaton;
 
+import fr.labri.patterndetector.automaton.exception.AutomatonException;
 import fr.labri.patterndetector.executor.IEvent;
 import fr.labri.patterndetector.executor.IPatternObserver;
-import fr.labri.patterndetector.executor.RuleManager;
 import fr.labri.patterndetector.rules.IRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +25,7 @@ public class RuleAutomaton implements IRuleAutomaton {
     protected IState _finalState;
     protected Map<String, IState> _states;
     protected IState _currentState;
-    protected ArrayList<IEvent> _matchBuffer;
+    protected ArrayList<IEvent> _matchBuffer; // Events matching the current pattern
     protected Map<String, Long> _clocks;
     protected Collection<IPatternObserver> _observers; // Pattern observers to be notified when a pattern is detected.
 
@@ -77,16 +77,15 @@ public class RuleAutomaton implements IRuleAutomaton {
     @Override
     public Collection<ITransition> getTransitions() {
         Set<ITransition> transitions = new HashSet<>();
-
         _states.values().forEach(state -> transitions.addAll(state.getTransitions()));
 
         return transitions;
     }
 
     @Override
-    public void setInitialState(IState s) throws Exception {
+    public void setInitialState(IState s) throws AutomatonException {
         if (_initialState != null) {
-            throw new Exception("An initial state has already been set");
+            throw new AutomatonException(this, "Initial state already set");
         }
         s.setLabel(State.LABEL_INITIAL);
         s.setInitial(true);
@@ -104,9 +103,9 @@ public class RuleAutomaton implements IRuleAutomaton {
     }
 
     @Override
-    public void setFinalState(IState s) throws Exception {
+    public void setFinalState(IState s) throws AutomatonException {
         if (_finalState != null) {
-            throw new Exception("A final state has already been set");
+            throw new AutomatonException(this, "Final state already set");
         }
         s.setLabel(State.LABEL_FINAL);
         s.setFinal(true);
@@ -129,7 +128,7 @@ public class RuleAutomaton implements IRuleAutomaton {
                     && testClockGuard(e.getTimestamp(), t.getClockConstraint())
                     && testPredicates(e.getPayload(), t.getPredicates())) {
 
-                logger.info("Transitioning : " + t + " (" + e + ")");
+                logger.debug("Transitioning : " + t + " (" + e + ")");
 
                 // Action to perform on the transition
                 switch (t.getType()) {
@@ -145,14 +144,14 @@ public class RuleAutomaton implements IRuleAutomaton {
                 _currentState = t.getTarget();
 
                 if (_currentState.isFinal()) {
-                    logger.info("Final state reached");
+                    logger.debug("Final state reached");
 
                     // If the final state has been reached, post the found pattern and reset the automaton
-                    patternFound(_matchBuffer);
+                    patternDetected(_matchBuffer);
                     reset();
                 }
             } else {
-                logger.info("Can't transition (" + e + ")");
+                logger.debug("Can't transition (" + e + ")");
 
                 reset();
             }
@@ -168,7 +167,7 @@ public class RuleAutomaton implements IRuleAutomaton {
         _matchBuffer.clear();
         _clocks.clear();
 
-        logger.info("Automaton reset");
+        logger.debug("Automaton reset");
     }
 
     @Override
@@ -177,7 +176,7 @@ public class RuleAutomaton implements IRuleAutomaton {
     }
 
     @Override
-    public void patternFound(Collection<IEvent> pattern) {
+    public void patternDetected(Collection<IEvent> pattern) {
         _observers.forEach(observer -> observer.notifyPattern(this, pattern)); // Notify observers
     }
 

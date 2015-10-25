@@ -3,7 +3,6 @@ package fr.labri.patterndetector.executor;
 import fr.labri.patterndetector.rules.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Created by William Braik on 6/22/2015.
@@ -14,41 +13,28 @@ import java.util.Collection;
 public class TestRules {
 
     public static void main(String[] args) {
-        // 0) a
-        IRule r0 = new Atom("a")
-                .setPredicate("age", age -> age > 18)
-                .setPredicate("height", h -> h > 170);
+        IRule rule = new Atom("a");
+        //.setPredicate("age", age -> age > 18)
+        //.setPredicate("height", h -> h > 170);
 
-        // 1) !a
-        IRule r1 = new AtomNot("a");
+        /*IRule rule = new AtomNot("a");
 
-        // 2) b --> a
-        IRule r2 = new FollowedBy("a", "b");
-        //.setTimeConstraint(5);
+        IRule rule = new FollowedBy("a", "b");
 
-        // 2.1) a --> a
-        IRule r21 = new FollowedBy("a", "a");
+        IRule rule = new FollowedBy("a", "a");
 
-        // 7) a+
-        Kleene r7 = new Kleene("View"); // WARNING : this rule doesn't terminate (Kleene)
+        Kleene rule = new Kleene("View");
 
-        // 9) a+ --> b
-        IRule r9 = new FollowedBy(r7, "b");
+        IRule rule = new FollowedBy(new Kleene("View"), "Exit");
 
-        // 10) a --> b+
-        IRule r10 = new FollowedBy("a", new Kleene("b")); // WARNING : this rule doesn't terminate because the right component is a Kleene
+        IRule rule = new FollowedBy("Enter", new Kleene("View"));
 
-        // 12) a+ --> (b --> c)
-        IRule r12 = new FollowedBy(new Kleene("a"), new FollowedBy("b", "c"));
-        //.setTimeConstraint(5);
-
-        IRule r99 = new FollowedBy(new Kleene("View"), new Atom("Exit"));
-
-        Collection<IEvent> events = Generator.generateStuff();
+        IRule rule = new FollowedBy(new Kleene("View"), new FollowedBy("Add", "Exit"));*/
 
         RuleManager ruleManager = new RuleManager();
-        ruleManager.addRule(r2);
-        ruleManager.detect(events);
+        ruleManager.addRule(rule);
+        Detector detector = new Detector(ruleManager);
+        detector.detect(Generator.generateStuff());
     }
 
     class DefaultTraversal extends RuleVisitor {

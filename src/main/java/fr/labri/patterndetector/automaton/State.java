@@ -181,7 +181,7 @@ public class State implements IState {
     }
 
     @Override
-    public ITransition pickTransition(IEvent event) throws Exception {
+    public ITransition pickTransition(IEvent event) {
         List<ITransition> list = _transitions.get(event.getType());
         if (list == null) {
             list = _transitions.get(Transition.LABEL_STAR);
@@ -192,7 +192,7 @@ public class State implements IState {
         if (list == null) {
             t = null;
         } else if (list.size() > 1) {
-            throw new Exception("The automaton is not deterministic !");
+            throw new RuntimeException("The automaton is not deterministic");
         } else {
             t = list.get(0);
         }
@@ -207,7 +207,7 @@ public class State implements IState {
             return null;
         else {
             if (transitions.size() > 1) {
-                throw new Exception("The automaton is not deterministic !");
+                throw new Exception("The automaton is not deterministic");
             } else {
                 return _transitions.get(label).get(0);
             }

@@ -52,11 +52,11 @@ public final class AutomatonUtils {
                         stateCopy.registerTransition(automatonCopy.getStateByLabel(target.getLabel()), t.getLabel(), t.getType(), t.getClockConstraint());
                     }
                 } catch (Exception e) {
-                    logger.error("An error occured during the copy of the automaton (" + e.getMessage() + ")");
+                    logger.error("Automaton copy failed (" + e.getMessage() + ")");
                 }
             });
         } catch (Exception e) {
-            logger.error("An error occured during the copy of the automaton (" + e.getMessage() + ")");
+            logger.error("Automaton copy failed (" + e.getMessage() + ")");
         }
 
         return stateCopy;

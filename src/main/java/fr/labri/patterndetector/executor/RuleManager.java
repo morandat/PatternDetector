@@ -2,8 +2,7 @@ package fr.labri.patterndetector.executor;
 /**
  * Created by William Braik on 6/22/2015.
  * <p>
- * Keeps references to the active rules and dispatches events to the rule automata.
- * TODO Triggers an action when a pattern is observed by an automaton.
+ * Entity which maintains a rule set and dispatches events to rule automata.
  */
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
@@ -29,11 +28,12 @@ public final class RuleManager implements IPatternObserver {
     }
 
     /**
-     * Add a rule to the rule set (only if it is valid).
+     * Validate a rule and if it is valid, add it to the rule set.
      *
      * @param rule The rule to add.
+     * @return The rule's name.
      */
-    public void addRule(IRule rule) { // TODO throw InvalidRuleException
+    public String addRule(IRule rule) {
         if (rule.getAutomaton() == null) { // Could not obtain the rule's automaton, invalid rule
             throw new RuntimeException("Invalid rule : " + rule);
         }
@@ -44,11 +44,7 @@ public final class RuleManager implements IPatternObserver {
 
         IRuleAutomaton powerset = rule.getAutomaton().powerset();
 
-        try {
-            validateRuleAutomaton(powerset);
-        } catch (Exception e) { // FIXME remove catch block
-            throw new RuntimeException("Invalid rule " + rule.getName() + " (" + rule + ") : " + e.getMessage());
-        }
+        validateRuleAutomaton(powerset);
 
         // If the rule is valid, add it to the rule set
         _rules.put(rule.getName(), rule);
@@ -57,6 +53,8 @@ public final class RuleManager implements IPatternObserver {
 
         logger.info("Rule " + rule.getName() + " added : " + rule);
         logger.debug("Powerset : " + powerset);
+
+        return rule.getName();
     }
 
     /**
@@ -65,7 +63,7 @@ public final class RuleManager implements IPatternObserver {
      * @param ruleName The name of the rule to get.
      * @return The rule.
      */
-    public IRule getRuleByName(String ruleName) {
+    public IRule getRule(String ruleName) {
         return _rules.get(ruleName);
     }
 
@@ -75,7 +73,7 @@ public final class RuleManager implements IPatternObserver {
      * @param ruleName The name of the rule.
      * @return The rule's automaton.
      */
-    public IRuleAutomaton getRuleAutomatonByName(String ruleName) {
+    public IRuleAutomaton getRuleAutomaton(String ruleName) {
         return _automata.get(ruleName);
     }
 
@@ -107,34 +105,17 @@ public final class RuleManager implements IPatternObserver {
     }
 
     /**
-     * Detect patterns in a stream of events.
-     *
-     * @param events The stream of events.
-     */
-    public void detect(Collection<IEvent> events) {
-        logger.info("Detecting patterns in stream : " + events);
-
-        // Each rule automaton fires the events in the order of the stream
-        events.stream().forEach(event -> _automata.values().forEach(automaton -> {
-            try {
-                automaton.fire(event);
-            } catch (Exception e) {
-                logger.error(e.getMessage());
-            }
-        }));
-    }
-
-    /**
-     * Check the validity of a rule automaton.
+     * Check whether a rule automaton is valid for execution.
      *
      * @param automaton The automaton to validate.
-     * @throws Exception
      */
-    private void validateRuleAutomaton(IRuleAutomaton automaton) throws Exception { //TODO vraie exception
-        if (automaton.getFinalState() == null) {
-            throw new Exception("Rule doesn't terminate !");
+    private void validateRuleAutomaton(IRuleAutomaton automaton) {
+        if (automaton.getInitialState() == null) {
+            throw new RuntimeException("Invalid automaton (" + automaton.getRule() + ") : rule can't start");
+        } else if (automaton.getFinalState() == null) {
+            throw new RuntimeException("Invalid automaton (" + automaton.getRule() + ") : rule doesn't terminate");
         } else if (automaton.getFinalState().getTransitions().size() > 0) {
-            throw new Exception("Rule is ambiguous !");
+            throw new RuntimeException("Invalid automaton (" + automaton.getRule() + ") : rule is ambiguous");
         }
     }
 
@@ -146,6 +127,16 @@ public final class RuleManager implements IPatternObserver {
 
         logger.info("Pattern found by " + rule.getName() + " : " + rule);
         logger.info("Pattern found : " + pattern);
+    }
+
+    public void dispatchEvent(IEvent event) {
+        _automata.values().forEach(automaton -> {
+            try {
+                automaton.fire(event);
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
+        });
     }
 
     @Override

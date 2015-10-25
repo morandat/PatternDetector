@@ -1,7 +1,4 @@
-import fr.labri.patterndetector.executor.Event;
-import fr.labri.patterndetector.executor.Generator;
-import fr.labri.patterndetector.executor.IEvent;
-import fr.labri.patterndetector.executor.RuleManager;
+import fr.labri.patterndetector.executor.*;
 import fr.labri.patterndetector.rules.Atom;
 import fr.labri.patterndetector.rules.FollowedBy;
 import fr.labri.patterndetector.rules.IRule;
@@ -26,14 +23,17 @@ public class PatternDetectionTest {
 
     private final Logger logger = LoggerFactory.getLogger(RuleManager.class);
     private RuleManager _ruleManager;
+    private Detector _detector;
 
     @Rule
     public TestName _name = new TestName();
 
     @Before
-    public void initializeRuleManager() {
+    public void initializeContext() {
         logger.info("Executing test : " + _name.getMethodName());
         _ruleManager = new RuleManager();
+        _detector = new Detector(_ruleManager);
+
     }
 
     @Test
@@ -41,7 +41,7 @@ public class PatternDetectionTest {
         IRule r = new Atom("a");
 
         _ruleManager.addRule(r);
-        _ruleManager.detect(Generator.generateStuff());
+        _detector.detect(Generator.generateStuff());
 
         Collection<IEvent> expected = new ArrayList<>();
         expected.add(new Event("a", 1));
@@ -60,7 +60,7 @@ public class PatternDetectionTest {
         IRule r = new FollowedBy("a", "b");
 
         _ruleManager.addRule(r);
-        _ruleManager.detect(Generator.generateStuff());
+        _detector.detect(Generator.generateStuff());
 
         Collection<IEvent> expected = new ArrayList<>();
         expected.add(new Event("a", 1));

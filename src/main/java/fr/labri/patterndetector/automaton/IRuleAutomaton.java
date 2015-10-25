@@ -1,5 +1,6 @@
 package fr.labri.patterndetector.automaton;
 
+import fr.labri.patterndetector.automaton.exception.AutomatonException;
 import fr.labri.patterndetector.executor.IEvent;
 import fr.labri.patterndetector.executor.IPatternObserver;
 import fr.labri.patterndetector.rules.IRule;
@@ -31,11 +32,11 @@ public interface IRuleAutomaton {
 
     Collection<ITransition> getTransitions();
 
-    void setInitialState(IState s) throws Exception;  //TODO AutomatonException;
+    void setInitialState(IState s) throws AutomatonException;
 
     void addState(IState s);
 
-    void setFinalState(IState s) throws Exception; //TODO AutomatonException;
+    void setFinalState(IState s) throws AutomatonException;
 
     void fire(IEvent e) throws Exception; //TODO AutomatonException
 
@@ -51,9 +52,9 @@ public interface IRuleAutomaton {
     /**
      * Action performed when a pattern is found (i.e. when the final state is reached)
      *
-     * @param pattern
+     * @param pattern The detected pattern.
      */
-    void patternFound(Collection<IEvent> pattern);
+    void patternDetected(Collection<IEvent> pattern);
 
     /**
      * @return The corresponding powerset automaton of this automaton.

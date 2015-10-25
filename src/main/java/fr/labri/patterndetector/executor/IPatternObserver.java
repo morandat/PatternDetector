@@ -5,7 +5,7 @@ import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import java.util.Collection;
 
 /**
- * Created by Ma on 10/25/2015.
+ * Created by wbraik on 10/25/2015.
  * <p>
  * Base interface for pattern observers.
  */
