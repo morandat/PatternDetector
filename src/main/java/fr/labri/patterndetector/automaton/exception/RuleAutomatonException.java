@@ -8,11 +8,11 @@ import fr.labri.patterndetector.rules.IRule;
  * <p>
  * Automaton exception.
  */
-public class AutomatonException extends Exception {
+public class RuleAutomatonException extends Exception {
 
     private IRuleAutomaton _ruleAutomaton;
 
-    public AutomatonException(IRuleAutomaton ruleAutomaton, String message) {
+    public RuleAutomatonException(IRuleAutomaton ruleAutomaton, String message) {
         super(message);
         _ruleAutomaton = ruleAutomaton;
     }

@@ -1,6 +1,7 @@
 package fr.labri.patterndetector.rules;
 
 import fr.labri.patterndetector.automaton.*;
+import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
 
 /**
  * Created by William Braik on 6/25/2015.
@@ -35,7 +36,7 @@ public class FollowedBy extends AbstractBinaryRule {
     }
 
     @Override
-    public void buildAutomaton() throws Exception {
+    public void buildAutomaton() throws RuleAutomatonException {
         IRuleAutomaton leftAutomaton = _leftChild.getAutomaton().copy();
         IRuleAutomaton rightAutomaton = _rightChild.getAutomaton().copy();
 
@@ -47,14 +48,14 @@ public class FollowedBy extends AbstractBinaryRule {
         automaton.setInitialState(leftAutomaton.getInitialState());
 
         // The connection state of the left component becomes a state of the FollowedBy automaton.
-        IState leftConnectionState = leftAutomaton.getStateByLabel(_leftChild.getConnectionStateLabel());
+        IState leftConnectionState = leftAutomaton.getState(_leftChild.getConnectionStateLabel());
         // If the connection state is a final state, register it as a basic state
         if (State.LABEL_FINAL.equals(leftConnectionState.getLabel())) {
             automaton.addState(leftConnectionState);
         }
 
         // The rest of the left component's states become states of the FollowedBy automaton.
-        leftAutomaton.getStates().values().forEach(automaton::addState);
+        leftAutomaton.getStates().forEach(automaton::addState);
 
         /* --- Right component --- */
 
@@ -63,12 +64,12 @@ public class FollowedBy extends AbstractBinaryRule {
         automaton.addState(rightInitialState);
 
         // The final state of the FollowedBy automaton is the connection state of the right component's automaton.
-        IState rightConnectionState = rightAutomaton.getStateByLabel(_rightChild.getConnectionStateLabel());
+        IState rightConnectionState = rightAutomaton.getState(_rightChild.getConnectionStateLabel());
         automaton.setFinalState(rightConnectionState);
         _connectionStateLabel = rightConnectionState.getLabel();
 
         // The rest of the right component's states become states of the FollowedBy automaton.
-        rightAutomaton.getStates().values().forEach(automaton::addState);
+        rightAutomaton.getStates().forEach(automaton::addState);
 
         /* --- Add extra stuff to obtain the final FollowedBy automaton. --- */
 
@@ -88,8 +89,6 @@ public class FollowedBy extends AbstractBinaryRule {
         s.registerEpsilonTransition(rightInitialState);
 
         _automaton = automaton;
-
-        logger.debug(automaton.toString());
 
         // Create clock constraints.
         createClockConstraints(leftConnectionState, rightAutomaton);

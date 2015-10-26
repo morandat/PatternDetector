@@ -1,5 +1,6 @@
 package fr.labri.patterndetector.automaton;
 
+import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +22,12 @@ public final class AutomatonUtils {
     private AutomatonUtils() {
     }
 
+    /**
+     * Performs a copy of a rule automaton.
+     *
+     * @param automaton The rule automaton to copy.
+     * @return A copy of the rule automaton.
+     */
     public static IRuleAutomaton copy(IRuleAutomaton automaton) {
         IRuleAutomaton automatonCopy = new RuleAutomaton(automaton.getRule());
         startCopy(automaton.getInitialState(), automatonCopy);
@@ -28,10 +35,15 @@ public final class AutomatonUtils {
         return automatonCopy;
     }
 
+    /**
+     * Recursive function called by the copy() method to perform the automaton copy.
+     *
+     * @param currentState  The current state to copy.
+     * @param automatonCopy The automaton copy.
+     * @return A copy of the current state.
+     */
     private static IState startCopy(IState currentState, IRuleAutomaton automatonCopy) {
         IState stateCopy = new State();
-        stateCopy.setFinal(currentState.isFinal());
-        stateCopy.setInitial(currentState.isInitial());
 
         try {
             if (stateCopy.isInitial()) {
@@ -44,26 +56,31 @@ public final class AutomatonUtils {
 
             currentState.getTransitions().forEach(t -> {
                 IState target = t.getTarget();
-                try {
-                    if (automatonCopy.getStateByLabel(target.getLabel()) == null) {
-                        target = startCopy(target, automatonCopy);
-                        stateCopy.registerTransition(target, t.getLabel(), t.getType(), t.getClockConstraint());
-                    } else {
-                        stateCopy.registerTransition(automatonCopy.getStateByLabel(target.getLabel()), t.getLabel(), t.getType(), t.getClockConstraint());
-                    }
-                } catch (Exception e) {
-                    logger.error("Automaton copy failed (" + e.getMessage() + ")");
+
+                if (automatonCopy.getState(target.getLabel()) == null) {
+                    target = startCopy(target, automatonCopy);
+                    stateCopy.registerTransition(target, t.getLabel(), t.getType(), t.getClockConstraint());
+                } else {
+                    stateCopy.registerTransition(automatonCopy.getState(target.getLabel()), t.getLabel(), t.getType(),
+                            t.getClockConstraint());
                 }
             });
-        } catch (Exception e) {
-            logger.error("Automaton copy failed (" + e.getMessage() + ")");
+        } catch (RuleAutomatonException e) {
+            logger.error("Automaton copy failed : " + e.getRule() + " (" + e.getMessage() + ")\n"
+                    + e.getRuleAutomaton());
+
+            throw new RuntimeException("Automaton copy failed : " + e.getRule() + " (" + e.getMessage() + ")\n"
+                    + e.getRuleAutomaton());
         }
 
         return stateCopy;
     }
 
     /**
-     * Powerset construction algorithm : transform a NFA into a DFA.
+     * The Powerset construction algorithm. Transforms a NFA into a DFA.
+     *
+     * @param automaton The NFA to transform.
+     * @return The corresponding DFA.
      */
     public static IRuleAutomaton powerset(IRuleAutomaton automaton) {
         IRuleAutomaton powersetAutomaton = new RuleAutomaton(automaton.getRule());
@@ -76,14 +93,25 @@ public final class AutomatonUtils {
         try {
             powersetAutomaton.setInitialState(initialState);
             startPowerset(initialStateSet, allStateSets, powersetAutomaton);
-        } catch (Exception e) {
-            logger.error("An error occured during Powerset (" + e.getMessage() + ")");
+        } catch (RuleAutomatonException e) {
+            logger.error("Powerset failed : " + e.getRule() + " (" + e.getMessage() + ")\n" + e.getRuleAutomaton());
+
+            throw new RuntimeException("Powerset failed : " + e.getRule() + " (" + e.getMessage() + ")\n"
+                    + e.getRuleAutomaton());
         }
 
         return powersetAutomaton;
     }
 
-    private static void startPowerset(Set<IState> currentStateSet, Map<Set<String>, IState> allStateSets, IRuleAutomaton finalAutomaton) {
+    /**
+     * Recursive function called by the powerset() method to perform the Powerset.
+     *
+     * @param currentStateSet The current state set.
+     * @param allStateSets    All state sets.
+     * @param finalAutomaton  The final DFA.
+     */
+    private static void startPowerset(Set<IState> currentStateSet, Map<Set<String>, IState> allStateSets,
+                                      IRuleAutomaton finalAutomaton) {
         Map<String, Set<IState>> targetStateSets = new HashMap<>();
         Map<String, TransitionType> transitionTypes = new HashMap<>();
         Map<String, ClockGuard> clockGuards = new HashMap<>();
@@ -112,7 +140,8 @@ public final class AutomatonUtils {
         });
 
         targetStateSets.forEach((label, targetStateSet) -> {
-            IState targetState = allStateSets.get(targetStateSet.stream().map(IState::getLabel).collect(Collectors.toSet()));
+            IState targetState = allStateSets.get(targetStateSet.stream().map(IState::getLabel).collect(
+                    Collectors.toSet()));
 
             if (targetState == null) {
                 // New state set detected, must create new target state
@@ -121,8 +150,12 @@ public final class AutomatonUtils {
                 if (isFinalStateSet(targetStateSet)) {
                     try {
                         finalAutomaton.setFinalState(targetState);
-                    } catch (Exception e) {
-                        logger.error("An error occured during Powerset (" + e.getMessage() + ")");
+                    } catch (RuleAutomatonException e) {
+                        logger.error("Powerset failed : " + e.getRule() + " (" + e.getMessage() + ")\n"
+                                + e.getRuleAutomaton());
+
+                        throw new RuntimeException("Powerset failed : " + e.getRule() + " (" + e.getMessage() + ")\n"
+                                + e.getRuleAutomaton());
                     }
                 } else {
                     finalAutomaton.addState(targetState);
@@ -133,15 +166,20 @@ public final class AutomatonUtils {
                 startPowerset(targetStateSet, allStateSets, finalAutomaton);
             }
 
-            IState currentState = allStateSets.get(currentStateSet.stream().map(IState::getLabel).collect(Collectors.toSet()));
-            currentState.registerTransition(targetState, label, transitionTypes.get(label), clockGuards.get(label), predicates.get(label));
+            IState currentState = allStateSets.get(currentStateSet.stream().map(IState::getLabel).collect(
+                    Collectors.toSet()));
+            currentState.registerTransition(targetState, label, transitionTypes.get(label), clockGuards.get(label),
+                    predicates.get(label));
         });
     }
 
     /**
-     * Extend the state set by running the epsilon transitions from each state of the set.
-     * Used by the powerset construction algorithm.
-     **/
+     * Used by Powerset to extend a state set by absorbing the target states of all outgoing epsilon transitions.
+     *
+     * @param stateSet      The state set to extend.
+     * @param checkedStates The states that have already been absorbed into the state set.
+     * @return The extended state set.
+     */
     private static Set<IState> extendStateSet(Set<IState> stateSet, Set<String> checkedStates) {
         Set<IState> extendedStateSet = new HashSet<>();
         extendedStateSet.addAll(stateSet);
@@ -160,8 +198,8 @@ public final class AutomatonUtils {
             }
         }
 
-        /* If new states have been added to the state set, we need to check those for epsilon transitions, so keep the
-        extension going. If no epsilon transitions were found in any state, we can stop the extension. */
+        /* If new states have been added to the state set, we need to check those new states for epsilon transitions,
+        and keep extending the state set if needed. If no new epsilon transitions are found, we can stop extending. */
         if (statesAdded) {
             extendedStateSet = extendStateSet(extendedStateSet, checkedStates);
         }
@@ -170,8 +208,11 @@ public final class AutomatonUtils {
     }
 
     /**
-     * Check if the state set contains at least one accepting state
-     **/
+     * Check whether the state set contains at least one final state.
+     *
+     * @param stateSet The state set to check for final states.
+     * @return True if the state set contains a final state, False otherwise.
+     */
     private static boolean isFinalStateSet(Set<IState> stateSet) {
         boolean isFinal = false;
 

@@ -1,6 +1,7 @@
 package fr.labri.patterndetector.rules;
 
 import fr.labri.patterndetector.automaton.*;
+import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +43,7 @@ public class Atom extends AbstractRule implements IAtom {
     }
 
     @Override
-    public void buildAutomaton() throws Exception {
+    public void buildAutomaton() throws RuleAutomatonException {
         IState i = new State(); // Initial state
         IState f = new State(); // Final state
 

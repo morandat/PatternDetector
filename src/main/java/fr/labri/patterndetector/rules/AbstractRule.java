@@ -1,17 +1,19 @@
 package fr.labri.patterndetector.rules;
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
+import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Created by William Braik on 6/25/2015.
  * <p>
- * Operator which binds atoms or sub-patterns together to form patterns.
+ * Operator which  together to form patterns.
  */
 public abstract class AbstractRule implements IRule {
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass()); // TODO getClass() = ? for subclasses
+    // Concrete subclasses will log with their own class names
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected String _name;
     protected String _symbol;
     protected TimeConstraint _timeConstraint;
@@ -56,13 +58,13 @@ public abstract class AbstractRule implements IRule {
 
         // If the rule already has an automaton, it needs to be reconstructed to apply clock constraints
         // TODO actually we don't need to reconstruct the automaton, just to call createClockConstraints() so make it an abstract method
-        if (_automaton != null) {
-            try {
-                // TODO createClockConstraints()
-                buildAutomaton();
-            } catch (Exception e) {
-                logger.error("An error occurred while building the automaton (" + e.getMessage() + ")");
-            }
+        try {
+            buildAutomaton(); // TODO createClockConstraints()
+        } catch (RuleAutomatonException e) {
+            logger.error("Could not create clock constraints : " + this.toString() + " (" + e.getMessage() + ")");
+
+            throw new RuntimeException("Could not create clock constraints : " + this.toString() + " (" + e.getMessage()
+                    + ")");
         }
 
         return this;
@@ -74,18 +76,16 @@ public abstract class AbstractRule implements IRule {
     }
 
     @Override
-    public final IRuleAutomaton getAutomaton() {
+    public final IRuleAutomaton getAutomaton() throws RuleAutomatonException {
         if (_automaton == null) {
-            try {
-                buildAutomaton();
-            } catch (Exception e) {
-                logger.error("An error occurred while building the automaton (" + e.getMessage() + ")");
-            }
+            buildAutomaton();
+
+            logger.debug(_automaton.toString());
         }
 
         return _automaton;
     }
 
-    // TODO put this method in an AutomatonFactory class ?
-    public abstract void buildAutomaton() throws Exception; // TODO RuleException
+    // TODO this method will disappear. Automaton construction code will be put in the Compiler visitor.
+    protected abstract void buildAutomaton() throws RuleAutomatonException;
 }

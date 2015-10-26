@@ -1,6 +1,6 @@
 package fr.labri.patterndetector.automaton;
 
-import fr.labri.patterndetector.automaton.exception.AutomatonException;
+import fr.labri.patterndetector.automaton.exception.*;
 import fr.labri.patterndetector.executor.IEvent;
 import fr.labri.patterndetector.executor.IPatternObserver;
 import fr.labri.patterndetector.rules.IRule;
@@ -53,20 +53,32 @@ public class RuleAutomaton implements IRuleAutomaton {
     }
 
     @Override
-    public IState getStateByLabel(String label) {
+    public IState getState(String label) {
         if (State.LABEL_INITIAL.equals(label)) return _initialState;
         else if (State.LABEL_FINAL.equals(label)) return _finalState;
         else return _states.get(label);
     }
 
     @Override
-    public Map<String, IState> getStates() {
-        return _states;
+    public Set<IState> getStates() {
+        Set<IState> states = new HashSet<>();
+        _states.values().forEach(states::add);
+
+        return states;
     }
 
     @Override
     public IState getFinalState() {
         return _finalState;
+    }
+
+    @Override
+    public Set<IState> getAllStates() {
+        Set<IState> states = getStates();
+        states.add(_initialState);
+        states.add(_finalState);
+
+        return states;
     }
 
     @Override
@@ -83,9 +95,9 @@ public class RuleAutomaton implements IRuleAutomaton {
     }
 
     @Override
-    public void setInitialState(IState s) throws AutomatonException {
+    public void setInitialState(IState s) throws RuleAutomatonException {
         if (_initialState != null) {
-            throw new AutomatonException(this, "Initial state already set");
+            throw new RuleAutomatonException(this, "Initial state already set");
         }
         s.setLabel(State.LABEL_INITIAL);
         s.setInitial(true);
@@ -103,9 +115,9 @@ public class RuleAutomaton implements IRuleAutomaton {
     }
 
     @Override
-    public void setFinalState(IState s) throws AutomatonException {
+    public void setFinalState(IState s) throws RuleAutomatonException {
         if (_finalState != null) {
-            throw new AutomatonException(this, "Final state already set");
+            throw new RuleAutomatonException(this, "Final state already set");
         }
         s.setLabel(State.LABEL_FINAL);
         s.setFinal(true);
@@ -114,50 +126,45 @@ public class RuleAutomaton implements IRuleAutomaton {
     }
 
     @Override
-    public void fire(IEvent e) throws Exception {
-        if (_initialState != null) {
-            // Initialize current state if needed
-            if (_currentState == null) {
-                _currentState = _initialState;
+    public void fire(IEvent e) {
+        // Initialize current state if needed
+        if (_currentState == null) {
+            _currentState = _initialState;
+        }
+
+        ITransition t = _currentState.pickTransition(e);
+
+        // If there is a transition, check its clock guards if any
+        if (t != null
+                && testClockGuard(e.getTimestamp(), t.getClockConstraint())
+                && testPredicates(e.getPayload(), t.getPredicates())) {
+
+            logger.debug("Transitioning : " + t + " (" + e + ")");
+
+            // Action to perform on the transition
+            switch (t.getType()) {
+                case TRANSITION_APPEND:
+                    _matchBuffer.add(e);
+                    // Update event clock
+                    _clocks.put(e.getType(), e.getTimestamp());
+                    break;
+                case TRANSITION_DROP:
             }
 
-            ITransition t = _currentState.pickTransition(e);
+            // Update current state
+            _currentState = t.getTarget();
 
-            // If there is a transition, check its clock guards if any
-            if (t != null
-                    && testClockGuard(e.getTimestamp(), t.getClockConstraint())
-                    && testPredicates(e.getPayload(), t.getPredicates())) {
+            if (_currentState.isFinal()) {
+                logger.debug("Final state reached");
 
-                logger.debug("Transitioning : " + t + " (" + e + ")");
-
-                // Action to perform on the transition
-                switch (t.getType()) {
-                    case TRANSITION_APPEND:
-                        _matchBuffer.add(e);
-                        // Update event clock
-                        _clocks.put(e.getType(), e.getTimestamp());
-                        break;
-                    case TRANSITION_DROP:
-                }
-
-                // Update current state
-                _currentState = t.getTarget();
-
-                if (_currentState.isFinal()) {
-                    logger.debug("Final state reached");
-
-                    // If the final state has been reached, post the found pattern and reset the automaton
-                    patternDetected(_matchBuffer);
-                    reset();
-                }
-            } else {
-                logger.debug("Can't transition (" + e + ")");
-
+                // If the final state has been reached, post the found pattern and reset the automaton
+                patternDetected(_matchBuffer);
                 reset();
             }
-
         } else {
-            throw new Exception("Initial state not set");
+            logger.debug("Can't transition (" + e + ")");
+
+            reset();
         }
     }
 
@@ -227,6 +234,25 @@ public class RuleAutomaton implements IRuleAutomaton {
         }
 
         return true;
+    }
+
+    @Override
+    public void validate() throws NoInitialStateException, NoFinalStateException, UnreachableStatesException, NonDeterministicException {
+        if (_initialState == null)
+            throw new NoInitialStateException(this);
+
+        if (_finalState == null)
+            throw new NoFinalStateException(this);
+
+        if (_finalState.getTransitions().size() > 0)
+            throw new UnreachableStatesException(this);
+
+        // Check that all states have exactly one transition for each different label
+        for (IState state : getAllStates()) {
+            long numDistinctTransitionLabels = state.getTransitions().stream().map(ITransition::getLabel).distinct().count();
+            if (numDistinctTransitionLabels != state.getTransitions().size())
+                throw new NonDeterministicException(this);
+        }
     }
 
     @Override

@@ -21,7 +21,7 @@ import java.util.Collection;
  */
 public class PatternDetectionTest {
 
-    private final Logger logger = LoggerFactory.getLogger(RuleManager.class);
+    private final Logger logger = LoggerFactory.getLogger(PatternDetectionTest.class);
     private RuleManager _ruleManager;
     private Detector _detector;
 
@@ -74,5 +74,10 @@ public class PatternDetectionTest {
         Collection<IEvent> actual = _ruleManager.getLastPattern();
 
         Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testKleene() {
+
     }
 }

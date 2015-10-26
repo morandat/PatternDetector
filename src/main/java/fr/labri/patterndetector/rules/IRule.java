@@ -1,6 +1,7 @@
 package fr.labri.patterndetector.rules;
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
+import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
 
 /**
  * Created by William Braik on 6/25/2015.
@@ -28,7 +29,7 @@ public interface IRule {
      *
      * @return The rule's automaton.
      */
-    IRuleAutomaton getAutomaton();
+    IRuleAutomaton getAutomaton() throws RuleAutomatonException;
 
     /**
      * Get the time constraint specified for the rule.

@@ -1,6 +1,7 @@
 package fr.labri.patterndetector.rules;
 
 import fr.labri.patterndetector.automaton.*;
+import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
 
 /**
  * Created by william.braik on 10/07/2015.
@@ -25,7 +26,7 @@ public class Kleene extends AbstractUnaryRule {
                 (e.startsWith("!") ? new AtomNot(e.substring(1)) : new Atom(e)));
     }
 
-    public void buildAutomaton() throws Exception {
+    public void buildAutomaton() throws RuleAutomatonException {
         IRuleAutomaton baseAutomaton = _childRule.getAutomaton().copy();
 
         IRuleAutomaton automaton = new RuleAutomaton(this);
@@ -40,7 +41,7 @@ public class Kleene extends AbstractUnaryRule {
         _connectionStateLabel = baseFinalState.getLabel();
 
         // The rest of the base component's states become states of the Kleene automaton.
-        baseAutomaton.getStates().values().forEach(automaton::addState);
+        baseAutomaton.getStates().forEach(automaton::addState);
 
         /* --- Add extra stuff to obtain the final Kleene automaton --- */
 
@@ -52,8 +53,6 @@ public class Kleene extends AbstractUnaryRule {
         automaton.addState(s);
 
         _automaton = automaton;
-
-        logger.debug(automaton.toString());
     }
 
     @Override
