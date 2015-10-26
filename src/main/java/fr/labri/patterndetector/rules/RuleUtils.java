@@ -20,9 +20,9 @@ public final class RuleUtils {
         if (rule instanceof IAtom) {
             return (IAtom) rule;
         } else if (rule instanceof AbstractUnaryRule) {
-            return getRightmostAtom(((AbstractUnaryRule) rule).getRule());
+            return getRightmostAtom(((AbstractUnaryRule) rule).getChildRule());
         } else { // binary rule
-            return getRightmostAtom(((AbstractBinaryRule) rule).getRightRule());
+            return getRightmostAtom(((AbstractBinaryRule) rule).getRightChildRule());
         }
     }
 
@@ -36,9 +36,9 @@ public final class RuleUtils {
         if (rule instanceof IAtom) {
             return (IAtom) rule;
         } else if (rule instanceof AbstractUnaryRule) {
-            return getRightmostAtom(((AbstractUnaryRule) rule).getRule());
+            return getRightmostAtom(((AbstractUnaryRule) rule).getChildRule());
         } else { // binary rule
-            return getRightmostAtom(((AbstractBinaryRule) rule).getLeftRule());
+            return getRightmostAtom(((AbstractBinaryRule) rule).getLeftChildRule());
         }
     }
 }

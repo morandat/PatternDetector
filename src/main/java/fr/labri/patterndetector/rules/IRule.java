@@ -68,4 +68,6 @@ public interface IRule {
      * @return The rule itself.
      */
     IRule setTimeConstraint(int value);
+
+    void accept(RuleVisitor visitor);
 }

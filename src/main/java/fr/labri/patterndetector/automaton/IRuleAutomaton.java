@@ -1,11 +1,12 @@
 package fr.labri.patterndetector.automaton;
 
-import fr.labri.patterndetector.IEvent;
+import fr.labri.patterndetector.automaton.exception.AutomatonException;
+import fr.labri.patterndetector.executor.IEvent;
+import fr.labri.patterndetector.executor.IPatternObserver;
 import fr.labri.patterndetector.rules.IRule;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by William Braik on 6/28/2015.
@@ -31,20 +32,41 @@ public interface IRuleAutomaton {
 
     Collection<ITransition> getTransitions();
 
-    void registerInitialState(IState s) throws Exception;  //TODO AutomatonException;
+    void setInitialState(IState s) throws AutomatonException;
 
-    void registerState(IState s);
+    void addState(IState s);
 
-    void registerFinalState(IState s) throws Exception; //TODO AutomatonException;
+    void setFinalState(IState s) throws AutomatonException;
 
     void fire(IEvent e) throws Exception; //TODO AutomatonException
 
     void reset();
 
     /**
+     * Register a pattern observer.
+     *
+     * @param observer The pattern observer to register.
+     */
+    void registerPatternObserver(IPatternObserver observer);
+
+    /**
      * Action performed when a pattern is found (i.e. when the final state is reached)
      *
-     * @param pattern
+     * @param pattern The detected pattern.
      */
-    void patternFound(Collection<IEvent> pattern);
+    void patternDetected(Collection<IEvent> pattern);
+
+    /**
+     * @return The corresponding powerset automaton of this automaton.
+     */
+    default IRuleAutomaton powerset() {
+        return AutomatonUtils.powerset(this);
+    }
+
+    /**
+     * @return A copy of this automaton.
+     */
+    default IRuleAutomaton copy() {
+        return AutomatonUtils.copy(this);
+    }
 }

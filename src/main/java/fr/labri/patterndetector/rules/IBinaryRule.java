@@ -5,9 +5,9 @@ package fr.labri.patterndetector.rules;
  * <p>
  * Base interface for binary rules.
  */
-public interface IBinaryRule extends IRule {
+public interface IBinaryRule extends ICompositeRule {
 
-    IRule getLeftRule();
+    IRule getLeftChildRule();
 
-    IRule getRightRule();
+    IRule getRightChildRule();
 }

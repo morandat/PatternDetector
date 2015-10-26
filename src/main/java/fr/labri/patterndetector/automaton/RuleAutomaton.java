@@ -1,8 +1,11 @@
 package fr.labri.patterndetector.automaton;
 
-import fr.labri.patterndetector.IEvent;
-import fr.labri.patterndetector.RuleManager;
+import fr.labri.patterndetector.automaton.exception.AutomatonException;
+import fr.labri.patterndetector.executor.IEvent;
+import fr.labri.patterndetector.executor.IPatternObserver;
 import fr.labri.patterndetector.rules.IRule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -16,19 +19,22 @@ import java.util.function.Predicate;
 
 public class RuleAutomaton implements IRuleAutomaton {
 
+    private final Logger logger = LoggerFactory.getLogger(RuleAutomaton.class);
     protected IRule _rule;
     protected IState _initialState;
     protected IState _finalState;
     protected Map<String, IState> _states;
     protected IState _currentState;
-    protected ArrayList<IEvent> _matchBuffer;
+    protected ArrayList<IEvent> _matchBuffer; // Events matching the current pattern
     protected Map<String, Long> _clocks;
+    protected Collection<IPatternObserver> _observers; // Pattern observers to be notified when a pattern is detected.
 
     public RuleAutomaton(IRule rule) {
         _rule = rule;
         _states = new HashMap<>();
         _matchBuffer = new ArrayList<>();
         _clocks = new HashMap<>();
+        _observers = new ArrayList<>();
     }
 
     @Override
@@ -71,16 +77,15 @@ public class RuleAutomaton implements IRuleAutomaton {
     @Override
     public Collection<ITransition> getTransitions() {
         Set<ITransition> transitions = new HashSet<>();
-
         _states.values().forEach(state -> transitions.addAll(state.getTransitions()));
 
         return transitions;
     }
 
     @Override
-    public void registerInitialState(IState s) throws Exception {
+    public void setInitialState(IState s) throws AutomatonException {
         if (_initialState != null) {
-            throw new Exception("An initial state has already been set !");
+            throw new AutomatonException(this, "Initial state already set");
         }
         s.setLabel(State.LABEL_INITIAL);
         s.setInitial(true);
@@ -89,7 +94,7 @@ public class RuleAutomaton implements IRuleAutomaton {
     }
 
     @Override
-    public void registerState(IState s) {
+    public void addState(IState s) {
         s.setLabel(Integer.toString(_states.size()));
         s.setInitial(false);
         s.setFinal(false);
@@ -98,9 +103,9 @@ public class RuleAutomaton implements IRuleAutomaton {
     }
 
     @Override
-    public void registerFinalState(IState s) throws Exception {
+    public void setFinalState(IState s) throws AutomatonException {
         if (_finalState != null) {
-            throw new Exception("A final state has already been set !");
+            throw new AutomatonException(this, "Final state already set");
         }
         s.setLabel(State.LABEL_FINAL);
         s.setFinal(true);
@@ -122,7 +127,8 @@ public class RuleAutomaton implements IRuleAutomaton {
             if (t != null
                     && testClockGuard(e.getTimestamp(), t.getClockConstraint())
                     && testPredicates(e.getPayload(), t.getPredicates())) {
-                System.out.println("Transitioning : " + t + " (" + e + ")");
+
+                logger.debug("Transitioning : " + t + " (" + e + ")");
 
                 // Action to perform on the transition
                 switch (t.getType()) {
@@ -138,18 +144,20 @@ public class RuleAutomaton implements IRuleAutomaton {
                 _currentState = t.getTarget();
 
                 if (_currentState.isFinal()) {
+                    logger.debug("Final state reached");
+
                     // If the final state has been reached, post the found pattern and reset the automaton
-                    patternFound(_matchBuffer);
+                    patternDetected(_matchBuffer);
                     reset();
-                    System.out.println("Final state reached");
                 }
             } else {
-                System.out.println("Can't transition ! (" + e + ")");
+                logger.debug("Can't transition (" + e + ")");
+
                 reset();
             }
 
         } else {
-            throw new Exception("Initial state not set !");
+            throw new Exception("Initial state not set");
         }
     }
 
@@ -158,12 +166,18 @@ public class RuleAutomaton implements IRuleAutomaton {
         _currentState = _initialState;
         _matchBuffer.clear();
         _clocks.clear();
-        System.out.println("Automaton reset");
+
+        logger.debug("Automaton reset");
     }
 
     @Override
-    public void patternFound(Collection<IEvent> pattern) {
-        RuleManager.getInstance().notifyPattern(pattern, _rule);
+    public void registerPatternObserver(IPatternObserver observer) {
+        _observers.add(observer);
+    }
+
+    @Override
+    public void patternDetected(Collection<IEvent> pattern) {
+        _observers.forEach(observer -> observer.notifyPattern(this, pattern)); // Notify observers
     }
 
     /**

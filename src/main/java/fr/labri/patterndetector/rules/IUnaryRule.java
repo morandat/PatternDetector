@@ -5,7 +5,7 @@ package fr.labri.patterndetector.rules;
  * <p>
  * Base interface for unary rules.
  */
-public interface IUnaryRule extends IRule {
+public interface IUnaryRule extends ICompositeRule {
 
-    IRule getRule();
+    IRule getChildRule();
 }

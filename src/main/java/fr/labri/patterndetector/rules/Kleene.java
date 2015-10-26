@@ -26,20 +26,21 @@ public class Kleene extends AbstractUnaryRule {
     }
 
     public void buildAutomaton() throws Exception {
-        IRuleAutomaton baseAutomaton = AutomatonUtils.copy(_rule.getAutomaton());
+        IRuleAutomaton baseAutomaton = _childRule.getAutomaton().copy();
 
         IRuleAutomaton automaton = new RuleAutomaton(this);
 
         // The initial state of the base component becomes the initial state of the Kleene automaton.
         IState baseInitialState = baseAutomaton.getInitialState();
-        automaton.registerInitialState(baseInitialState);
-
-        // The rest of the base component's states become states of the Kleene automaton.
-        baseAutomaton.getStates().values().forEach(automaton::registerState);
+        automaton.setInitialState(baseInitialState);
 
         // The final state of the base component becomes a state of the Kleene automaton.
         IState baseFinalState = baseAutomaton.getFinalState();
-        automaton.registerState(baseFinalState);
+        automaton.addState(baseFinalState);
+        _connectionStateLabel = baseFinalState.getLabel();
+
+        // The rest of the base component's states become states of the Kleene automaton.
+        baseAutomaton.getStates().values().forEach(automaton::addState);
 
         /* --- Add extra stuff to obtain the final Kleene automaton --- */
 
@@ -48,11 +49,17 @@ public class Kleene extends AbstractUnaryRule {
         baseFinalState.registerEpsilonTransition(s);
         s.registerStarTransition(s, TransitionType.TRANSITION_DROP);
         s.registerEpsilonTransition(baseInitialState);
-        automaton.registerState(s);
-        _connectionStateLabel = s.getLabel();
-
-        //System.err.println(automaton); // TODO for debug
+        automaton.addState(s);
 
         _automaton = automaton;
+
+        logger.debug(automaton.toString());
+    }
+
+    @Override
+    public void accept(RuleVisitor visitor) {
+        //_childRule.accept(visitor); // TODO do we need this?
+
+        visitor.visit(this);
     }
 }
