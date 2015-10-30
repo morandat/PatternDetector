@@ -72,7 +72,7 @@ public class Transition implements ITransition {
     }
 
     @Override
-    public ClockGuard getClockConstraint() {
+    public ClockGuard getClockGuard() {
         return _clockGuard;
     }
 
@@ -97,17 +97,17 @@ public class Transition implements ITransition {
     }
 
     @Override
-    public void setClockConstraint(ClockGuard clockGuard) {
+    public void setClockGuard(ClockGuard clockGuard) {
         _clockGuard = clockGuard;
     }
 
     @Override
-    public void setClockConstraint(String eventType, int value) {
+    public void setClockGuard(String eventType, int value) {
         _clockGuard = new ClockGuard(eventType, value);
     }
 
     @Override
-    public void setClockConstraint(String eventType, int value, boolean lowerThan) {
+    public void setClockGuard(String eventType, int value, boolean lowerThan) {
         _clockGuard = new ClockGuard(eventType, value, lowerThan);
     }
 

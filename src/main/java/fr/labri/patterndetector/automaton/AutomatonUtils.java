@@ -59,10 +59,10 @@ public final class AutomatonUtils {
 
                 if (automatonCopy.getState(target.getLabel()) == null) {
                     target = startCopy(target, automatonCopy);
-                    stateCopy.registerTransition(target, t.getLabel(), t.getType(), t.getClockConstraint());
+                    stateCopy.registerTransition(target, t.getLabel(), t.getType(), t.getClockGuard());
                 } else {
                     stateCopy.registerTransition(automatonCopy.getState(target.getLabel()), t.getLabel(), t.getType(),
-                            t.getClockConstraint());
+                            t.getClockGuard());
                 }
             });
         } catch (RuleAutomatonException e) {
@@ -128,7 +128,7 @@ public final class AutomatonUtils {
                     stateSet.add(t.getTarget());
                     targetStateSets.put(t.getLabel(), stateSet);
                     transitionTypes.put(t.getLabel(), t.getType());
-                    clockGuards.put(t.getLabel(), t.getClockConstraint());
+                    clockGuards.put(t.getLabel(), t.getClockGuard());
                     predicates.put(t.getLabel(), t.getPredicates());
                 }
             }

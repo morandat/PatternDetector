@@ -16,7 +16,7 @@ public interface ITransition {
 
     TransitionType getType();
 
-    ClockGuard getClockConstraint();
+    ClockGuard getClockGuard();
 
     Predicate<Integer> getPredicate(String field);
 
@@ -26,11 +26,11 @@ public interface ITransition {
 
     boolean isStar();
 
-    void setClockConstraint(ClockGuard clockGuard);
+    void setClockGuard(ClockGuard clockGuard);
 
-    void setClockConstraint(String eventType, int value);
+    void setClockGuard(String eventType, int value);
 
-    void setClockConstraint(String eventType, int value, boolean lowerThan);
+    void setClockGuard(String eventType, int value, boolean lowerThan);
 
     void setPredicate(String field, Predicate<Integer> predicate); // TODO replace Integer by generic type '?'
 

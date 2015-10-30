@@ -25,7 +25,7 @@ public interface IRule {
     String getSymbol();
 
     /**
-     * Get the rule's automaton. This method lazily calls buildAutomaton() if needed.
+     * Get the rule's automaton. This method lazily builds the automaton when called for the first time.
      *
      * @return The rule's automaton.
      */
@@ -71,4 +71,18 @@ public interface IRule {
     IRule setTimeConstraint(int value);
 
     void accept(RuleVisitor visitor);
+
+    /**
+     * @return The corresponding powerset automaton of this automaton.
+     */
+    default IAtom getLeftmostAtom() {
+        return RuleUtils.getLeftmostAtom(this);
+    }
+
+    /**
+     * @return A copy of this automaton.
+     */
+    default IAtom getRightmostAtom() {
+        return RuleUtils.getRightmostAtom(this);
+    }
 }

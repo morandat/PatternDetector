@@ -136,7 +136,7 @@ public class RuleAutomaton implements IRuleAutomaton {
 
         // If there is a transition, check its clock guards if any
         if (t != null
-                && testClockGuard(e.getTimestamp(), t.getClockConstraint())
+                && testClockGuard(e.getTimestamp(), t.getClockGuard())
                 && testPredicates(e.getPayload(), t.getPredicates())) {
 
             logger.debug("Transitioning : " + t + " (" + e + ")");
