@@ -108,6 +108,15 @@ public class RuleAutomaton implements IRuleAutomaton {
     }
 
     @Override
+    public void addState(IState s, String label) {
+        s.setLabel(label);
+        s.setInitial(false);
+        s.setFinal(false);
+        s.setAutomaton(this);
+        _states.put(s.getLabel(), s);
+    }
+
+    @Override
     public void setFinalState(IState s) throws RuleAutomatonException {
         if (_finalState != null) {
             throw new RuleAutomatonException(this, "Final state already set");

@@ -47,6 +47,7 @@ public final class Generator {
 
         eventStream.add(new Event("b", _t++));
         eventStream.add(new Event("a", _t++));
+        eventStream.add(new Event("x", _t++));
         eventStream.add(new Event("a", _t++));
         eventStream.add(new Event("c", _t++));
         eventStream.add(new Event("b", _t++));
@@ -59,23 +60,16 @@ public final class Generator {
 
         Collection<IEvent> eventStream = new ArrayList<>();
 
-        eventStream.add(new Event("a", _t++));
         eventStream.add(new Event("x", _t++));
-        eventStream.add(new Event("c", _t++));
-        eventStream.add(new Event("a", _t++));
-        eventStream.add(new Event("a", _t++));
-        eventStream.add(new Event("c", _t++));
         eventStream.add(new Event("a", _t++));
         eventStream.add(new Event("c", _t++));
         eventStream.add(new Event("a", _t++));
         eventStream.add(new Event("a", _t++));
-        eventStream.add(new Event("c", _t++));
-        eventStream.add(new Event("c", _t++));
+        eventStream.add(new Event("y", _t++));
+        eventStream.add(new Event("a", _t++));
         eventStream.add(new Event("b", _t++));
-        eventStream.add(new Event("a", _t++));
         eventStream.add(new Event("x", _t++));
-        eventStream.add(new Event("x", _t++));
-        eventStream.add(new Event("b", _t++));
+        eventStream.add(new Event("c", _t++));
 
         return eventStream;
     }

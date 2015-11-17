@@ -2,10 +2,10 @@ import fr.labri.patterndetector.executor.*;
 import fr.labri.patterndetector.rules.Atom;
 import fr.labri.patterndetector.rules.FollowedBy;
 import fr.labri.patterndetector.rules.IRule;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import fr.labri.patterndetector.rules.Kleene;
+import org.hamcrest.core.StringContains;
+import org.junit.*;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,16 +29,19 @@ public class PatternDetectionTest {
     @Rule
     public TestName _name = new TestName();
 
+    @Rule
+    public ExpectedException _thrown = ExpectedException.none();
+
     @Before
     public void initializeContext() {
-        logger.info("Executing test : " + _name.getMethodName());
+        logger.info("## Executing test : " + _name.getMethodName());
 
         _ruleManager.removeAllRules();
         _generator.resetTime();
     }
 
     @Test
-    public void testAtom() {
+    public void shouldDetectsAtomA() {
         IRule r = new Atom("a");
 
         _ruleManager.addRule(r);
@@ -53,7 +56,7 @@ public class PatternDetectionTest {
     }
 
     @Test
-    public void testFollowedBy() {
+    public void shouldDetectAFollowedByB() {
         IRule r = new FollowedBy("a", "b");
 
         _ruleManager.addRule(r);
@@ -61,7 +64,7 @@ public class PatternDetectionTest {
 
         Collection<IEvent> expected = new ArrayList<>();
         expected.add(new Event("a", 1));
-        expected.add(new Event("b", 4));
+        expected.add(new Event("b", 5));
 
         Collection<IEvent> actual = _ruleManager.getLastPattern();
 
@@ -69,18 +72,81 @@ public class PatternDetectionTest {
     }
 
     @Test
-    public void testKleene() {
+    public void shouldDetectAFollowedByA() {
+        IRule r = new FollowedBy("a", "a");
 
+        _ruleManager.addRule(r);
+        _detector.detect(_generator.generateFollowedBy());
+
+        Collection<IEvent> expected = new ArrayList<>();
+        expected.add(new Event("a", 1));
+        expected.add(new Event("a", 3));
+
+        Collection<IEvent> actual = _ruleManager.getLastPattern();
+
+        Assert.assertEquals(expected, actual);
     }
 
-    // TODO write those tests
-    /*IRule rule = new FollowedBy("a", "a");
+    @Test
+    public void shouldThrowRuntimeExceptionNonTerminatingRule() {
+        _thrown.expect(RuntimeException.class);
+        _thrown.expectMessage(StringContains.containsString("Non-terminating rule"));
 
-    Kleene rule = new Kleene("View");
+        IRule r = new Kleene("a");
 
-    IRule rule = new FollowedBy(new Kleene("View"), "Exit");
+        _ruleManager.addRule(r);
+        _detector.detect(_generator.generateKleene());
+    }
 
-    IRule rule = new FollowedBy("Enter", new Kleene("View"));
 
-    IRule rule = new FollowedBy(new Kleene("View"), new FollowedBy("Add", "Exit"));*/
+    @Test
+    public void shouldThrowRuntimeExceptionNonTerminatingRule2() {
+        _thrown.expect(RuntimeException.class);
+        _thrown.expectMessage(StringContains.containsString("Non-terminating rule"));
+
+        IRule r = new FollowedBy("a", new Kleene("b"));
+
+        _ruleManager.addRule(r);
+        _detector.detect(_generator.generateKleene());
+    }
+
+
+    @Test
+    public void shouldDetectASeqFollowedByB() {
+        IRule r = new FollowedBy(new Kleene("a"), "b");
+
+        _ruleManager.addRule(r);
+        _detector.detect(_generator.generateKleene());
+
+        Collection<IEvent> expected = new ArrayList<>();
+        expected.add(new Event("a", 1));
+        expected.add(new Event("a", 3));
+        expected.add(new Event("a", 4));
+        expected.add(new Event("a", 6));
+        expected.add(new Event("b", 7));
+
+        Collection<IEvent> actual = _ruleManager.getLastPattern();
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldDetectASeqFollowedByBFollowedByC() {
+        IRule r = new FollowedBy(new Kleene("a"), new FollowedBy("b", "c"));
+
+        _ruleManager.addRule(r);
+        _detector.detect(_generator.generateKleene());
+
+        Collection<IEvent> expected = new ArrayList<>();
+        expected.add(new Event("a", 1));
+        expected.add(new Event("a", 3));
+        expected.add(new Event("a", 4));
+        expected.add(new Event("a", 6));
+        expected.add(new Event("b", 7));
+        expected.add(new Event("c", 9));
+
+        Collection<IEvent> actual = _ruleManager.getLastPattern();
+
+        Assert.assertEquals(expected, actual);
+    }
 }

@@ -53,7 +53,7 @@ public final class AutomatonUtils {
             } else if (stateCopy.isFinal()) {
                 automatonCopy.setFinalState(stateCopy);
             } else {
-                automatonCopy.addState(stateCopy);
+                automatonCopy.addState(stateCopy, currentState.getLabel());
             }
 
             currentState.getTransitions().forEach(t -> {

@@ -67,6 +67,8 @@ public interface IRuleAutomaton {
 
     void addState(IState s);
 
+    void addState(IState s, String label);
+
     void setFinalState(IState s) throws RuleAutomatonException;
 
     void fire(IEvent e);
