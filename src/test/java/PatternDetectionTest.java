@@ -41,7 +41,7 @@ public class PatternDetectionTest {
     }
 
     @Test
-    public void shouldDetectsAtomA() {
+    public void shouldDetectAtom() {
         IRule r = new Atom("a");
 
         _ruleManager.addRule(r);
@@ -49,6 +49,35 @@ public class PatternDetectionTest {
 
         Collection<IEvent> expected = new ArrayList<>();
         expected.add(new Event("a", 1));
+
+        Collection<IEvent> actual = _ruleManager.getLastPattern();
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldDetectAtomWithPredicate() {
+        IRule r = new Atom("a").addPredicate("x", x -> x > 5);
+
+        _ruleManager.addRule(r);
+        _detector.detect(_generator.generateAtom());
+
+        Collection<IEvent> expected = new ArrayList<>();
+        expected.add(new Event("a", 1));
+
+        Collection<IEvent> actual = _ruleManager.getLastPattern();
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldNotDetectAtomWithPredicate() {
+        IRule r = new Atom("a").addPredicate("x", x -> x > 20);
+
+        _ruleManager.addRule(r);
+        _detector.detect(_generator.generateAtom());
+
+        Collection<IEvent> expected = new ArrayList<>();
 
         Collection<IEvent> actual = _ruleManager.getLastPattern();
 
