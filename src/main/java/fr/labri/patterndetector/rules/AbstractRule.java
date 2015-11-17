@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by William Braik on 6/25/2015.
  * <p>
- * Operator which  together to form patterns.
+ * Composes sub-rules and/or atoms to form patterns.
  */
 public abstract class AbstractRule implements IRule {
 

@@ -20,7 +20,6 @@ import java.util.function.Predicate;
 public class RuleAutomaton implements IRuleAutomaton {
 
     private final Logger logger = LoggerFactory.getLogger(RuleAutomaton.class);
-    protected IRule _rule;
     protected IState _initialState;
     protected IState _finalState;
     protected Map<String, IState> _states;
@@ -29,17 +28,11 @@ public class RuleAutomaton implements IRuleAutomaton {
     protected Map<String, Long> _clocks;
     protected Collection<IPatternObserver> _observers; // Pattern observers to be notified when a pattern is detected.
 
-    public RuleAutomaton(IRule rule) {
-        _rule = rule;
+    public RuleAutomaton() {
         _states = new HashMap<>();
         _matchBuffer = new ArrayList<>();
         _clocks = new HashMap<>();
         _observers = new ArrayList<>();
-    }
-
-    @Override
-    public IRule getRule() {
-        return _rule;
     }
 
     @Override

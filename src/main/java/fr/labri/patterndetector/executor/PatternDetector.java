@@ -10,31 +10,10 @@ import java.util.ArrayList;
  * Main class for quick testing.
  * Use the JUnit test suite for more formal testing.
  */
-public class TestRules {
+public class PatternDetector {
 
     public static void main(String[] args) {
-        IRule rule = new Atom("a");
-        //.setPredicate("age", age -> age > 18)
-        //.setPredicate("height", h -> h > 170);
 
-        /*IRule rule = new AtomNot("a");
-
-        IRule rule = new FollowedBy("a", "b");
-
-        IRule rule = new FollowedBy("a", "a");
-
-        Kleene rule = new Kleene("View");
-
-        IRule rule = new FollowedBy(new Kleene("View"), "Exit");
-
-        IRule rule = new FollowedBy("Enter", new Kleene("View"));
-
-        IRule rule = new FollowedBy(new Kleene("View"), new FollowedBy("Add", "Exit"));*/
-
-        RuleManager ruleManager = new RuleManager();
-        ruleManager.addRule(rule);
-        Detector detector = new Detector(ruleManager);
-        detector.detect(Generator.generateStuff());
     }
 
     class DefaultTraversal extends RuleVisitor {

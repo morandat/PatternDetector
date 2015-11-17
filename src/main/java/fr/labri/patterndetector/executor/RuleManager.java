@@ -133,9 +133,7 @@ public final class RuleManager implements IPatternObserver {
     public void notifyPattern(IRuleAutomaton ruleAutomaton, Collection<IEvent> pattern) {
         _lastPattern.clear();
         _lastPattern.addAll(pattern);
-        IRule rule = ruleAutomaton.getRule();
 
-        logger.info("Pattern found by " + rule.getName() + " : " + rule);
         logger.info("Pattern found : " + pattern);
     }
 

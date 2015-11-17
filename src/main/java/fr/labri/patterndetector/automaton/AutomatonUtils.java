@@ -29,7 +29,7 @@ public final class AutomatonUtils {
      * @return A copy of the rule automaton.
      */
     public static IRuleAutomaton copy(IRuleAutomaton automaton) {
-        IRuleAutomaton automatonCopy = new RuleAutomaton(automaton.getRule());
+        IRuleAutomaton automatonCopy = new RuleAutomaton();
         startCopy(automaton.getInitialState(), automatonCopy);
 
         return automatonCopy;
@@ -44,6 +44,8 @@ public final class AutomatonUtils {
      */
     private static IState startCopy(IState currentState, IRuleAutomaton automatonCopy) {
         IState stateCopy = new State();
+        stateCopy.setFinal(currentState.isFinal());
+        stateCopy.setInitial(currentState.isInitial());
 
         try {
             if (stateCopy.isInitial()) {
@@ -66,10 +68,10 @@ public final class AutomatonUtils {
                 }
             });
         } catch (RuleAutomatonException e) {
-            logger.error("Automaton copy failed : " + e.getRule() + " (" + e.getMessage() + ")\n"
+            logger.error("Automaton copy failed : " + e.getMessage() + "\n"
                     + e.getRuleAutomaton());
 
-            throw new RuntimeException("Automaton copy failed : " + e.getRule() + " (" + e.getMessage() + ")\n"
+            throw new RuntimeException("Automaton copy failed : " + e.getMessage() + "\n"
                     + e.getRuleAutomaton());
         }
 
@@ -83,7 +85,7 @@ public final class AutomatonUtils {
      * @return The corresponding DFA.
      */
     public static IRuleAutomaton powerset(IRuleAutomaton automaton) {
-        IRuleAutomaton powersetAutomaton = new RuleAutomaton(automaton.getRule());
+        IRuleAutomaton powersetAutomaton = new RuleAutomaton();
         Set<IState> initialStateSet = new HashSet<>();
         initialStateSet.add(automaton.getInitialState());
         IState initialState = new State();
@@ -94,9 +96,9 @@ public final class AutomatonUtils {
             powersetAutomaton.setInitialState(initialState);
             startPowerset(initialStateSet, allStateSets, powersetAutomaton);
         } catch (RuleAutomatonException e) {
-            logger.error("Powerset failed : " + e.getRule() + " (" + e.getMessage() + ")\n" + e.getRuleAutomaton());
+            logger.error("Powerset failed : " + e.getMessage() + "\n" + e.getRuleAutomaton());
 
-            throw new RuntimeException("Powerset failed : " + e.getRule() + " (" + e.getMessage() + ")\n"
+            throw new RuntimeException("Powerset failed : " + e.getMessage() + "\n"
                     + e.getRuleAutomaton());
         }
 
@@ -151,10 +153,10 @@ public final class AutomatonUtils {
                     try {
                         finalAutomaton.setFinalState(targetState);
                     } catch (RuleAutomatonException e) {
-                        logger.error("Powerset failed : " + e.getRule() + " (" + e.getMessage() + ")\n"
+                        logger.error("Powerset failed : " + e.getMessage() + "\n"
                                 + e.getRuleAutomaton());
 
-                        throw new RuntimeException("Powerset failed : " + e.getRule() + " (" + e.getMessage() + ")\n"
+                        throw new RuntimeException("Powerset failed : " + e.getMessage() + "\n"
                                 + e.getRuleAutomaton());
                     }
                 } else {

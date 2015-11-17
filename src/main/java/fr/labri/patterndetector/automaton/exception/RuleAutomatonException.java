@@ -20,8 +20,4 @@ public class RuleAutomatonException extends Exception {
     public IRuleAutomaton getRuleAutomaton() {
         return _ruleAutomaton;
     }
-
-    public IRule getRule() {
-        return _ruleAutomaton.getRule();
-    }
 }

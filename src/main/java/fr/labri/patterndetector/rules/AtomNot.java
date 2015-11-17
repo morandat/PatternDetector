@@ -13,32 +13,14 @@ import java.util.function.Predicate;
  * The complement of an atom.
  * Given an event type x, it represents an event of any type besides x.
  */
-public class AtomNot extends AbstractRule implements IAtom {
-
-    protected String _eventType; // Given an event type x, this atom represents an event of any type besides x
-    protected Map<String, Predicate<Integer>> _predicates; // Maps fields of the event's payload to predicates
+public class AtomNot extends AbstractAtom {
 
     public AtomNot(String eventType) {
-        super(null);
-        _eventType = eventType;
-        _predicates = new HashMap<>();
+        super(eventType);
     }
 
-    @Override
-    public String getEventType() {
-        return _eventType;
-    }
-
-    @Override
-    public IAtom setPredicate(String field, Predicate<Integer> predicate) {
-        _predicates.put(field, predicate);
-
-        return this;
-    }
-
-    @Override
-    public String toString() {
-        return "!" + _eventType;
+    public AtomNot(String eventType, Map<String, Predicate<Integer>> predicates) {
+        super(eventType, predicates);
     }
 
     public void buildAutomaton() throws RuleAutomatonException {
@@ -48,12 +30,17 @@ public class AtomNot extends AbstractRule implements IAtom {
         i.registerTransition(i, _eventType, TransitionType.TRANSITION_DROP);
         i.registerTransition(f, Transition.LABEL_STAR, TransitionType.TRANSITION_APPEND, _predicates);
 
-        IRuleAutomaton automaton = new RuleAutomaton(this);
+        IRuleAutomaton automaton = new RuleAutomaton();
         automaton.setInitialState(i);
         automaton.setFinalState(f);
         _connectionStateLabel = f.getLabel();
 
         _automaton = automaton;
+    }
+
+    @Override
+    public String toString() {
+        return "!" + _eventType;
     }
 
     @Override

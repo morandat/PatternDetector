@@ -2,7 +2,6 @@ import fr.labri.patterndetector.executor.*;
 import fr.labri.patterndetector.rules.Atom;
 import fr.labri.patterndetector.rules.FollowedBy;
 import fr.labri.patterndetector.rules.IRule;
-import fr.labri.patterndetector.rules.Kleene;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,8 +21,10 @@ import java.util.Collection;
 public class PatternDetectionTest {
 
     private final Logger logger = LoggerFactory.getLogger(PatternDetectionTest.class);
-    private RuleManager _ruleManager;
-    private Detector _detector;
+
+    private RuleManager _ruleManager = new RuleManager();
+    private Detector _detector = new Detector(_ruleManager);
+    private Generator _generator = new Generator();
 
     @Rule
     public TestName _name = new TestName();
@@ -31,9 +32,9 @@ public class PatternDetectionTest {
     @Before
     public void initializeContext() {
         logger.info("Executing test : " + _name.getMethodName());
-        _ruleManager = new RuleManager();
-        _detector = new Detector(_ruleManager);
 
+        _ruleManager.removeAllRules();
+        _generator.resetTime();
     }
 
     @Test
@@ -41,14 +42,10 @@ public class PatternDetectionTest {
         IRule r = new Atom("a");
 
         _ruleManager.addRule(r);
-        _detector.detect(Generator.generateStuff());
+        _detector.detect(_generator.generateAtom());
 
         Collection<IEvent> expected = new ArrayList<>();
         expected.add(new Event("a", 1));
-        expected.add(new Event("a", 2));
-        expected.add(new Event("a", 3));
-        expected.add(new Event("a", 4));
-        expected.add(new Event("a", 5));
 
         Collection<IEvent> actual = _ruleManager.getLastPattern();
 
@@ -60,16 +57,11 @@ public class PatternDetectionTest {
         IRule r = new FollowedBy("a", "b");
 
         _ruleManager.addRule(r);
-        _detector.detect(Generator.generateStuff());
+        _detector.detect(_generator.generateFollowedBy());
 
         Collection<IEvent> expected = new ArrayList<>();
         expected.add(new Event("a", 1));
-        expected.add(new Event("a", 2));
-        expected.add(new Event("a", 3));
-        expected.add(new Event("a", 4));
-        expected.add(new Event("a", 5));
-        expected.add(new Event("b", 9));
-        expected.add(new Event("c", 11));
+        expected.add(new Event("b", 4));
 
         Collection<IEvent> actual = _ruleManager.getLastPattern();
 
@@ -80,4 +72,15 @@ public class PatternDetectionTest {
     public void testKleene() {
 
     }
+
+    // TODO write those tests
+    /*IRule rule = new FollowedBy("a", "a");
+
+    Kleene rule = new Kleene("View");
+
+    IRule rule = new FollowedBy(new Kleene("View"), "Exit");
+
+    IRule rule = new FollowedBy("Enter", new Kleene("View"));
+
+    IRule rule = new FollowedBy(new Kleene("View"), new FollowedBy("Add", "Exit"));*/
 }

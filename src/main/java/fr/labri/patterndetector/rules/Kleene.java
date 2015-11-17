@@ -29,7 +29,7 @@ public class Kleene extends AbstractUnaryRule {
     public void buildAutomaton() throws RuleAutomatonException {
         IRuleAutomaton baseAutomaton = _childRule.getAutomaton().copy();
 
-        IRuleAutomaton automaton = new RuleAutomaton(this);
+        IRuleAutomaton automaton = new RuleAutomaton();
 
         // The initial state of the base component becomes the initial state of the Kleene automaton.
         IState baseInitialState = baseAutomaton.getInitialState();

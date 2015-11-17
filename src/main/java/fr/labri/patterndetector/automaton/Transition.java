@@ -24,6 +24,7 @@ public class Transition implements ITransition {
         _label = label;
         _type = type;
         _clockGuard = null;
+        _predicates = null;
     }
 
     public Transition(IState source, IState target, String label, TransitionType type, ClockGuard clockGuard) {
@@ -32,6 +33,7 @@ public class Transition implements ITransition {
         _label = label;
         _type = type;
         _clockGuard = clockGuard;
+        _predicates = null;
     }
 
     public Transition(IState source, IState target, String label, TransitionType type, Map<String, Predicate<Integer>> predicates) {
@@ -40,6 +42,7 @@ public class Transition implements ITransition {
         _label = label;
         _type = type;
         _predicates = predicates;
+        _clockGuard = null;
     }
 
     public Transition(IState source, IState target, String label, TransitionType type, ClockGuard clockGuard, Map<String, Predicate<Integer>> predicates) {

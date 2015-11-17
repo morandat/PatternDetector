@@ -23,5 +23,5 @@ public interface IAtom extends ITerminalRule {
      * @param predicate The predicate of the field.
      * @return The atom itself.
      */
-    IAtom setPredicate(String field, Predicate<Integer> predicate); // TODO replace Integer by generic type '?'
+    IAtom addPredicate(String field, Predicate<Integer> predicate); // TODO replace Integer by generic type '?'
 }

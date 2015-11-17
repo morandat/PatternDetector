@@ -40,7 +40,7 @@ public class FollowedBy extends AbstractBinaryRule {
         IRuleAutomaton leftAutomaton = _leftChild.getAutomaton().copy();
         IRuleAutomaton rightAutomaton = _rightChild.getAutomaton().copy();
 
-        IRuleAutomaton automaton = new RuleAutomaton(this);
+        IRuleAutomaton automaton = new RuleAutomaton();
 
         /* --- Left component --- */
 

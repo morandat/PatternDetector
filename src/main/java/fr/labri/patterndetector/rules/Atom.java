@@ -3,7 +3,6 @@ package fr.labri.patterndetector.rules;
 import fr.labri.patterndetector.automaton.*;
 import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
@@ -12,34 +11,17 @@ import java.util.function.Predicate;
  * <p>
  * The atom is the most elementary rule.
  * It represents the occurrence of a given event type.
- * Atoms can be used within FollowedBy and Kleene rules, to specify more complex rules.
+ * Atoms can be used within FollowedBy and Kleene rules, to describe more complex rules.
  */
-public class Atom extends AbstractRule implements IAtom {
+public class Atom extends AbstractAtom {
 
-    protected String _eventType; // The event type
-    protected Map<String, Predicate<Integer>> _predicates; // Maps fields of the event's payload to predicates TODO à mettre au niveau règle ?
 
     public Atom(String eventType) {
-        super(null);
-        _eventType = eventType;
-        _predicates = new HashMap<>();
+        super(eventType);
     }
 
-    @Override
-    public String getEventType() {
-        return _eventType;
-    }
-
-    @Override
-    public IAtom setPredicate(String field, Predicate<Integer> predicate) {
-        _predicates.put(field, predicate);
-
-        return this;
-    }
-
-    @Override
-    public String toString() {
-        return _eventType;
+    public Atom(String eventType, Map<String, Predicate<Integer>> predicates) {
+        super(eventType, predicates);
     }
 
     @Override
@@ -49,12 +31,17 @@ public class Atom extends AbstractRule implements IAtom {
 
         i.registerTransition(f, _eventType, TransitionType.TRANSITION_APPEND, _predicates);
 
-        IRuleAutomaton automaton = new RuleAutomaton(this);
+        IRuleAutomaton automaton = new RuleAutomaton();
         automaton.setInitialState(i);
         automaton.setFinalState(f);
         _connectionStateLabel = f.getLabel();
 
         _automaton = automaton;
+    }
+
+    @Override
+    public String toString() {
+        return _eventType;
     }
 
     @Override

@@ -16,8 +16,11 @@ import java.util.Set;
  */
 public interface IRuleAutomaton {
 
-    IRule getRule();
-
+    /**
+     * Get the current state of the rule automaton.
+     *
+     * @return The current state of the rule automaton.
+     */
     IState getCurrentState();
 
     /**
