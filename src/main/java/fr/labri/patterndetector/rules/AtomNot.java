@@ -2,8 +2,8 @@ package fr.labri.patterndetector.rules;
 
 import fr.labri.patterndetector.automaton.*;
 import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
+import fr.labri.patterndetector.compiler.RuleVisitor;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
@@ -13,6 +13,7 @@ import java.util.function.Predicate;
  * The complement of an atom.
  * Given an event type x, it represents an event of any type besides x.
  */
+@Deprecated
 public class AtomNot extends AbstractAtom {
 
     public AtomNot(String eventType) {

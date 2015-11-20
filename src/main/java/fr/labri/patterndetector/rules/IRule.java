@@ -2,6 +2,7 @@ package fr.labri.patterndetector.rules;
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
+import fr.labri.patterndetector.compiler.RuleVisitor;
 
 /**
  * Created by William Braik on 6/25/2015.

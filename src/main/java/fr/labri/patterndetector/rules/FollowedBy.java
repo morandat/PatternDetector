@@ -2,6 +2,7 @@ package fr.labri.patterndetector.rules;
 
 import fr.labri.patterndetector.automaton.*;
 import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
+import fr.labri.patterndetector.compiler.RuleVisitor;
 
 /**
  * Created by William Braik on 6/25/2015.
@@ -111,9 +112,6 @@ public class FollowedBy extends AbstractBinaryRule {
 
     @Override
     public void accept(RuleVisitor visitor) {
-        //_leftChild.accept(visitor); // TODO do we need this?
-        //_rightChild.accept(visitor);
-
         visitor.visit(this);
     }
 }

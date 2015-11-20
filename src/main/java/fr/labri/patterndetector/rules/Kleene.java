@@ -2,6 +2,7 @@ package fr.labri.patterndetector.rules;
 
 import fr.labri.patterndetector.automaton.*;
 import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
+import fr.labri.patterndetector.compiler.RuleVisitor;
 
 /**
  * Created by william.braik on 10/07/2015.
@@ -57,8 +58,6 @@ public class Kleene extends AbstractUnaryRule {
 
     @Override
     public void accept(RuleVisitor visitor) {
-        //_childRule.accept(visitor); // TODO do we need this?
-
         visitor.visit(this);
     }
 }

@@ -2,6 +2,7 @@ package fr.labri.patterndetector.rules;
 
 import fr.labri.patterndetector.automaton.*;
 import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
+import fr.labri.patterndetector.compiler.RuleVisitor;
 
 import java.util.Map;
 import java.util.function.Predicate;
@@ -14,7 +15,6 @@ import java.util.function.Predicate;
  * Atoms can be used within FollowedBy and Kleene rules, to describe more complex rules.
  */
 public class Atom extends AbstractAtom {
-
 
     public Atom(String eventType) {
         super(eventType);
