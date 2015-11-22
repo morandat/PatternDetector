@@ -7,7 +7,7 @@ import fr.labri.patterndetector.rules.*;
  * <p>
  * Default behavior for a rule visitor.
  */
-public abstract class RuleVisitor implements IRuleVisitor {
+public abstract class AbstractRuleVisitor implements IRuleVisitor {
 
     @Override
     public void visit(IRule rule) {

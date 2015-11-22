@@ -6,7 +6,7 @@ import fr.labri.patterndetector.rules.ITerminalRule;
 /**
  * Created by wbraik on 19/11/15.
  */
-public class DefaultTraversal extends RuleVisitor {
+public class DefaultTraversal extends AbstractRuleVisitor {
     @Override
     public void visit(ITerminalRule terminalRule) {
     }

@@ -33,7 +33,7 @@ public class PatternDetectionTest {
     public ExpectedException _thrown = ExpectedException.none();
 
     @Before
-    public void initializeContext() {
+    public void initializeTest() {
         logger.info("## Executing test : " + _name.getMethodName());
 
         _ruleManager.removeAllRules();

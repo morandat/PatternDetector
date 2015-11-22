@@ -9,10 +9,12 @@ import java.util.ArrayList;
  * Created by wbraik on 19/11/15.
  */
 public class AtomCollector extends DefaultTraversal {
-    ArrayList<IAtom> atoms = new ArrayList<>();
 
-    public ArrayList<IAtom> collect(IRule root) {
-        root.accept(this);
+    private ArrayList<IAtom> atoms = new ArrayList<>();
+
+    public ArrayList<IAtom> collect(IRule rule) {
+        rule.accept(this);
+
         return atoms;
     }
 

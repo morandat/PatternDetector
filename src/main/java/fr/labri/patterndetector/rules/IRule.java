@@ -2,7 +2,7 @@ package fr.labri.patterndetector.rules;
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
-import fr.labri.patterndetector.compiler.RuleVisitor;
+import fr.labri.patterndetector.compiler.IRuleVisitor;
 
 /**
  * Created by William Braik on 6/25/2015.
@@ -30,7 +30,7 @@ public interface IRule {
      *
      * @return The rule's automaton.
      */
-    IRuleAutomaton getAutomaton() throws RuleAutomatonException;
+    //IRuleAutomaton getAutomaton() throws RuleAutomatonException;
 
     /**
      * Get the time constraint specified for the rule.
@@ -38,15 +38,6 @@ public interface IRule {
      * @return The time constraint specification of the rule.
      */
     TimeConstraint getTimeConstraint();
-
-    /**
-     * Get the connection state's label from the rule's automaton.
-     * The connection state is the state which is used by operators (such as FollowedBy) as a connection point between
-     * the current rule's automaton and the following pattern's automaton.
-     *
-     * @return The connection state's label of the rule's automaton.
-     */
-    String getConnectionStateLabel();
 
     /**
      * Set the name of the rule.
@@ -71,7 +62,7 @@ public interface IRule {
      */
     IRule setTimeConstraint(int value);
 
-    void accept(RuleVisitor visitor);
+    void accept(IRuleVisitor visitor);
 
     /**
      * @return The corresponding powerset automaton of this automaton.

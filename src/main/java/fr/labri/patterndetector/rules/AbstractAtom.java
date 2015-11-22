@@ -32,6 +32,11 @@ public abstract class AbstractAtom extends AbstractRule implements IAtom {
     }
 
     @Override
+    public Map<String, Predicate<Integer>> getPredicates() {
+        return _predicates;
+    }
+
+    @Override
     public IAtom addPredicate(String field, Predicate<Integer> predicate) {
         if (_predicates == null) {
             _predicates = new HashMap<>();

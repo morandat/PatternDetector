@@ -1,8 +1,8 @@
 package fr.labri.patterndetector.executor;
 
+import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.compiler.AtomCollector;
-import fr.labri.patterndetector.compiler.DefaultTraversal;
-import fr.labri.patterndetector.compiler.RulePrettyPrinter;
+import fr.labri.patterndetector.compiler.RuleCompiler;
 import fr.labri.patterndetector.rules.*;
 
 import java.util.ArrayList;
@@ -13,15 +13,16 @@ import java.util.ArrayList;
  * Main class for quick testing.
  * Use the JUnit test suite for more formal testing.
  */
-public class TestVisitors {
+public class Main {
 
     public static void main(String[] args) {
-        TestVisitors main = new TestVisitors();
+        Main main = new Main();
 
-        IRule r = new Atom("a");
+        //IRule r = new Atom("a");
         //IRule r = new FollowedBy("a", "b");
         //IRule r = new Kleene("a");
         //IRule r = new FollowedBy(new Kleene("a"), "b");
+        IRule r = new Kleene(new FollowedBy("a", "b"));
         //IRule r = new FollowedBy(new Kleene(new FollowedBy("x", "y")), new FollowedBy("b", new Kleene("c")));
 
         //DefaultTraversal v = new DefaultTraversal();
@@ -36,15 +37,12 @@ public class TestVisitors {
         System.out.println(atoms.size() + " atoms found :");
         atoms.forEach(System.out::println);*/
 
-        RulePrettyPrinter prettyPrinter = new RulePrettyPrinter();
-        prettyPrinter.startVisit(r);
-    }
+        /*RulePrettyPrinter prettyPrinter = new RulePrettyPrinter();
+        prettyPrinter.startVisit(r);*/
 
-    public ArrayList<IAtom> collectAtomsNotInKleene(IRule root) {
-        return new AtomCollector() {
-            @Override
-            public void visit(Kleene rule) {
-            }
-        }.collect(root);
+        RuleCompiler compiler = new RuleCompiler();
+        IRuleAutomaton automaton = compiler.compile(r);
+        System.out.println(automaton);
+        System.out.println(automaton.powerset());
     }
 }

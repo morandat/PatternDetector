@@ -2,7 +2,7 @@ package fr.labri.patterndetector.rules;
 
 import fr.labri.patterndetector.automaton.*;
 import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
-import fr.labri.patterndetector.compiler.RuleVisitor;
+import fr.labri.patterndetector.compiler.IRuleVisitor;
 
 /**
  * Created by William Braik on 6/25/2015.
@@ -36,14 +36,14 @@ public class FollowedBy extends AbstractBinaryRule {
                 (e2.startsWith("!") ? new AtomNot(e2.substring(1)) : new Atom(e2)));
     }
 
-    @Override
+    /*@Override
     public void buildAutomaton() throws RuleAutomatonException {
         IRuleAutomaton leftAutomaton = _leftChild.getAutomaton().copy();
         IRuleAutomaton rightAutomaton = _rightChild.getAutomaton().copy();
 
         IRuleAutomaton automaton = new RuleAutomaton();
 
-        /* --- Left component --- */
+        // ### Left component
 
         // The initial state of the left component becomes the initial state of the FollowedBy automaton.
         automaton.setInitialState(leftAutomaton.getInitialState());
@@ -58,7 +58,7 @@ public class FollowedBy extends AbstractBinaryRule {
         // The rest of the left component's states become states of the FollowedBy automaton.
         leftAutomaton.getStates().forEach(automaton::addState);
 
-        /* --- Right component --- */
+        // ### Right component
 
         // The initial state of the right component becomes a state of the FollowedBy automaton.
         IState rightInitialState = rightAutomaton.getInitialState();
@@ -72,7 +72,7 @@ public class FollowedBy extends AbstractBinaryRule {
         // The rest of the right component's states become states of the FollowedBy automaton.
         rightAutomaton.getStates().forEach(automaton::addState);
 
-        /* --- Add extra stuff to obtain the final FollowedBy automaton. --- */
+        // ### Add extra stuff to obtain the final FollowedBy automaton.
 
         // State for ignoring irrelevant events occuring between left and right.
         State s = new State();
@@ -93,25 +93,23 @@ public class FollowedBy extends AbstractBinaryRule {
 
         // If a time constraint is specified, create clock constraints now.
         createClockGuards();
-    }
+    }*/
 
     /**
      * Create clock guards corresponding to the time constraint specified for the rule.
      */
-    //@Override
-    private void createClockGuards() {
+    /*private void createClockGuards() {
         if (_timeConstraint != null) {
             int value = _timeConstraint.getValue();
 
-            /*leftConnectionState.getTransitions().forEach(t ->
+            leftConnectionState.getTransitions().forEach(t ->
                     t.setClockGuard(_leftChild.getRightmostAtom().getEventType(), value));
             rightAutomaton.getTransitions().forEach(t ->
-                    t.setClockGuard(_leftChild.getRightmostAtom().getEventType(), value));*/
+                    t.setClockGuard(_leftChild.getRightmostAtom().getEventType(), value));
         }
-    }
-
+    }*/
     @Override
-    public void accept(RuleVisitor visitor) {
+    public void accept(IRuleVisitor visitor) {
         visitor.visit(this);
     }
 }

@@ -2,7 +2,7 @@ package fr.labri.patterndetector.rules;
 
 import fr.labri.patterndetector.automaton.*;
 import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
-import fr.labri.patterndetector.compiler.RuleVisitor;
+import fr.labri.patterndetector.compiler.IRuleVisitor;
 
 import java.util.Map;
 import java.util.function.Predicate;
@@ -24,7 +24,7 @@ public class Atom extends AbstractAtom {
         super(eventType, predicates);
     }
 
-    @Override
+    /*@Override
     public void buildAutomaton() throws RuleAutomatonException {
         IState i = new State(); // Initial state
         IState f = new State(); // Final state
@@ -37,7 +37,7 @@ public class Atom extends AbstractAtom {
         _connectionStateLabel = f.getLabel();
 
         _automaton = automaton;
-    }
+    }*/
 
     @Override
     public String toString() {
@@ -45,7 +45,7 @@ public class Atom extends AbstractAtom {
     }
 
     @Override
-    public void accept(RuleVisitor visitor) {
+    public void accept(IRuleVisitor visitor) {
         visitor.visit(this);
     }
 }

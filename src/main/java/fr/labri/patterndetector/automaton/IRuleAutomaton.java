@@ -53,6 +53,15 @@ public interface IRuleAutomaton {
     IState getFinalState();
 
     /**
+     * Get the connection state's label from the rule's automaton.
+     * The connection state is the state which is used by operators (such as FollowedBy) as a connection point between
+     * the current rule's automaton and the following pattern's automaton.
+     *
+     * @return The connection state's label of the rule's automaton.
+     */
+    IState getConnectionState();
+
+    /**
      * Get all states of the rule automaton (including the initial and final states).
      *
      * @return A set containing all sets of the rule automaton.
@@ -70,6 +79,8 @@ public interface IRuleAutomaton {
     void addState(IState s, String label);
 
     void setFinalState(IState s) throws RuleAutomatonException;
+
+    void setConnectionState(IState s) throws RuleAutomatonException;
 
     void fire(IEvent e);
 

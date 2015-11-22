@@ -12,19 +12,15 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractRule implements IRule {
 
-    // Concrete subclasses will log with their own class names
+    // Concrete subclasses should log with their own class names
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected String _name;
     protected String _symbol;
     protected TimeConstraint _timeConstraint;
-    protected String _connectionStateLabel;
     protected IRuleAutomaton _automaton;
 
     public AbstractRule(String symbol) {
         _symbol = symbol;
-        _timeConstraint = null;
-        _connectionStateLabel = null;
-        _automaton = null;
     }
 
     @Override
@@ -48,19 +44,14 @@ public abstract class AbstractRule implements IRule {
     }
 
     @Override
-    public String getConnectionStateLabel() {
-        return _connectionStateLabel;
-    }
-
-    @Override
     public IRule setTimeConstraint(TimeConstraint timeConstraint) {
         _timeConstraint = timeConstraint;
 
         // If the automaton isn't built yet, the clock guards will be created later on, at build time.
         // Otherwise, the clock guards need to be added immediately to the existing automaton.
-        if (_automaton != null) {
+        /*if (_automaton != null) {
             // TODO createClockConstraints()
-        }
+        }*/
 
         return this;
     }
@@ -70,7 +61,7 @@ public abstract class AbstractRule implements IRule {
         return setTimeConstraint(new TimeConstraint(value));
     }
 
-    @Override
+    /*@Override
     public final IRuleAutomaton getAutomaton() throws RuleAutomatonException {
         if (_automaton == null) {
             buildAutomaton();
@@ -79,8 +70,8 @@ public abstract class AbstractRule implements IRule {
         }
 
         return _automaton;
-    }
+    }*/
 
     // TODO this method will disappear. Automaton construction code will be put in the compiler visitor.
-    protected abstract void buildAutomaton() throws RuleAutomatonException;
+    //protected abstract void buildAutomaton() throws RuleAutomatonException;
 }

@@ -3,7 +3,6 @@ package fr.labri.patterndetector.automaton;
 import fr.labri.patterndetector.automaton.exception.*;
 import fr.labri.patterndetector.executor.IEvent;
 import fr.labri.patterndetector.executor.IPatternObserver;
-import fr.labri.patterndetector.rules.IRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +21,7 @@ public class RuleAutomaton implements IRuleAutomaton {
     private final Logger logger = LoggerFactory.getLogger(RuleAutomaton.class);
     protected IState _initialState;
     protected IState _finalState;
+    protected IState _connectionState;
     protected Map<String, IState> _states;
     protected IState _currentState;
     protected ArrayList<IEvent> _matchBuffer; // Events matching the current pattern
@@ -63,6 +63,11 @@ public class RuleAutomaton implements IRuleAutomaton {
     @Override
     public IState getFinalState() {
         return _finalState;
+    }
+
+    @Override
+    public IState getConnectionState() {
+        return _connectionState;
     }
 
     @Override
@@ -125,6 +130,14 @@ public class RuleAutomaton implements IRuleAutomaton {
         s.setFinal(true);
         s.setAutomaton(this);
         _finalState = s;
+    }
+
+    @Override
+    public void setConnectionState(IState s) throws RuleAutomatonException {
+        if (_connectionState != null) {
+            throw new RuleAutomatonException(this, "Connection state already set");
+        }
+        _connectionState = s;
     }
 
     @Override

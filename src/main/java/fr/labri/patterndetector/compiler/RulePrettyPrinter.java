@@ -5,7 +5,7 @@ import fr.labri.patterndetector.rules.*;
 /**
  * Created by wbraik on 20/11/15.
  */
-public class RulePrettyPrinter extends RuleVisitor {
+public class RulePrettyPrinter extends AbstractRuleVisitor {
 
     int _row;
     int _column;
