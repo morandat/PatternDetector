@@ -1,5 +1,6 @@
 package fr.labri.patterndetector.compiler;
 
+import fr.labri.patterndetector.automaton.*;
 import fr.labri.patterndetector.rules.*;
 
 /**
@@ -10,17 +11,17 @@ import fr.labri.patterndetector.rules.*;
 public class RuleCompiler extends RuleVisitor {
 
     @Override
-    public void visit(Atom rule) {
-        rule.accept(this);
+    public void visit(Atom atom) {
+        atom.accept(this);
     }
 
     @Override
-    public void visit(FollowedBy rule) {
-        rule.accept(this);
+    public void visit(FollowedBy followedBy) {
+        followedBy.accept(this);
     }
 
     @Override
-    public void visit(Kleene rule) {
-        rule.accept(this);
+    public void visit(Kleene kleene) {
+        kleene.accept(this);
     }
 }

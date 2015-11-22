@@ -1,75 +1,75 @@
 package fr.labri.patterndetector.compiler;
 
-import fr.labri.patterndetector.rules.Atom;
-import fr.labri.patterndetector.rules.FollowedBy;
-import fr.labri.patterndetector.rules.IAtom;
-import fr.labri.patterndetector.rules.Kleene;
+import fr.labri.patterndetector.rules.*;
 
 /**
  * Created by wbraik on 20/11/15.
  */
 public class RulePrettyPrinter extends RuleVisitor {
 
-    private int _indent;
-    private boolean _newLine;
-    private boolean _haveLeftSibling;
-    private int _parentIndent;
+    int _row;
+    int _column;
 
     public RulePrettyPrinter() {
-        _indent = 50;
-        _newLine = true;
-        _haveLeftSibling = false;
-        _parentIndent = -1;
+        _row = 0;
+        _column = 50;
     }
 
-    private RulePrettyPrinter(int indent, boolean newLine, boolean haveLeftSibling, int parentIndent) {
-        _indent = indent;
-        _newLine = newLine;
-        _haveLeftSibling = haveLeftSibling;
-        _parentIndent = parentIndent;
+    private RulePrettyPrinter(int row, int column) {
+        _row = row;
+        _column = column;
+    }
+
+    public void startVisit(IRule root) {
+        String indent = "";
+        for (int i = 0; i < _column; i++) {
+            indent += " ";
+        }
+
+        System.out.println(indent + (root instanceof IAtom ? root : root.getSymbol()));
+
+        root.accept(this);
     }
 
     @Override
     public void visit(Atom atom) {
-        String indent = "";
-        for (int i = 0; i < _indent - (_haveLeftSibling ? _parentIndent : 0); i++) {
-            indent += " ";
-        }
 
-        System.out.print(indent + atom);
-
-        if (_newLine)
-            System.out.println();
     }
 
     @Override
     public void visit(Kleene kleene) {
+        IRule k = kleene.getChildRule();
+
         String indent = "";
-        for (int i = 0; i < _indent - (_haveLeftSibling ? _parentIndent : 0); i++) {
+        for (int i = 0; i < _column; i++) {
             indent += " ";
         }
 
-        System.out.print(indent + kleene.getSymbol());
+        System.out.print(indent + (k instanceof IAtom ? k : k.getSymbol()));
+        System.out.println();
 
-        if (_newLine)
-            System.out.println();
-
-        kleene.getChildRule().accept(new RulePrettyPrinter(_indent, true, false, _indent));
+        k.accept(new RulePrettyPrinter(_row + 1, _column));
     }
 
     @Override
     public void visit(FollowedBy followedBy) {
-        String indent = "";
-        for (int i = 0; i < _indent - (_haveLeftSibling ? _parentIndent : 0); i++) {
-            indent += " ";
+        IRule left = followedBy.getLeftChildRule();
+        IRule right = followedBy.getRightChildRule();
+
+        String indentLeft = "";
+        for (int i = 0; i < _column - 2; i++) {
+            indentLeft += " ";
+        }
+        String indentRight = "";
+        for (int i = 0; i < 3; i++) {
+            indentRight += " ";
         }
 
-        System.out.print(indent + followedBy.getSymbol());
+        System.out.print(indentLeft + (right instanceof IAtom ? right : right.getSymbol()));
+        System.out.print(indentRight + (left instanceof IAtom ? left : left.getSymbol()));
+        System.out.println();
 
-        if (_newLine)
-            System.out.println();
-
-        followedBy.getLeftChildRule().accept(new RulePrettyPrinter(_indent - 1, false, false, _indent));
-        followedBy.getRightChildRule().accept(new RulePrettyPrinter(_indent + 3, true, true, _indent));
+        right.accept(new RulePrettyPrinter(_row + 1, _column - 2));
+        left.accept(new RulePrettyPrinter(_row + 1, _column + 2));
     }
 }

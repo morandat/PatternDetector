@@ -18,11 +18,11 @@ public class TestVisitors {
     public static void main(String[] args) {
         TestVisitors main = new TestVisitors();
 
-        //IRule r = new Atom("a");
-        IRule r = new FollowedBy(new Kleene("a"), new FollowedBy("b", "c"));
+        IRule r = new Atom("a");
         //IRule r = new FollowedBy("a", "b");
         //IRule r = new Kleene("a");
         //IRule r = new FollowedBy(new Kleene("a"), "b");
+        //IRule r = new FollowedBy(new Kleene(new FollowedBy("x", "y")), new FollowedBy("b", new Kleene("c")));
 
         //DefaultTraversal v = new DefaultTraversal();
         //r.accept(v);
@@ -37,7 +37,7 @@ public class TestVisitors {
         atoms.forEach(System.out::println);*/
 
         RulePrettyPrinter prettyPrinter = new RulePrettyPrinter();
-        r.accept(prettyPrinter);
+        prettyPrinter.startVisit(r);
     }
 
     public ArrayList<IAtom> collectAtomsNotInKleene(IRule root) {

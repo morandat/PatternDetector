@@ -12,7 +12,7 @@ import fr.labri.patterndetector.compiler.RuleVisitor;
  */
 public class FollowedBy extends AbstractBinaryRule {
 
-    public static final String Symbol = "-->";
+    public static final String Symbol = ".";
 
     public FollowedBy(IRule left, IRule right) {
         super(FollowedBy.Symbol, left, right);
