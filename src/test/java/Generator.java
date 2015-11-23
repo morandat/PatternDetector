@@ -15,11 +15,7 @@ import java.util.Collection;
  */
 public final class Generator {
 
-    private long _t;
-
-    public Generator() {
-        _t = 0;
-    }
+    private long _t = 0;
 
     /**
      * Initialize the generator.

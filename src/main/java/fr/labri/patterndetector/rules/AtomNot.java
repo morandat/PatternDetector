@@ -24,21 +24,6 @@ public class AtomNot extends AbstractAtom {
         super(eventType, predicates);
     }
 
-    /*public void buildAutomaton() throws RuleAutomatonException {
-        IState i = new State(); // Initial state
-        IState f = new State(); // Final state
-
-        i.registerTransition(i, _eventType, TransitionType.TRANSITION_DROP);
-        i.registerTransition(f, Transition.LABEL_STAR, TransitionType.TRANSITION_APPEND, _predicates);
-
-        IRuleAutomaton automaton = new RuleAutomaton();
-        automaton.setInitialState(i);
-        automaton.setFinalState(f);
-        _connectionStateLabel = f.getLabel();
-
-        _automaton = automaton;
-    }*/
-
     @Override
     public String toString() {
         return "!" + _eventType;

@@ -14,10 +14,10 @@ public abstract class AbstractRule implements IRule {
 
     // Concrete subclasses should log with their own class names
     protected final Logger logger = LoggerFactory.getLogger(getClass());
+
     protected String _name;
     protected String _symbol;
     protected TimeConstraint _timeConstraint;
-    protected IRuleAutomaton _automaton;
 
     public AbstractRule(String symbol) {
         _symbol = symbol;
@@ -47,12 +47,6 @@ public abstract class AbstractRule implements IRule {
     public IRule setTimeConstraint(TimeConstraint timeConstraint) {
         _timeConstraint = timeConstraint;
 
-        // If the automaton isn't built yet, the clock guards will be created later on, at build time.
-        // Otherwise, the clock guards need to be added immediately to the existing automaton.
-        /*if (_automaton != null) {
-            // TODO createClockConstraints()
-        }*/
-
         return this;
     }
 
@@ -60,18 +54,4 @@ public abstract class AbstractRule implements IRule {
     public IRule setTimeConstraint(int value) {
         return setTimeConstraint(new TimeConstraint(value));
     }
-
-    /*@Override
-    public final IRuleAutomaton getAutomaton() throws RuleAutomatonException {
-        if (_automaton == null) {
-            buildAutomaton();
-
-            logger.debug(_automaton.toString());
-        }
-
-        return _automaton;
-    }*/
-
-    // TODO this method will disappear. Automaton construction code will be put in the compiler visitor.
-    //protected abstract void buildAutomaton() throws RuleAutomatonException;
 }

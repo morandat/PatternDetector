@@ -30,7 +30,7 @@ public final class AutomatonUtils {
      */
     public static IRuleAutomaton copy(IRuleAutomaton automaton) {
         IRuleAutomaton automatonCopy = new RuleAutomaton();
-        startCopy(automaton.getInitialState(), automatonCopy);
+        doCopy(automaton.getInitialState(), automatonCopy);
 
         return automatonCopy;
     }
@@ -42,7 +42,7 @@ public final class AutomatonUtils {
      * @param automatonCopy The automaton copy.
      * @return A copy of the current state.
      */
-    private static IState startCopy(IState currentState, IRuleAutomaton automatonCopy) {
+    private static IState doCopy(IState currentState, IRuleAutomaton automatonCopy) {
         IState stateCopy = new State();
         stateCopy.setFinal(currentState.isFinal());
         stateCopy.setInitial(currentState.isInitial());
@@ -60,7 +60,7 @@ public final class AutomatonUtils {
                 IState target = t.getTarget();
 
                 if (automatonCopy.getState(target.getLabel()) == null) {
-                    target = startCopy(target, automatonCopy);
+                    target = doCopy(target, automatonCopy);
                     stateCopy.registerTransition(target, t.getLabel(), t.getType(), t.getClockGuard());
                 } else {
                     stateCopy.registerTransition(automatonCopy.getState(target.getLabel()), t.getLabel(), t.getType(),
@@ -94,7 +94,7 @@ public final class AutomatonUtils {
 
         try {
             powersetAutomaton.setInitialState(initialState);
-            startPowerset(initialStateSet, allStateSets, powersetAutomaton);
+            doPowerset(initialStateSet, allStateSets, powersetAutomaton);
         } catch (RuleAutomatonException e) {
             logger.error("Powerset failed : " + e.getMessage() + "\n" + e.getRuleAutomaton());
 
@@ -112,8 +112,8 @@ public final class AutomatonUtils {
      * @param allStateSets    All state sets.
      * @param finalAutomaton  The final DFA.
      */
-    private static void startPowerset(Set<IState> currentStateSet, Map<Set<String>, IState> allStateSets,
-                                      IRuleAutomaton finalAutomaton) {
+    private static void doPowerset(Set<IState> currentStateSet, Map<Set<String>, IState> allStateSets,
+                                   IRuleAutomaton finalAutomaton) {
         Map<String, Set<IState>> targetStateSets = new HashMap<>();
         Map<String, TransitionType> transitionTypes = new HashMap<>();
         Map<String, ClockGuard> clockGuards = new HashMap<>();
@@ -127,6 +127,8 @@ public final class AutomatonUtils {
                         stateSet = new HashSet<>();
                     }
 
+                    // FIXME Potential bugs if two transitions with the same label originate from the same state set ;
+                    // FIXME In this case, the transition picked last "wins" (its attribute overwrite the previous ones)
                     stateSet.add(t.getTarget());
                     targetStateSets.put(t.getLabel(), stateSet);
                     transitionTypes.put(t.getLabel(), t.getType());
@@ -146,10 +148,10 @@ public final class AutomatonUtils {
                     Collectors.toSet()));
 
             if (targetState == null) {
-                // New state set detected, must create new target state
+                // New state set found, create a new state which corresponds to it
                 targetState = new State();
 
-                if (isFinalStateSet(targetStateSet)) {
+                if (isStateSetFinal(targetStateSet)) {
                     try {
                         finalAutomaton.setFinalState(targetState);
                     } catch (RuleAutomatonException e) {
@@ -165,9 +167,10 @@ public final class AutomatonUtils {
 
                 allStateSets.put(targetStateSet.stream().map(IState::getLabel).collect(Collectors.toSet()), targetState);
 
-                startPowerset(targetStateSet, allStateSets, finalAutomaton);
+                doPowerset(targetStateSet, allStateSets, finalAutomaton);
             }
 
+            // Create a transition to the target state set with the attributes which correspond to the label.
             IState currentState = allStateSets.get(currentStateSet.stream().map(IState::getLabel).collect(
                     Collectors.toSet()));
             currentState.registerTransition(targetState, label, transitionTypes.get(label), clockGuards.get(label),
@@ -176,7 +179,8 @@ public final class AutomatonUtils {
     }
 
     /**
-     * Used by Powerset to extend a state set by absorbing the target states of all outgoing epsilon transitions.
+     * Extend a state set by absorbing the target states of all outgoing epsilon transitions.
+     * Used by the Powerset algorithm.
      *
      * @param stateSet      The state set to extend.
      * @param checkedStates The states that have already been absorbed into the state set.
@@ -200,8 +204,7 @@ public final class AutomatonUtils {
             }
         }
 
-        /* If new states have been added to the state set, we need to check those new states for epsilon transitions,
-        and keep extending the state set if needed. If no new epsilon transitions are found, we can stop extending. */
+        // Recursion : if new states were added to the state set, the state set potentially needs to be extended again.
         if (statesAdded) {
             extendedStateSet = extendStateSet(extendedStateSet, checkedStates);
         }
@@ -210,12 +213,12 @@ public final class AutomatonUtils {
     }
 
     /**
-     * Check whether the state set contains at least one final state.
+     * Check whether the state set if final, i.e. contains at least one final state.
      *
-     * @param stateSet The state set to check for final states.
-     * @return True if the state set contains a final state, False otherwise.
+     * @param stateSet The state set to check.
+     * @return A boolean stating whether the state set contains a final state.
      */
-    private static boolean isFinalStateSet(Set<IState> stateSet) {
+    private static boolean isStateSetFinal(Set<IState> stateSet) {
         boolean isFinal = false;
 
         for (IState s : stateSet) {

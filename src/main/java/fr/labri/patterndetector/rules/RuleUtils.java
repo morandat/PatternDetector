@@ -36,9 +36,9 @@ public final class RuleUtils {
         if (rule instanceof IAtom) {
             return (IAtom) rule;
         } else if (rule instanceof AbstractUnaryRule) {
-            return getRightmostAtom(((AbstractUnaryRule) rule).getChildRule());
+            return getLeftmostAtom(((AbstractUnaryRule) rule).getChildRule());
         } else { // binary rule
-            return getRightmostAtom(((AbstractBinaryRule) rule).getLeftChildRule());
+            return getLeftmostAtom(((AbstractBinaryRule) rule).getLeftChildRule());
         }
     }
 }

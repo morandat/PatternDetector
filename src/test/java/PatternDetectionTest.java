@@ -117,30 +117,6 @@ public class PatternDetectionTest {
     }
 
     @Test
-    public void shouldThrowRuntimeExceptionNonTerminatingRule() {
-        _thrown.expect(RuntimeException.class);
-        _thrown.expectMessage(StringContains.containsString("Non-terminating rule"));
-
-        IRule r = new Kleene("a");
-
-        _ruleManager.addRule(r);
-        _detector.detect(_generator.generateKleene());
-    }
-
-
-    @Test
-    public void shouldThrowRuntimeExceptionNonTerminatingRule2() {
-        _thrown.expect(RuntimeException.class);
-        _thrown.expectMessage(StringContains.containsString("Non-terminating rule"));
-
-        IRule r = new FollowedBy("a", new Kleene("b"));
-
-        _ruleManager.addRule(r);
-        _detector.detect(_generator.generateKleene());
-    }
-
-
-    @Test
     public void shouldDetectASeqFollowedByB() {
         IRule r = new FollowedBy(new Kleene("a"), "b");
 
@@ -173,6 +149,59 @@ public class PatternDetectionTest {
         expected.add(new Event("a", 6));
         expected.add(new Event("b", 7));
         expected.add(new Event("c", 9));
+
+        Collection<IEvent> actual = _ruleManager.getLastPattern();
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldThrowRuntimeExceptionNonTerminatingRule() {
+        _thrown.expect(RuntimeException.class);
+        _thrown.expectMessage(StringContains.containsString("Non-terminating rule"));
+
+        IRule r = new Kleene("a");
+
+        _ruleManager.addRule(r);
+        _detector.detect(_generator.generateKleene());
+    }
+
+
+    @Test
+    public void shouldThrowRuntimeExceptionNonTerminatingRule2() {
+        _thrown.expect(RuntimeException.class);
+        _thrown.expectMessage(StringContains.containsString("Non-terminating rule"));
+
+        IRule r = new FollowedBy("a", new Kleene("b"));
+
+        _ruleManager.addRule(r);
+        _detector.detect(_generator.generateKleene());
+    }
+
+    @Test
+    public void shouldDetectAFollowedByBWithTimeConstraint() {
+        IRule r = new FollowedBy("a", "b").setTimeConstraint(5);
+
+        _ruleManager.addRule(r);
+        _detector.detect(_generator.generateFollowedBy());
+
+        Collection<IEvent> expected = new ArrayList<>();
+        expected.add(new Event("a", 1));
+        expected.add(new Event("b", 5));
+
+        Collection<IEvent> actual = _ruleManager.getLastPattern();
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldNotDetectAFollowedByBWithTimeConstraint() {
+        IRule r = new FollowedBy("a", "b").setTimeConstraint(3);
+
+        _ruleManager.addRule(r);
+        _detector.detect(_generator.generateFollowedBy());
+
+        Collection<IEvent> expected = new ArrayList<>();
 
         Collection<IEvent> actual = _ruleManager.getLastPattern();
 

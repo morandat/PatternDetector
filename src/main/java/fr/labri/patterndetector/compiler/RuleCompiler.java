@@ -3,15 +3,19 @@ package fr.labri.patterndetector.compiler;
 import fr.labri.patterndetector.automaton.*;
 import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
 import fr.labri.patterndetector.rules.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by wbraik on 20/11/15.
  * <p>
- * TODO Compiles a rule into a corresponding automaton by traversing the rule tree.
+ * Compiles a rule into a corresponding automaton by traversing the rule tree.
  */
 public class RuleCompiler extends AbstractRuleVisitor {
 
     private IRuleAutomaton _automaton;
+
+    private final Logger logger = LoggerFactory.getLogger(RuleCompiler.class);
 
     public IRuleAutomaton compile(IRule rule) {
         rule.accept(this);
@@ -34,7 +38,9 @@ public class RuleCompiler extends AbstractRuleVisitor {
 
             _automaton = automaton;
         } catch (RuleAutomatonException e) {
-            //TODO comment factoriser cette exception?
+            logger.error("Compilation failed : " + e.getMessage() + "(" + atom + ")\n"
+                    + e.getRuleAutomaton());
+
             throw new RuntimeException("Compilation failed : " + e.getMessage() + "(" + atom + ")");
         }
 
@@ -82,9 +88,7 @@ public class RuleCompiler extends AbstractRuleVisitor {
             State s = new State();
 
             // If the left automaton is Kleene, then the negation transition is already on the connection state.
-            //if (!(followedBy.getLeftChildRule() instanceof Kleene)) { // FIXME this code is ugly
             s.registerStarTransition(s, TransitionType.TRANSITION_DROP);
-            //}
 
             automaton.addState(s);
 
@@ -93,12 +97,21 @@ public class RuleCompiler extends AbstractRuleVisitor {
             leftConnectionState.registerEpsilonTransition(s);
             s.registerEpsilonTransition(rightInitialState);
 
-            _automaton = automaton;
+            // TODO If a time constraint is specified, create clock constraints.
+            if (followedBy.getTimeConstraint() != null) {
+                int value = followedBy.getTimeConstraint().getValue();
 
-            // If a time constraint is specified, create clock constraints now.
-            //TODO createClockGuards();
+                s.getTransitionsByLabel(Transition.LABEL_STAR).get(0)
+                        .setClockGuard(followedBy.getLeftChildRule().getRightmostAtom().getEventType(), value);
+                rightAutomaton.getTransitions().forEach(t ->
+                        t.setClockGuard(followedBy.getLeftChildRule().getRightmostAtom().getEventType(), value));
+            }
+
+            _automaton = automaton;
         } catch (RuleAutomatonException e) {
-            //TODO comment factoriser cette exception?
+            logger.error("Compilation failed : " + e.getMessage() + "(" + followedBy + ")\n"
+                    + e.getRuleAutomaton());
+
             throw new RuntimeException("Compilation failed : " + e.getMessage() + "(" + followedBy + ")");
         }
     }
@@ -130,9 +143,21 @@ public class RuleCompiler extends AbstractRuleVisitor {
             s.registerEpsilonTransition(baseInitialState);
             automaton.addState(s);
 
+            // TODO If a time constraint is specified, create clock constraints.
+            /*if (_timeConstraint != null) {
+                int value = _timeConstraint.getValue();
+
+                leftConnectionState.getTransitions().forEach(t ->
+                        t.setClockGuard(_leftChild.getRightmostAtom().getEventType(), value));
+                rightAutomaton.getTransitions().forEach(t ->
+                        t.setClockGuard(_leftChild.getRightmostAtom().getEventType(), value));
+            }*/
+
             _automaton = automaton;
         } catch (RuleAutomatonException e) {
-            //TODO comment factoriser cette exception?
+            logger.error("Compilation failed : " + e.getMessage() + "(" + kleene + ")\n"
+                    + e.getRuleAutomaton());
+
             throw new RuntimeException("Compilation failed : " + e.getMessage() + "(" + kleene + ")");
         }
     }

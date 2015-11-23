@@ -87,7 +87,9 @@ public class RuleAutomaton implements IRuleAutomaton {
     @Override
     public Collection<ITransition> getTransitions() {
         Set<ITransition> transitions = new HashSet<>();
+        transitions.addAll(_initialState.getTransitions());
         _states.values().forEach(state -> transitions.addAll(state.getTransitions()));
+        transitions.addAll(_finalState.getTransitions());
 
         return transitions;
     }

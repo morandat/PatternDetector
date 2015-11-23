@@ -20,15 +20,15 @@ public class RulePrettyPrinter extends AbstractRuleVisitor {
         _column = column;
     }
 
-    public void startVisit(IRule root) {
+    public void prettyPrint(IRule rule) {
         String indent = "";
         for (int i = 0; i < _column; i++) {
             indent += " ";
         }
 
-        System.out.println(indent + (root instanceof IAtom ? root : root.getSymbol()));
+        System.out.println(indent + (rule instanceof IAtom ? rule : rule.getSymbol()));
 
-        root.accept(this);
+        rule.accept(this);
     }
 
     @Override

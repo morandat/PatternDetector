@@ -27,35 +27,6 @@ public class Kleene extends AbstractUnaryRule {
                 (e.startsWith("!") ? new AtomNot(e.substring(1)) : new Atom(e)));
     }
 
-    /*public void buildAutomaton() throws RuleAutomatonException {
-        IRuleAutomaton baseAutomaton = _childRule.getAutomaton().copy();
-
-        IRuleAutomaton automaton = new RuleAutomaton();
-
-        // The initial state of the base component becomes the initial state of the Kleene automaton.
-        IState baseInitialState = baseAutomaton.getInitialState();
-        automaton.setInitialState(baseInitialState);
-
-        // The final state of the base component becomes a state of the Kleene automaton.
-        IState baseFinalState = baseAutomaton.getFinalState();
-        automaton.addState(baseFinalState);
-        _connectionStateLabel = baseFinalState.getLabel();
-
-        // The rest of the base component's states become states of the Kleene automaton.
-        baseAutomaton.getStates().forEach(automaton::addState);
-
-        // ### Add extra stuff to obtain the final Kleene automaton.
-
-        // State for ignoring irrelevant events occuring between left and right.
-        IState s = new State();
-        baseFinalState.registerEpsilonTransition(s);
-        s.registerStarTransition(s, TransitionType.TRANSITION_DROP);
-        s.registerEpsilonTransition(baseInitialState);
-        automaton.addState(s);
-
-        _automaton = automaton;
-    }*/
-
     @Override
     public void accept(IRuleVisitor visitor) {
         visitor.visit(this);
