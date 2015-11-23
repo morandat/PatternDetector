@@ -19,8 +19,10 @@ public class Main {
         Main main = new Main();
 
         //IRule a = new Atom("a");
-        IRule r = new FollowedBy("a", "b").setTimeConstraint(5);
-        //IRule r = new Kleene("a");
+        //IRule r = new FollowedBy("a", "b")
+        // .setTimeConstraint(5);
+        IRule r = new FollowedBy(new Kleene("a").setTimeConstraint(5),
+                "b");
         //IRule r = new FollowedBy(new Kleene("a"), "b");
         //IRule r = new Kleene(new FollowedBy("a", "b"));
         //IRule r = new FollowedBy(new Kleene(new FollowedBy("x", "y")), new FollowedBy("b", new Kleene("c")));

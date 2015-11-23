@@ -66,6 +66,37 @@ public final class Generator {
         eventStream.add(new Event("b", _t++));
         eventStream.add(new Event("x", _t++));
         eventStream.add(new Event("c", _t++));
+        eventStream.add(new Event("a", _t++));
+        eventStream.add(new Event("end", _t++));
+
+        return eventStream;
+    }
+
+    public Collection<IEvent> generateKleene2() {
+        // ... a .. a .. a .. a .. a .. a .. a ...
+
+        Collection<IEvent> eventStream = new ArrayList<>();
+
+        eventStream.add(new Event("x", _t++));
+        eventStream.add(new Event("a", _t++));
+        eventStream.add(new Event("c", _t++));
+        eventStream.add(new Event("b", _t++));
+        eventStream.add(new Event("x", _t++));
+        eventStream.add(new Event("x", _t++));
+        eventStream.add(new Event("x", _t++));
+        eventStream.add(new Event("x", _t++));
+        eventStream.add(new Event("a", _t++));
+        eventStream.add(new Event("y", _t++));
+        eventStream.add(new Event("y", _t++));
+        eventStream.add(new Event("y", _t++));
+        eventStream.add(new Event("y", _t++));
+        eventStream.add(new Event("y", _t++));
+        eventStream.add(new Event("y", _t++));
+        eventStream.add(new Event("y", _t++));
+        eventStream.add(new Event("b", _t++));
+        eventStream.add(new Event("x", _t++));
+        eventStream.add(new Event("c", _t++));
+        eventStream.add(new Event("end", _t++));
 
         return eventStream;
     }

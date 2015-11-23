@@ -207,4 +207,79 @@ public class PatternDetectionTest {
 
         Assert.assertEquals(expected, actual);
     }
+
+    @Test
+    public void shouldDetectASeqWithTimeConstraint() {
+        IRule r = new FollowedBy(
+                new Kleene("a").setTimeConstraint(5),
+                "end");
+
+        _ruleManager.addRule(r);
+        _detector.detect(_generator.generateKleene());
+
+        Collection<IEvent> expected = new ArrayList<>();
+        expected.add(new Event("a", 1));
+        expected.add(new Event("a", 3));
+        expected.add(new Event("a", 4));
+        expected.add(new Event("a", 6));
+        expected.add(new Event("a", 10));
+        expected.add(new Event("end", 11));
+
+        Collection<IEvent> actual = _ruleManager.getLastPattern();
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldNotDetectASeqWithTimeConstraint() {
+        IRule r = new FollowedBy(
+                new Kleene("a").setTimeConstraint(3),
+                "end");
+
+        _ruleManager.addRule(r);
+        _detector.detect(_generator.generateKleene());
+
+        Collection<IEvent> expected = new ArrayList<>();
+
+        Collection<IEvent> actual = _ruleManager.getLastPattern();
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldDetectAFollowedByBSeqWithTimeConstraint() {
+        IRule r = new FollowedBy(
+                new Kleene(new FollowedBy("a", "b")).setTimeConstraint(5),
+                "end");
+
+        _ruleManager.addRule(r);
+        _detector.detect(_generator.generateKleene2());
+
+        Collection<IEvent> expected = new ArrayList<>();
+        expected.add(new Event("a", 1));
+        expected.add(new Event("b", 3));
+        expected.add(new Event("a", 8));
+        expected.add(new Event("b", 16));
+        expected.add(new Event("end", 19));
+
+        Collection<IEvent> actual = _ruleManager.getLastPattern();
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldNotDetectAFollowedByBSeqWithTimeConstraint() {
+        IRule r = new FollowedBy(
+                new Kleene(new FollowedBy("a", "b")).setTimeConstraint(4),
+                "end");
+
+        _ruleManager.addRule(r);
+        _detector.detect(_generator.generateKleene2());
+
+        Collection<IEvent> expected = new ArrayList<>();
+
+        Collection<IEvent> actual = _ruleManager.getLastPattern();
+
+        Assert.assertEquals(expected, actual);
+    }
 }

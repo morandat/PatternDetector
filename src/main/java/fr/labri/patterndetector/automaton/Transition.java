@@ -23,8 +23,6 @@ public class Transition implements ITransition {
         _target = target;
         _label = label;
         _type = type;
-        _clockGuard = null;
-        _predicates = null;
     }
 
     public Transition(IState source, IState target, String label, TransitionType type, ClockGuard clockGuard) {
@@ -33,19 +31,19 @@ public class Transition implements ITransition {
         _label = label;
         _type = type;
         _clockGuard = clockGuard;
-        _predicates = null;
     }
 
-    public Transition(IState source, IState target, String label, TransitionType type, Map<String, Predicate<Integer>> predicates) {
+    public Transition(IState source, IState target, String label, TransitionType type,
+                      Map<String, Predicate<Integer>> predicates) {
         _source = source;
         _target = target;
         _label = label;
         _type = type;
         _predicates = predicates;
-        _clockGuard = null;
     }
 
-    public Transition(IState source, IState target, String label, TransitionType type, ClockGuard clockGuard, Map<String, Predicate<Integer>> predicates) {
+    public Transition(IState source, IState target, String label, TransitionType type, ClockGuard clockGuard,
+                      Map<String, Predicate<Integer>> predicates) {
         _source = source;
         _target = target;
         _label = label;
@@ -126,7 +124,8 @@ public class Transition implements ITransition {
 
     @Override
     public String toString() {
-        return _source + ":" + _label + " => " + _target + " [" + _type + "]" + (_clockGuard == null ? "" : " {" + _clockGuard + "}");
+        return _source + ":" + _label + " => " + _target + " [" + _type + "]"
+                + (_clockGuard == null ? "" : " {" + _clockGuard + "}");
     }
 
     @Override

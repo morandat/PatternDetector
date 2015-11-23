@@ -97,14 +97,14 @@ public class RuleCompiler extends AbstractRuleVisitor {
             leftConnectionState.registerEpsilonTransition(s);
             s.registerEpsilonTransition(rightInitialState);
 
-            // TODO If a time constraint is specified, create clock constraints.
+            // If a time constraint is specified, create clock constraints.
             if (followedBy.getTimeConstraint() != null) {
                 int value = followedBy.getTimeConstraint().getValue();
 
-                s.getTransitionsByLabel(Transition.LABEL_STAR).get(0)
-                        .setClockGuard(followedBy.getLeftChildRule().getRightmostAtom().getEventType(), value);
                 rightAutomaton.getTransitions().forEach(t ->
                         t.setClockGuard(followedBy.getLeftChildRule().getRightmostAtom().getEventType(), value));
+                s.getTransitionsByLabel(Transition.LABEL_STAR).get(0)
+                        .setClockGuard(followedBy.getLeftChildRule().getRightmostAtom().getEventType(), value);
             }
 
             _automaton = automaton;
@@ -136,22 +136,22 @@ public class RuleCompiler extends AbstractRuleVisitor {
 
             // ### Add extra stuff to obtain the final Kleene automaton.
 
-            // State for ignoring irrelevant events occuring between left and right.
+            // State for ignoring irrelevant events occuring between each event captured by the Kleene sequence.
             IState s = new State();
             baseFinalState.registerEpsilonTransition(s);
             s.registerStarTransition(s, TransitionType.TRANSITION_DROP);
             s.registerEpsilonTransition(baseInitialState);
             automaton.addState(s);
 
-            // TODO If a time constraint is specified, create clock constraints.
-            /*if (_timeConstraint != null) {
-                int value = _timeConstraint.getValue();
+            // If a time constraint is specified, create clock constraints.
+            if (kleene.getTimeConstraint() != null) {
+                int value = kleene.getTimeConstraint().getValue();
 
-                leftConnectionState.getTransitions().forEach(t ->
-                        t.setClockGuard(_leftChild.getRightmostAtom().getEventType(), value));
-                rightAutomaton.getTransitions().forEach(t ->
-                        t.setClockGuard(_leftChild.getRightmostAtom().getEventType(), value));
-            }*/
+                baseAutomaton.getInitialState().getTransitions().forEach(t ->
+                        t.setClockGuard(kleene.getChildRule().getRightmostAtom().getEventType(), value));
+                s.getTransitionsByLabel(Transition.LABEL_STAR).get(0)
+                        .setClockGuard(kleene.getChildRule().getRightmostAtom().getEventType(), value);
+            }
 
             _automaton = automaton;
         } catch (RuleAutomatonException e) {

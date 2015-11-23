@@ -211,7 +211,7 @@ public class RuleAutomaton implements IRuleAutomaton {
         if (clockGuard == null) {
             return true;
         } else if (_clocks.get(clockGuard.getEventType()) == null) {
-            return false;
+            return true;
         } else {
             long timeLast = _clocks.get(clockGuard.getEventType());
             long timeSinceLast = currentTime - timeLast;
