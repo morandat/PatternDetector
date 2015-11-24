@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Compiles a rule into a corresponding automaton by traversing the rule tree.
  */
+// FIXME RuleCompiler is not a visitor, it just has a compile() method that creates a visitor
 public class RuleCompiler extends AbstractRuleVisitor {
 
     private IRuleAutomaton _automaton;
@@ -43,7 +44,6 @@ public class RuleCompiler extends AbstractRuleVisitor {
 
             throw new RuntimeException("Compilation failed : " + e.getMessage() + "(" + atom + ")");
         }
-
     }
 
     @Override

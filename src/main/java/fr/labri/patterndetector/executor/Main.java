@@ -3,6 +3,7 @@ package fr.labri.patterndetector.executor;
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.compiler.AtomCollector;
 import fr.labri.patterndetector.compiler.RuleCompiler;
+import fr.labri.patterndetector.compiler.RulePrettyPrinter;
 import fr.labri.patterndetector.rules.*;
 
 import java.util.ArrayList;
@@ -21,11 +22,11 @@ public class Main {
         //IRule a = new Atom("a");
         //IRule r = new FollowedBy("a", "b")
         // .setTimeConstraint(5);
-        IRule r = new FollowedBy(new Kleene("a").setTimeConstraint(5),
-                "b");
+        /*IRule r = new FollowedBy(new Kleene("a").setTimeConstraint(5),
+                "b");*/
         //IRule r = new FollowedBy(new Kleene("a"), "b");
         //IRule r = new Kleene(new FollowedBy("a", "b"));
-        //IRule r = new FollowedBy(new Kleene(new FollowedBy("x", "y")), new FollowedBy("b", new Kleene("c")));
+        IRule r = new FollowedBy(new Kleene(new FollowedBy("x", "y")), new FollowedBy("b", new Kleene("c")));
 
         //DefaultTraversal v = new DefaultTraversal();
         //r.accept(v);
@@ -39,12 +40,12 @@ public class Main {
         System.out.println(atoms.size() + " atoms found :");
         atoms.forEach(System.out::println);*/
 
-        /*RulePrettyPrinter prettyPrinter = new RulePrettyPrinter();
-        prettyPrinter.prettyPrint(r);*/
+        RulePrettyPrinter prettyPrinter = new RulePrettyPrinter(System.out);
+        prettyPrinter.prettyPrint(r);
 
-        RuleCompiler compiler = new RuleCompiler();
+        /*RuleCompiler compiler = new RuleCompiler();
         IRuleAutomaton automaton = compiler.compile(r);
         System.out.println(automaton);
-        System.out.println(automaton.powerset());
+        System.out.println(automaton.powerset());*/
     }
 }
