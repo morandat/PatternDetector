@@ -1,12 +1,9 @@
 package fr.labri.patterndetector.executor;
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
-import fr.labri.patterndetector.compiler.AtomCollector;
-import fr.labri.patterndetector.compiler.RuleCompiler;
-import fr.labri.patterndetector.compiler.RulePrettyPrinter;
-import fr.labri.patterndetector.rules.*;
-
-import java.util.ArrayList;
+import fr.labri.patterndetector.rule.visitors.RuleAutomatonBuilder;
+import fr.labri.patterndetector.rule.visitors.RulePrinter;
+import fr.labri.patterndetector.rule.*;
 
 /**
  * Created by William Braik on 6/22/2015.
@@ -17,10 +14,12 @@ import java.util.ArrayList;
 public class Main {
 
     public static void main(String[] args) {
-        Main main = new Main();
 
-        //IRule a = new Atom("a");
-        //IRule r = new FollowedBy("a", "b")
+        Main main = new Main();
+        RulePrinter stdoutRulePrinter = new RulePrinter(System.out);
+
+        //IRule r = new Atom("a");
+        //IRule r = new FollowedBy("a", "b");
         // .setTimeConstraint(5);
         /*IRule r = new FollowedBy(new Kleene("a").setTimeConstraint(5),
                 "b");*/
@@ -28,24 +27,11 @@ public class Main {
         //IRule r = new Kleene(new FollowedBy("a", "b"));
         IRule r = new FollowedBy(new Kleene(new FollowedBy("x", "y")), new FollowedBy("b", new Kleene("c")));
 
-        //DefaultTraversal v = new DefaultTraversal();
-        //r.accept(v);
+        stdoutRulePrinter.printRule(r);
 
-        /*AtomCollector v = new AtomCollector();
-        ArrayList<IAtom> atoms = v.collect(r);
-        System.out.println(atoms.size() + " atoms found :");
-        atoms.forEach(System.out::println);*/
-
-        /*ArrayList<IAtom> atoms = main.collectAtomsNotInKleene(r);
-        System.out.println(atoms.size() + " atoms found :");
-        atoms.forEach(System.out::println);*/
-
-        RulePrettyPrinter prettyPrinter = new RulePrettyPrinter(System.out);
-        prettyPrinter.prettyPrint(r);
-
-        /*RuleCompiler compiler = new RuleCompiler();
-        IRuleAutomaton automaton = compiler.compile(r);
+        RuleAutomatonBuilder compiler = new RuleAutomatonBuilder();
+        IRuleAutomaton automaton = compiler.buildAutomaton(r);
         System.out.println(automaton);
-        System.out.println(automaton.powerset());*/
+        System.out.println(automaton.powerset());
     }
 }

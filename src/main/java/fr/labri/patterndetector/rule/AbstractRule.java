@@ -1,7 +1,6 @@
-package fr.labri.patterndetector.rules;
+package fr.labri.patterndetector.rule;
 
-import fr.labri.patterndetector.automaton.IRuleAutomaton;
-import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
+import fr.labri.patterndetector.rule.visitors.RuleStringifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,5 +52,10 @@ public abstract class AbstractRule implements IRule {
     @Override
     public IRule setTimeConstraint(int value) {
         return setTimeConstraint(new TimeConstraint(value));
+    }
+
+    @Override
+    public String toString() {
+        return new RuleStringifier().stringify(this);
     }
 }

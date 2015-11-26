@@ -1,6 +1,6 @@
-import fr.labri.patterndetector.rules.FollowedBy;
-import fr.labri.patterndetector.rules.IRule;
-import fr.labri.patterndetector.rules.Kleene;
+import fr.labri.patterndetector.rule.FollowedBy;
+import fr.labri.patterndetector.rule.IRule;
+import fr.labri.patterndetector.rule.Kleene;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;

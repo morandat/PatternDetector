@@ -1,6 +1,6 @@
-package fr.labri.patterndetector.compiler;
+package fr.labri.patterndetector.rule.visitors;
 
-import fr.labri.patterndetector.rules.*;
+import fr.labri.patterndetector.rule.*;
 
 /**
  * Created by wbraik on 22/10/15.
@@ -11,17 +11,16 @@ public abstract class AbstractRuleVisitor implements IRuleVisitor {
 
     @Override
     public void visit(IRule rule) {
-        rule.accept(this);
+    }
+
+    @Override
+    public void visit(ICompositeRule compositeRule) {
+        visit((IRule) compositeRule);
     }
 
     @Override
     public void visit(ITerminalRule terminalRule) {
         visit((IRule) terminalRule);
-    }
-
-    @Override
-    public void visit(ICompositeRule compositeRule) {
-        compositeRule.getChildRules().forEach(rule -> visit((IRule) rule));
     }
 
     @Override

@@ -1,8 +1,6 @@
-package fr.labri.patterndetector.rules;
+package fr.labri.patterndetector.rule;
 
-import fr.labri.patterndetector.automaton.*;
-import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
-import fr.labri.patterndetector.compiler.IRuleVisitor;
+import fr.labri.patterndetector.rule.visitors.IRuleVisitor;
 
 import java.util.Map;
 import java.util.function.Predicate;
@@ -13,20 +11,15 @@ import java.util.function.Predicate;
  * The complement of an atom.
  * Given an event type x, it represents an event of any type besides x.
  */
-@Deprecated
+@Deprecated //TODO to reintroduce once the ImmediatelyFollowedBy operator comes back
 public class AtomNot extends AbstractAtom {
 
     public AtomNot(String eventType) {
-        super(eventType);
+        super("!", eventType);
     }
 
     public AtomNot(String eventType, Map<String, Predicate<Integer>> predicates) {
         super(eventType, predicates);
-    }
-
-    @Override
-    public String toString() {
-        return "!" + _eventType;
     }
 
     @Override

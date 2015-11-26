@@ -1,4 +1,4 @@
-package fr.labri.patterndetector.rules;
+package fr.labri.patterndetector.rule;
 
 /**
  * Created by William Braik on 6/28/2015.

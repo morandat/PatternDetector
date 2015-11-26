@@ -3,7 +3,6 @@ package fr.labri.patterndetector.automaton;
 import fr.labri.patterndetector.automaton.exception.*;
 import fr.labri.patterndetector.executor.IEvent;
 import fr.labri.patterndetector.executor.IPatternObserver;
-import fr.labri.patterndetector.rules.IRule;
 
 import java.util.Collection;
 import java.util.Set;

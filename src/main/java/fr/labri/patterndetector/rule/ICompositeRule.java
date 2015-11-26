@@ -1,4 +1,4 @@
-package fr.labri.patterndetector.rules;
+package fr.labri.patterndetector.rule;
 
 import java.util.Collection;
 

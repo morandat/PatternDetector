@@ -1,7 +1,6 @@
 package fr.labri.patterndetector.automaton.exception;
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
-import fr.labri.patterndetector.rules.IRule;
 
 /**
  * Created by wbraik on 10/25/2015.

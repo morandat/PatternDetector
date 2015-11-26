@@ -1,6 +1,6 @@
-package fr.labri.patterndetector.compiler;
+package fr.labri.patterndetector.rule.visitors;
 
-import fr.labri.patterndetector.rules.*;
+import fr.labri.patterndetector.rule.*;
 
 /**
  * Created by wbraik on 19/11/15.

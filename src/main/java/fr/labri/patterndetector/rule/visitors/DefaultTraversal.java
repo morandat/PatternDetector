@@ -1,11 +1,13 @@
-package fr.labri.patterndetector.compiler;
+package fr.labri.patterndetector.rule.visitors;
 
-import fr.labri.patterndetector.rules.ICompositeRule;
-import fr.labri.patterndetector.rules.ITerminalRule;
+import fr.labri.patterndetector.rule.ICompositeRule;
+import fr.labri.patterndetector.rule.ITerminalRule;
 
 /**
  * Created by wbraik on 19/11/15.
  */
+
+@Deprecated
 public class DefaultTraversal extends AbstractRuleVisitor {
     @Override
     public void visit(ITerminalRule terminalRule) {

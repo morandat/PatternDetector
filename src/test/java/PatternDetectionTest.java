@@ -1,8 +1,8 @@
 import fr.labri.patterndetector.executor.*;
-import fr.labri.patterndetector.rules.Atom;
-import fr.labri.patterndetector.rules.FollowedBy;
-import fr.labri.patterndetector.rules.IRule;
-import fr.labri.patterndetector.rules.Kleene;
+import fr.labri.patterndetector.rule.Atom;
+import fr.labri.patterndetector.rule.FollowedBy;
+import fr.labri.patterndetector.rule.IRule;
+import fr.labri.patterndetector.rule.Kleene;
 import org.hamcrest.core.StringContains;
 import org.junit.*;
 import org.junit.rules.ExpectedException;

@@ -1,8 +1,6 @@
-package fr.labri.patterndetector.rules;
+package fr.labri.patterndetector.rule;
 
-import fr.labri.patterndetector.automaton.IRuleAutomaton;
-import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
-import fr.labri.patterndetector.compiler.IRuleVisitor;
+import fr.labri.patterndetector.rule.visitors.IRuleVisitor;
 
 /**
  * Created by William Braik on 6/25/2015.

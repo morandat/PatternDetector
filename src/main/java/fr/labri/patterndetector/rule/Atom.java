@@ -1,8 +1,6 @@
-package fr.labri.patterndetector.rules;
+package fr.labri.patterndetector.rule;
 
-import fr.labri.patterndetector.automaton.*;
-import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
-import fr.labri.patterndetector.compiler.IRuleVisitor;
+import fr.labri.patterndetector.rule.visitors.IRuleVisitor;
 
 import java.util.Map;
 import java.util.function.Predicate;
@@ -17,16 +15,11 @@ import java.util.function.Predicate;
 public class Atom extends AbstractAtom {
 
     public Atom(String eventType) {
-        super(eventType);
+        super("", eventType);
     }
 
     public Atom(String eventType, Map<String, Predicate<Integer>> predicates) {
         super(eventType, predicates);
-    }
-
-    @Override
-    public String toString() {
-        return _eventType;
     }
 
     @Override

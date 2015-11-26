@@ -1,4 +1,4 @@
-package fr.labri.patterndetector.rules;
+package fr.labri.patterndetector.rule;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,13 +9,13 @@ import java.util.function.Predicate;
  * <p>
  * Base class for atoms and atom negations.
  */
-public abstract class AbstractAtom extends AbstractRule implements IAtom {
+public abstract class AbstractAtom extends AbstractTerminalRule implements IAtom {
 
     protected String _eventType; // The event type
-    protected Map<String, Predicate<Integer>> _predicates; // Maps fields of the event's payload to predicates TODO à mettre au niveau règle ?
+    protected Map<String, Predicate<Integer>> _predicates; // Maps fields of the event's payload to predicates
 
-    public AbstractAtom(String eventType) {
-        super(null);
+    public AbstractAtom(String symbol, String eventType) {
+        super(symbol);
         _eventType = eventType;
         _predicates = null;
     }
