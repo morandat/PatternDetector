@@ -9,12 +9,5 @@ import fr.labri.patterndetector.rule.ITerminalRule;
 
 @Deprecated
 public class DefaultTraversal extends AbstractRuleVisitor {
-    @Override
-    public void visit(ITerminalRule terminalRule) {
-    }
-
-    @Override
-    public void visit(ICompositeRule compositeRule) {
-        compositeRule.getChildRules().forEach(rule -> rule.accept(this));
-    }
+// TODO classic depth first traversal
 }

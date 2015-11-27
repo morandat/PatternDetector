@@ -23,7 +23,7 @@ public final class AutomatonUtils {
     }
 
     /**
-     * Performs a copy of a rule automaton.
+     * Performs the copy of a rule automaton.
      *
      * @param automaton The rule automaton to copy.
      * @return A copy of the rule automaton.
@@ -128,7 +128,7 @@ public final class AutomatonUtils {
                     }
 
                     // FIXME Potential bugs if two transitions with the same label originate from the same state set ;
-                    // FIXME In this case, the transition picked last "wins" (its attribute overwrite the previous ones)
+                    // FIXME In that case, the transition picked last "wins" (its attribute overwrite the previous ones)
                     stateSet.add(t.getTarget());
                     targetStateSets.put(t.getLabel(), stateSet);
                     transitionTypes.put(t.getLabel(), t.getType());

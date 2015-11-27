@@ -11,18 +11,21 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Compiles a rule into a corresponding automaton by traversing the rule tree.
  */
-public class RuleAutomatonBuilder {
+public final class RuleAutomatonMaker {
 
-    public IRuleAutomaton buildAutomaton(IRule rule) {
-        RuleAutomatonBuilderVisitor visitor = new RuleAutomatonBuilderVisitor();
+    private RuleAutomatonMaker() {
+    }
+
+    public static IRuleAutomaton makeAutomaton(IRule rule) {
+        RuleAutomatonMakerVisitor visitor = new RuleAutomatonMakerVisitor();
         rule.accept(visitor);
 
         return visitor.getAutomaton();
     }
 
-    class RuleAutomatonBuilderVisitor extends AbstractRuleVisitor {
+    static class RuleAutomatonMakerVisitor extends AbstractRuleVisitor {
 
-        private final Logger logger = LoggerFactory.getLogger(RuleAutomatonBuilderVisitor.class);
+        private final Logger logger = LoggerFactory.getLogger(RuleAutomatonMakerVisitor.class);
 
         private IRuleAutomaton _automaton;
 
@@ -51,8 +54,8 @@ public class RuleAutomatonBuilder {
         @Override
         public void visit(FollowedBy followedBy) {
             try {
-                IRuleAutomaton leftAutomaton = new RuleAutomatonBuilder().buildAutomaton(followedBy.getLeftChildRule());
-                IRuleAutomaton rightAutomaton = new RuleAutomatonBuilder().buildAutomaton(followedBy.getRightChildRule());
+                IRuleAutomaton leftAutomaton = RuleAutomatonMaker.makeAutomaton(followedBy.getLeftChildRule());
+                IRuleAutomaton rightAutomaton = RuleAutomatonMaker.makeAutomaton(followedBy.getRightChildRule());
                 IRuleAutomaton automaton = new RuleAutomaton();
 
                 // ### Left component
@@ -121,7 +124,7 @@ public class RuleAutomatonBuilder {
         @Override
         public void visit(Kleene kleene) {
             try {
-                IRuleAutomaton baseAutomaton = new RuleAutomatonBuilder().buildAutomaton(kleene.getChildRule());
+                IRuleAutomaton baseAutomaton = RuleAutomatonMaker.makeAutomaton(kleene.getChildRule());
                 IRuleAutomaton automaton = new RuleAutomaton();
 
                 // The initial state of the base component becomes the initial state of the Kleene automaton.

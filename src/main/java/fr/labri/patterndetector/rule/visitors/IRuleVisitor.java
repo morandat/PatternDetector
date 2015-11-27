@@ -9,17 +9,19 @@ public interface IRuleVisitor {
 
     void visit(IRule rule);
 
-    void visit(ITerminalRule terminalRule);
+    void visit(AbstractTerminalRule terminalRule);
 
-    void visit(ICompositeRule compositeRule);
+    void visit(AbstractCompositeRule compositeRule);
 
-    void visit(IUnaryRule unaryRule);
+    void visit(AbstractUnaryRule unaryRule);
 
-    void visit(IBinaryRule binaryRule);
+    void visit(AbstractBinaryRule binaryRule);
 
-    void visit(IAtom atom);
+    void visit(AbstractAtom atom);
 
     void visit(Atom atom);
+
+    void visit(AtomNot atomNot);
 
     void visit(Kleene kleene);
 

@@ -14,43 +14,48 @@ public abstract class AbstractRuleVisitor implements IRuleVisitor {
     }
 
     @Override
-    public void visit(ICompositeRule compositeRule) {
+    public void visit(AbstractCompositeRule compositeRule) {
         visit((IRule) compositeRule);
     }
 
     @Override
-    public void visit(ITerminalRule terminalRule) {
+    public void visit(AbstractTerminalRule terminalRule) {
         visit((IRule) terminalRule);
     }
 
     @Override
-    public void visit(IUnaryRule unaryRule) {
-        visit((ICompositeRule) unaryRule);
+    public void visit(AbstractUnaryRule unaryRule) {
+        visit((AbstractCompositeRule) unaryRule);
     }
 
     @Override
-    public void visit(IBinaryRule binaryRule) {
-        visit((ICompositeRule) binaryRule);
+    public void visit(AbstractBinaryRule binaryRule) {
+        visit((AbstractCompositeRule) binaryRule);
     }
 
     @Override
-    public void visit(IAtom atom) {
-        visit((ITerminalRule) atom);
+    public void visit(AbstractAtom atom) {
+        visit((AbstractTerminalRule) atom);
     }
 
     @Override
     public void visit(Atom atom) {
-        visit((ITerminalRule) atom);
+        visit((AbstractAtom) atom);
+    }
+
+    @Override
+    public void visit(AtomNot atomNot) {
+        visit((AbstractAtom) atomNot);
     }
 
     @Override
     public void visit(Kleene kleene) {
-        visit((ICompositeRule) kleene);
+        visit((AbstractUnaryRule) kleene);
     }
 
     @Override
     public void visit(FollowedBy followedBy) {
-        visit((ICompositeRule) followedBy);
+        visit((AbstractBinaryRule) followedBy);
     }
 }
 

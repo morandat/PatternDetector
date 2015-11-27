@@ -1,7 +1,7 @@
 package fr.labri.patterndetector.executor;
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
-import fr.labri.patterndetector.rule.visitors.RuleAutomatonBuilder;
+import fr.labri.patterndetector.rule.visitors.RuleAutomatonMaker;
 import fr.labri.patterndetector.rule.visitors.RulePrinter;
 import fr.labri.patterndetector.rule.*;
 
@@ -16,7 +16,6 @@ public class Main {
     public static void main(String[] args) {
 
         Main main = new Main();
-        RulePrinter stdoutRulePrinter = new RulePrinter(System.out);
 
         //IRule r = new Atom("a");
         //IRule r = new FollowedBy("a", "b");
@@ -27,10 +26,11 @@ public class Main {
         //IRule r = new Kleene(new FollowedBy("a", "b"));
         IRule r = new FollowedBy(new Kleene(new FollowedBy("x", "y")), new FollowedBy("b", new Kleene("c")));
 
-        stdoutRulePrinter.printRule(r);
+        // TODO new Or("a","b")
 
-        RuleAutomatonBuilder compiler = new RuleAutomatonBuilder();
-        IRuleAutomaton automaton = compiler.buildAutomaton(r);
+        RulePrinter.printRule(System.out, r);
+
+        IRuleAutomaton automaton = RuleAutomatonMaker.makeAutomaton(r);
         System.out.println(automaton);
         System.out.println(automaton.powerset());
     }

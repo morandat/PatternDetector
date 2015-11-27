@@ -7,7 +7,7 @@ package fr.labri.patterndetector.executor;
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.automaton.exception.*;
-import fr.labri.patterndetector.rule.visitors.RuleAutomatonBuilder;
+import fr.labri.patterndetector.rule.visitors.RuleAutomatonMaker;
 import fr.labri.patterndetector.rule.IRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public final class RuleManager implements IPatternObserver {
      * @return The rule's name.
      */
     public String addRule(IRule rule) {
-        IRuleAutomaton automaton = new RuleAutomatonBuilder().buildAutomaton(rule); // Try to build the rule automaton.
+        IRuleAutomaton automaton = RuleAutomatonMaker.makeAutomaton(rule); // Try to build the rule automaton.
 
         rule.setName(rule.getName() == null ? rule.getClass().getSimpleName() + "-" + _ruleCounter++
                 : rule.getName() + "-" + _ruleCounter++);

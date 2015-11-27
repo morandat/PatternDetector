@@ -9,15 +9,12 @@ import java.io.PrintStream;
  * <p>
  * Used to printRule rules.
  */
-public class RulePrinter {
+public final class RulePrinter {
 
-    PrintStream _out;
-
-    public RulePrinter(PrintStream out) {
-        _out = out;
+    private RulePrinter() {
     }
 
-    public void printRule(IRule rule) {
-        _out.println(new RuleStringifier().stringify(rule));
+    public static void printRule(PrintStream out, IRule rule) {
+        out.println(RuleStringifier.stringify(rule));
     }
 }

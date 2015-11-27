@@ -1,6 +1,6 @@
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.automaton.RuleAutomaton;
-import fr.labri.patterndetector.rule.visitors.RuleAutomatonBuilder;
+import fr.labri.patterndetector.rule.visitors.RuleAutomatonMaker;
 import fr.labri.patterndetector.rule.Atom;
 import fr.labri.patterndetector.rule.IRule;
 import org.hamcrest.core.StringContains;
@@ -33,7 +33,7 @@ public class AutomatonTest {
     public void shouldCompileAtom() {
         IRule r = new Atom("a");
 
-        IRuleAutomaton actual = new RuleAutomatonBuilder().buildAutomaton(r);
+        IRuleAutomaton actual = RuleAutomatonMaker.makeAutomaton(r);
 
         IRuleAutomaton expected = new RuleAutomaton();
 

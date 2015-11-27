@@ -56,6 +56,6 @@ public abstract class AbstractRule implements IRule {
 
     @Override
     public String toString() {
-        return new RuleStringifier().stringify(this);
+        return RuleStringifier.stringify(this);
     }
 }
