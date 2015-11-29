@@ -57,6 +57,11 @@ public abstract class AbstractRuleVisitor implements IRuleVisitor {
     public void visit(FollowedBy followedBy) {
         visit((AbstractBinaryRule) followedBy);
     }
+
+    @Override
+    public void visit(Or or) {
+        visit((AbstractBinaryRule) or);
+    }
 }
 
 

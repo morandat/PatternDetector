@@ -19,9 +19,10 @@ import java.util.function.Predicate;
 public class RuleAutomaton implements IRuleAutomaton {
 
     private final Logger logger = LoggerFactory.getLogger(RuleAutomaton.class);
+
     protected IState _initialState;
-    protected IState _finalState;
-    protected IState _connectionState;
+    protected Map<String, IState> _finalStates;
+    protected Map<String, IState> _connectionStates;
     protected Map<String, IState> _states;
     protected IState _currentState;
     protected ArrayList<IEvent> _matchBuffer; // Events matching the current pattern
@@ -30,6 +31,8 @@ public class RuleAutomaton implements IRuleAutomaton {
 
     public RuleAutomaton() {
         _states = new HashMap<>();
+        _finalStates = new HashMap<>();
+        _connectionStates = new HashMap<>();
         _matchBuffer = new ArrayList<>();
         _clocks = new HashMap<>();
         _observers = new ArrayList<>();
@@ -47,9 +50,7 @@ public class RuleAutomaton implements IRuleAutomaton {
 
     @Override
     public IState getState(String label) {
-        if (State.LABEL_INITIAL.equals(label)) return _initialState;
-        else if (State.LABEL_FINAL.equals(label)) return _finalState;
-        else return _states.get(label);
+        return _states.get(label);
     }
 
     @Override
@@ -61,20 +62,36 @@ public class RuleAutomaton implements IRuleAutomaton {
     }
 
     @Override
-    public IState getFinalState() {
-        return _finalState;
+    public IState getFinalState(String label) {
+        return _finalStates.get(label);
     }
 
     @Override
-    public IState getConnectionState() {
-        return _connectionState;
+    public Set<IState> getFinalStates() {
+        Set<IState> finalStates = new HashSet<>();
+        _finalStates.values().forEach(finalStates::add);
+
+        return finalStates;
+    }
+
+    @Override
+    public IState getConnectionState(String label) {
+        return _connectionStates.get(label);
+    }
+
+    @Override
+    public Set<IState> getConnectionStates() {
+        Set<IState> connectionStates = new HashSet<>();
+        _connectionStates.values().forEach(connectionStates::add);
+
+        return connectionStates;
     }
 
     @Override
     public Set<IState> getAllStates() {
         Set<IState> states = getStates();
         states.add(_initialState);
-        states.add(_finalState);
+        states.addAll(_finalStates.values());
 
         return states;
     }
@@ -89,7 +106,8 @@ public class RuleAutomaton implements IRuleAutomaton {
         Set<ITransition> transitions = new HashSet<>();
         transitions.addAll(_initialState.getTransitions());
         _states.values().forEach(state -> transitions.addAll(state.getTransitions()));
-        transitions.addAll(_finalState.getTransitions());
+        // FIXME final states shouldn't have transitions
+        _finalStates.values().forEach(finalState -> transitions.addAll(finalState.getTransitions()));
 
         return transitions;
     }
@@ -100,8 +118,8 @@ public class RuleAutomaton implements IRuleAutomaton {
             throw new RuleAutomatonException(this, "Initial state already set");
         }
         s.setLabel(State.LABEL_INITIAL);
+        s.setFinal(false);
         s.setInitial(true);
-        s.setAutomaton(this);
         _initialState = s;
     }
 
@@ -110,7 +128,6 @@ public class RuleAutomaton implements IRuleAutomaton {
         s.setLabel(Integer.toString(_states.size()));
         s.setInitial(false);
         s.setFinal(false);
-        s.setAutomaton(this);
         _states.put(s.getLabel(), s);
     }
 
@@ -119,27 +136,28 @@ public class RuleAutomaton implements IRuleAutomaton {
         s.setLabel(label);
         s.setInitial(false);
         s.setFinal(false);
-        s.setAutomaton(this);
         _states.put(s.getLabel(), s);
     }
 
     @Override
-    public void setFinalState(IState s) throws RuleAutomatonException {
-        if (_finalState != null) {
-            throw new RuleAutomatonException(this, "Final state already set");
-        }
-        s.setLabel(State.LABEL_FINAL);
+    public void addFinalState(IState s) {
+        s.setLabel(State.LABEL_FINAL + _finalStates.size());
+        s.setInitial(false);
         s.setFinal(true);
-        s.setAutomaton(this);
-        _finalState = s;
+        _finalStates.put(s.getLabel(), s);
     }
 
     @Override
-    public void setConnectionState(IState s) throws RuleAutomatonException {
-        if (_connectionState != null) {
-            throw new RuleAutomatonException(this, "Connection state already set");
-        }
-        _connectionState = s;
+    public void addFinalState(IState s, String label) {
+        s.setLabel(label);
+        s.setInitial(false);
+        s.setFinal(true);
+        _finalStates.put(s.getLabel(), s);
+    }
+
+    @Override
+    public void addConnectionState(IState s) {
+        _connectionStates.put(s.getLabel(), s);
     }
 
     @Override
@@ -258,13 +276,15 @@ public class RuleAutomaton implements IRuleAutomaton {
         if (_initialState == null)
             throw new NoInitialStateException(this);
 
-        if (_finalState == null)
+        if (_finalStates.isEmpty())
             throw new NoFinalStateException(this);
 
-        if (_finalState.getTransitions().size() > 0)
-            throw new UnreachableStatesException(this);
+        for (IState finalState : getFinalStates()) {
+            if (finalState.getTransitions().size() > 0)
+                throw new UnreachableStatesException(this);
+        }
 
-        // Check that all states have exactly one transition for each different label
+        // Check that all states have exactly one transition for each different label (deterministic)
         for (IState state : getAllStates()) {
             long numDistinctTransitionLabels = state.getTransitions().stream().map(ITransition::getLabel).distinct().count();
             if (numDistinctTransitionLabels != state.getTransitions().size())
@@ -281,8 +301,8 @@ public class RuleAutomaton implements IRuleAutomaton {
         for (IState state : _states.values()) {
             transitions.append(" (").append(state).append(",").append(state.getTransitions()).append(")");
         }
-        if (_finalState != null) {
-            transitions.append(" (").append(_finalState).append(",").append(_finalState.getTransitions()).append(")");
+        for (IState finalState : _finalStates.values()) {
+            transitions.append(" (").append(finalState).append(",").append(finalState.getTransitions()).append(")");
         }
         transitions.append(" ]");
 

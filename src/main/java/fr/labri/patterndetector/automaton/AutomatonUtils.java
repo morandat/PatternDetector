@@ -51,7 +51,7 @@ public final class AutomatonUtils {
             if (stateCopy.isInitial()) {
                 automatonCopy.setInitialState(stateCopy);
             } else if (stateCopy.isFinal()) {
-                automatonCopy.setFinalState(stateCopy);
+                automatonCopy.addFinalState(stateCopy);
             } else {
                 automatonCopy.addState(stateCopy, currentState.getLabel());
             }
@@ -88,6 +88,7 @@ public final class AutomatonUtils {
         IRuleAutomaton powersetAutomaton = new RuleAutomaton();
         Set<IState> initialStateSet = new HashSet<>();
         initialStateSet.add(automaton.getInitialState());
+        initialStateSet = extendStateSet(initialStateSet, new HashSet<>());
         IState initialState = new State();
         Map<Set<String>, IState> allStateSets = new HashMap<>();
         allStateSets.put(initialStateSet.stream().map(IState::getLabel).collect(Collectors.toSet()), initialState);
@@ -139,7 +140,7 @@ public final class AutomatonUtils {
         }
 
         targetStateSets.forEach((label, targetStateSet) -> {
-            Set<IState> extendedStateSet = extendStateSet(targetStateSet, new HashSet<>());
+            Set<IState> extendedStateSet = extendStateSet(targetStateSet, new HashSet<>()); // TODO hide second arg
             targetStateSets.put(label, extendedStateSet);
         });
 
@@ -152,15 +153,7 @@ public final class AutomatonUtils {
                 targetState = new State();
 
                 if (isStateSetFinal(targetStateSet)) {
-                    try {
-                        finalAutomaton.setFinalState(targetState);
-                    } catch (RuleAutomatonException e) {
-                        logger.error("Powerset failed : " + e.getMessage() + "\n"
-                                + e.getRuleAutomaton());
-
-                        throw new RuntimeException("Powerset failed : " + e.getMessage() + "\n"
-                                + e.getRuleAutomaton());
-                    }
+                    finalAutomaton.addFinalState(targetState);
                 } else {
                     finalAutomaton.addState(targetState);
                 }

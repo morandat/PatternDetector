@@ -26,4 +26,6 @@ public interface IRuleVisitor {
     void visit(Kleene kleene);
 
     void visit(FollowedBy followedBy);
+
+    void visit(Or or);
 }

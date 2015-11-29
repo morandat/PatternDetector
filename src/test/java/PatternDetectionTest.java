@@ -1,8 +1,5 @@
 import fr.labri.patterndetector.executor.*;
-import fr.labri.patterndetector.rule.Atom;
-import fr.labri.patterndetector.rule.FollowedBy;
-import fr.labri.patterndetector.rule.IRule;
-import fr.labri.patterndetector.rule.Kleene;
+import fr.labri.patterndetector.rule.*;
 import org.hamcrest.core.StringContains;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -82,6 +79,72 @@ public class PatternDetectionTest {
         Collection<IEvent> actual = _ruleManager.getLastPattern();
 
         Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldDetectAOrB() {
+        IRule r = new Or("a", "b");
+
+        _ruleManager.addRule(r);
+        _detector.detect(_generator.generateOr());
+
+        Collection<IEvent> expected = new ArrayList<>();
+        expected.add(new Event("b", 2));
+
+        Collection<IEvent> actual = _ruleManager.getLastPattern();
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldDetectAOrBOrCOrD() {
+        IRule r = new Or(new Or("a", "b"), new Or("c", "d"));
+
+        _ruleManager.addRule(r);
+        _detector.detect(_generator.generateOr());
+
+        Collection<IEvent> expected = new ArrayList<>();
+        expected.add(new Event("c", 3));
+
+        Collection<IEvent> actual = _ruleManager.getLastPattern();
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldDetectAFbBOrAFbC() {
+        IRule r = new Or(new FollowedBy("a", "b"), new FollowedBy("a", "c"));
+
+        _ruleManager.addRule(r);
+        _detector.detect(_generator.generateOr());
+
+        Collection<IEvent> expected = new ArrayList<>();
+        expected.add(new Event("a", 0));
+        expected.add(new Event("b", 2));
+
+        Collection<IEvent> actual = _ruleManager.getLastPattern();
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldDetectASeqFbBOrAFbB() {
+        IRule r = new Or(
+                new FollowedBy(new Kleene("a"), "b"),
+                new FollowedBy("a", "b"));
+
+        _ruleManager.addRule(r);
+        _detector.detect(_generator.generateOr());
+
+        Collection<IEvent> expected = new ArrayList<>();
+        expected.add(new Event("a", 0));
+        expected.add(new Event("a", 1));
+        expected.add(new Event("b", 2));
+
+        Collection<IEvent> actual = _ruleManager.getLastPattern();
+
+        Assert.assertEquals(expected, actual);
+        Assert.assertEquals(expected.size(), 3);
     }
 
     @Test

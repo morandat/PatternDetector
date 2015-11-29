@@ -28,6 +28,8 @@ public final class RuleStringifier {
             _ruleString = atom.getSymbol() + atom.getEventType();
         }
 
+        // TODO visit(AtomNot atomNot)
+
         @Override
         public void visit(AbstractUnaryRule unaryRule) {
             RuleStringifierVisitor visitor = new RuleStringifierVisitor();

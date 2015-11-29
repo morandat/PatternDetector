@@ -30,7 +30,7 @@ public interface IRuleAutomaton {
     IState getInitialState();
 
     /**
-     * Lookup a state of the rule automaton by its label.
+     * Get a state of the rule automaton by its label.
      *
      * @param label The state label.
      * @return The state mapped to the label, or null if no states are mapped to the label.
@@ -45,11 +45,18 @@ public interface IRuleAutomaton {
     Set<IState> getStates();
 
     /**
-     * Get the final state of the rule automaton.
+     * Get a final state of the rule automaton by its label.
      *
-     * @return The final state of the rule automaton.
+     * @return One of the final states of the rule automaton.
      */
-    IState getFinalState();
+    IState getFinalState(String label);
+
+    /**
+     * Get a final state of the rule automaton by its label.
+     *
+     * @return One of the final states of the rule automaton.
+     */
+    Set<IState> getFinalStates();
 
     /**
      * Get the connection state's label from the rule's automaton.
@@ -58,7 +65,14 @@ public interface IRuleAutomaton {
      *
      * @return The connection state's label of the rule's automaton.
      */
-    IState getConnectionState();
+    Set<IState> getConnectionStates();
+
+    /**
+     * Get a connection state of the rule automaton by its label.
+     *
+     * @return One of the connection states of the rule automaton.
+     */
+    IState getConnectionState(String label);
 
     /**
      * Get all states of the rule automaton (including the initial and final states).
@@ -77,9 +91,11 @@ public interface IRuleAutomaton {
 
     void addState(IState s, String label);
 
-    void setFinalState(IState s) throws RuleAutomatonException;
+    void addFinalState(IState s);
 
-    void setConnectionState(IState s) throws RuleAutomatonException;
+    void addFinalState(IState s, String label);
+
+    void addConnectionState(IState s);
 
     void fire(IEvent e);
 
@@ -101,7 +117,7 @@ public interface IRuleAutomaton {
 
     /**
      * Check whether the rule automaton is valid, i.e. can be executed.
-     * Must be called by the client to ensure safe usage of the automaton.
+     * Should be called by the client to ensure safe usage of the automaton.
      */
     void validate() throws NoInitialStateException, NoFinalStateException, UnreachableStatesException, NonDeterministicException;
 

@@ -6,6 +6,8 @@ import fr.labri.patterndetector.rule.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Set;
+
 /**
  * Created by wbraik on 20/11/15.
  * <p>
@@ -39,8 +41,8 @@ public final class RuleAutomatonMaker {
 
                 IRuleAutomaton automaton = new RuleAutomaton();
                 automaton.setInitialState(i);
-                automaton.setFinalState(f);
-                automaton.setConnectionState(f);
+                automaton.addFinalState(f);
+                automaton.addConnectionState(f);
 
                 _automaton = automaton;
             } catch (RuleAutomatonException e) {
@@ -50,6 +52,8 @@ public final class RuleAutomatonMaker {
                 throw new RuntimeException("Compilation failed : " + e.getMessage() + "(" + atom + ")");
             }
         }
+
+        // TODO visit(AtomNot atomNot)
 
         @Override
         public void visit(FollowedBy followedBy) {
@@ -63,12 +67,13 @@ public final class RuleAutomatonMaker {
                 // The initial state of the left component becomes the initial state of the FollowedBy automaton.
                 automaton.setInitialState(leftAutomaton.getInitialState());
 
-                // The connection state of the left component becomes a state of the FollowedBy automaton.
-                IState leftConnectionState = leftAutomaton.getConnectionState();
-                // If the connection state is a final state, register it as a basic state
-                if (State.LABEL_FINAL.equals(leftConnectionState.getLabel())) {
-                    automaton.addState(leftConnectionState);
-                }
+                // The connection states of the left component become states of the FollowedBy automaton.
+                leftAutomaton.getConnectionStates().forEach(connectionState -> {
+                    // If the connection state is a final state, register it as a basic state
+                    if (connectionState.isFinal()) {
+                        automaton.addState(connectionState);
+                    }
+                });
 
                 // The rest of the left component's states become states of the FollowedBy automaton.
                 leftAutomaton.getStates().forEach(automaton::addState);
@@ -79,10 +84,11 @@ public final class RuleAutomatonMaker {
                 IState rightInitialState = rightAutomaton.getInitialState();
                 automaton.addState(rightInitialState);
 
-                // The final state of the FollowedBy automaton is the connection state of the right component's automaton.
-                IState rightConnectionState = rightAutomaton.getConnectionState();
-                automaton.setFinalState(rightConnectionState);
-                automaton.setConnectionState(rightConnectionState);
+                // The final states of the FollowedBy automaton are the connection states of the right component's automaton.
+                rightAutomaton.getConnectionStates().forEach(connectionState -> {
+                    automaton.addFinalState(connectionState);
+                    automaton.addConnectionState(connectionState);
+                });
 
                 // The rest of the right component's states become states of the FollowedBy automaton.
                 rightAutomaton.getStates().forEach(automaton::addState);
@@ -97,9 +103,10 @@ public final class RuleAutomatonMaker {
 
                 automaton.addState(s);
 
-                // Connect the left component's connection state to s, and s to the right component's initial state,
+                // Connect the left component's connection states to s, and s to the right component's initial state,
                 // with epsilon transitions.
-                leftConnectionState.registerEpsilonTransition(s);
+
+                leftAutomaton.getConnectionStates().forEach(connectionState -> connectionState.registerEpsilonTransition(s));
                 s.registerEpsilonTransition(rightInitialState);
 
                 // If a time constraint is specified, create clock constraints.
@@ -131,10 +138,11 @@ public final class RuleAutomatonMaker {
                 IState baseInitialState = baseAutomaton.getInitialState();
                 automaton.setInitialState(baseInitialState);
 
-                // The final state of the base component becomes a state of the Kleene automaton.
-                IState baseFinalState = baseAutomaton.getFinalState();
-                automaton.addState(baseFinalState);
-                automaton.setConnectionState(baseFinalState);
+                // The final states of the base component become states of the Kleene automaton.
+                baseAutomaton.getFinalStates().forEach(finalState -> {
+                    automaton.addState(finalState);
+                    automaton.addConnectionState(finalState);
+                });
 
                 // The rest of the base component's states become states of the Kleene automaton.
                 baseAutomaton.getStates().forEach(automaton::addState);
@@ -143,7 +151,7 @@ public final class RuleAutomatonMaker {
 
                 // State for ignoring irrelevant events occuring between each event captured by the Kleene sequence.
                 IState s = new State();
-                baseFinalState.registerEpsilonTransition(s);
+                baseAutomaton.getFinalStates().forEach(finalState -> finalState.registerEpsilonTransition(s));
                 s.registerStarTransition(s, TransitionType.TRANSITION_DROP);
                 s.registerEpsilonTransition(baseInitialState);
                 automaton.addState(s);
@@ -164,6 +172,62 @@ public final class RuleAutomatonMaker {
                         + e.getRuleAutomaton());
 
                 throw new RuntimeException("Compilation failed : " + e.getMessage() + "(" + kleene + ")");
+            }
+        }
+
+        @Override
+        public void visit(Or or) {
+            try {
+                IRuleAutomaton leftAutomaton = RuleAutomatonMaker.makeAutomaton(or.getLeftChildRule());
+                IRuleAutomaton rightAutomaton = RuleAutomatonMaker.makeAutomaton(or.getRightChildRule());
+                IRuleAutomaton automaton = new RuleAutomaton();
+
+                // ### Left component
+
+                // The initial state of the left component becomes a state of the Or automaton.
+                IState leftInitialState = leftAutomaton.getInitialState();
+                automaton.addState(leftInitialState);
+
+                // The left component's states become states of the Or automaton.
+                leftAutomaton.getStates().forEach(automaton::addState);
+
+                // The left component's final states become final states of the Or automaton.
+                leftAutomaton.getFinalStates().forEach(finalState -> {
+                    automaton.addFinalState(finalState);
+                    automaton.addConnectionState(finalState);
+                });
+
+                // ### Right component
+
+                // The initial state of the right component becomes a state of the Or automaton.
+                IState rightInitialState = rightAutomaton.getInitialState();
+                automaton.addState(rightInitialState);
+
+                // The right component's states become states of the FollowedBy automaton.
+                rightAutomaton.getStates().forEach(automaton::addState);
+
+                // The right component's final states become final states of the Or automaton.
+                rightAutomaton.getFinalStates().forEach(finalState -> {
+                    automaton.addFinalState(finalState);
+                    automaton.addConnectionState(finalState);
+                });
+                // ### Add extra stuff to obtain the final FollowedBy automaton.
+
+                // Initial state
+                State i = new State();
+
+                // If the left automaton is Kleene, then the negation transition is already on the connection state.
+                i.registerEpsilonTransition(leftInitialState);
+                i.registerEpsilonTransition(rightInitialState);
+
+                automaton.setInitialState(i);
+
+                _automaton = automaton;
+            } catch (RuleAutomatonException e) {
+                logger.error("Compilation failed : " + e.getMessage() + "(" + or + ")\n"
+                        + e.getRuleAutomaton());
+
+                throw new RuntimeException("Compilation failed : " + e.getMessage() + "(" + or + ")");
             }
         }
 

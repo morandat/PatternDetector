@@ -30,15 +30,11 @@ public interface IState {
 
     boolean isFinal();
 
-    IRuleAutomaton getAutomaton();
-
     void setLabel(String label);
 
     void setInitial(boolean initial);
 
     void setFinal(boolean isFinal);
-
-    void setAutomaton(IRuleAutomaton automaton);
 
     void registerTransition(IState target, String label, TransitionType type);
 

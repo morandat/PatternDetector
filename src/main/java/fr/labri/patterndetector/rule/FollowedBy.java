@@ -16,6 +16,7 @@ public class FollowedBy extends AbstractBinaryRule {
         super(FollowedBy.Symbol, left, right);
     }
 
+    // TODO the following constructors should not exist. This code should be in a BinaryRuleFactory : Binary.Or("a","b")
     public FollowedBy(String e, IRule right) {
         super(FollowedBy.Symbol,
                 (e.startsWith("!") ? new AtomNot(e.substring(1)) : new Atom(e)),

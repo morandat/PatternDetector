@@ -24,9 +24,10 @@ public class Main {
                 "b");*/
         //IRule r = new FollowedBy(new Kleene("a"), "b");
         //IRule r = new Kleene(new FollowedBy("a", "b"));
-        IRule r = new FollowedBy(new Kleene(new FollowedBy("x", "y")), new FollowedBy("b", new Kleene("c")));
-
-        // TODO new Or("a","b")
+        //IRule r = new FollowedBy(new Kleene(new FollowedBy("x", "y")), new FollowedBy("b", new Kleene("c")));
+        IRule r = new Or(
+                new FollowedBy(new Kleene("a"), "b"),
+                new FollowedBy("a", "b"));
 
         RulePrinter.printRule(System.out, r);
 

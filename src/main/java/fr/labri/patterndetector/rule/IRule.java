@@ -24,13 +24,6 @@ public interface IRule {
     String getSymbol();
 
     /**
-     * Get the rule's automaton. This method lazily builds the automaton when called for the first time.
-     *
-     * @return The rule's automaton.
-     */
-    //IRuleAutomaton getAutomaton() throws RuleAutomatonException;
-
-    /**
      * Get the time constraint specified for the rule.
      *
      * @return The time constraint specification of the rule.
@@ -50,6 +43,7 @@ public interface IRule {
      * @param timeConstraint The time constraint to specify for the rule.
      * @return The rule itself.
      */
+    // FIXME should probably not be here. Create interface for rules that can be time-constrained (Or cannot be)
     IRule setTimeConstraint(TimeConstraint timeConstraint);
 
     /**
