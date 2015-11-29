@@ -11,7 +11,8 @@ import java.util.function.Predicate;
  * The complement of an atom.
  * Given an event type x, it represents an event of any type besides x.
  */
-@Deprecated //TODO to reintroduce once the ImmediatelyFollowedBy operator comes back
+@Deprecated
+// TODO un-deprecate once the FollowedByContiguous operator comes back
 public class AtomNot extends AbstractAtom {
 
     public AtomNot(String eventType) {
