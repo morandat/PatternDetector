@@ -43,7 +43,7 @@ public interface IRule {
      * @param timeConstraint The time constraint to specify for the rule.
      * @return The rule itself.
      */
-    // FIXME should probably not be here. Create interface for rules that can be time-constrained (Or cannot be)
+    // FIXME should probably not be here. Create interface for rules that can be time-constrained
     IRule setTimeConstraint(TimeConstraint timeConstraint);
 
     /**

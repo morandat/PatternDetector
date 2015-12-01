@@ -5,6 +5,8 @@ import java.util.function.Predicate;
 
 /**
  * Created by William Braik on 7/27/2015.
+ *
+ * Interface for the transitions of a rule automaton.
  */
 public interface ITransition {
 

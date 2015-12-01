@@ -38,7 +38,6 @@ public final class RuleStringifier {
             _ruleString = "(" + visitor.getRuleString() + ")" + unaryRule.getSymbol();
         }
 
-
         public void visit(AbstractBinaryRule binaryRule) {
             RuleStringifierVisitor leftVisitor = new RuleStringifierVisitor();
             binaryRule.getLeftChildRule().accept(leftVisitor);

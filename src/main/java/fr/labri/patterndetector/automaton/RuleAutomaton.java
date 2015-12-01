@@ -176,7 +176,7 @@ public class RuleAutomaton implements IRuleAutomaton {
 
             logger.debug("Transitioning : " + t + " (" + e + ")");
 
-            // Action to perform on the transition
+            // Save current event in match buffer or discard it depending on the transition's type
             switch (t.getType()) {
                 case TRANSITION_APPEND:
                     _matchBuffer.add(e);
@@ -185,6 +185,8 @@ public class RuleAutomaton implements IRuleAutomaton {
                     break;
                 case TRANSITION_DROP:
             }
+
+            // Any NACs to start ?
 
             // Update current state
             _currentState = t.getTarget();
