@@ -25,14 +25,17 @@ public class Main {
         //IRule r = new FollowedBy(new Kleene("a"), "b");
         //IRule r = new Kleene(new FollowedBy("a", "b"));
         //IRule r = new FollowedBy(new Kleene(new FollowedBy("x", "y")), new FollowedBy("b", new Kleene("c")));
-        IRule r = new Or(
+        /*IRule r = new Or(
                 new FollowedBy(new Kleene("a"), "b"),
-                new FollowedBy("a", "b"));
+                new FollowedBy("a", "b"));*/
+        IRule r = new FollowedBy("q", new FollowedBy(new Kleene("f"), "a"));
 
         RulePrinter.printRule(System.out, r);
 
         IRuleAutomaton automaton = RuleAutomatonMaker.makeAutomaton(r);
+        System.out.println("### NFA");
         System.out.println(automaton);
+        System.out.println("### POWERSET");
         System.out.println(automaton.powerset());
     }
 }

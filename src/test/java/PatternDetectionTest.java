@@ -345,4 +345,22 @@ public class PatternDetectionTest {
 
         Assert.assertEquals(expected, actual);
     }
+
+    @Test
+    public void shouldDetectSearchScenario() {
+        IRule r = new FollowedBy("q", new FollowedBy(new Kleene("f"), "a"));
+
+        _ruleManager.addRule(r);
+        _detector.detect(_generator.generateSearchScenario());
+
+        Collection<IEvent> expected = new ArrayList<>();
+        expected.add(new Event("q", 0));
+        expected.add(new Event("f", 1));
+        expected.add(new Event("f", 2));
+        expected.add(new Event("a", 3));
+
+        Collection<IEvent> actual = _ruleManager.getLastPattern();
+
+        Assert.assertEquals(expected, actual);
+    }
 }

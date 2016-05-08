@@ -14,9 +14,9 @@ public class Transition implements ITransition {
     private IState _source;
     private IState _target;
     private String _label;
-    TransitionType _type;
-    ClockGuard _clockGuard;
-    Map<String, Predicate<Integer>> _predicates;
+    private TransitionType _type;
+    private ClockGuard _clockGuard;
+    private Map<String, Predicate<Integer>> _predicates;
 
     public Transition(IState source, IState target, String label, TransitionType type) {
         _source = source;

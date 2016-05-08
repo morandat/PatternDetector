@@ -111,4 +111,17 @@ public final class Generator {
 
         return eventStream;
     }
+
+    public Collection<IEvent> generateSearchScenario() {
+        // q .. f .. f .. a
+
+        Collection<IEvent> eventStream = new ArrayList<>();
+
+        eventStream.add(new Event("q", _t++)); // TODO add referrer / url constraints
+        eventStream.add(new Event("f", _t++));
+        eventStream.add(new Event("f", _t++));
+        eventStream.add(new Event("a", _t++));
+
+        return eventStream;
+    }
 }
