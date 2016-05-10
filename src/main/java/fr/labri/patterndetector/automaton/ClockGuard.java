@@ -51,6 +51,6 @@ public final class ClockGuard implements IClockGuard {
 
     @Override
     public String toString() {
-        return "X(" + _eventType + ") " + (_lowerThan ? "< " : "> ") + _value;
+        return "T(" + _eventType + ") " + (_lowerThan ? "< " : "> ") + _value;
     }
 }

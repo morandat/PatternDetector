@@ -1,9 +1,8 @@
 package fr.labri.patterndetector.automaton;
 
-import fr.labri.patterndetector.automaton.exception.AutomatonException;
+import fr.labri.patterndetector.automaton.exception.*;
 import fr.labri.patterndetector.executor.IEvent;
 import fr.labri.patterndetector.executor.IPatternObserver;
-import fr.labri.patterndetector.rules.IRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,26 +19,23 @@ import java.util.function.Predicate;
 public class RuleAutomaton implements IRuleAutomaton {
 
     private final Logger logger = LoggerFactory.getLogger(RuleAutomaton.class);
-    protected IRule _rule;
+
     protected IState _initialState;
-    protected IState _finalState;
+    protected Map<String, IState> _finalStates;
+    protected Map<String, IState> _connectionStates;
     protected Map<String, IState> _states;
     protected IState _currentState;
     protected ArrayList<IEvent> _matchBuffer; // Events matching the current pattern
     protected Map<String, Long> _clocks;
     protected Collection<IPatternObserver> _observers; // Pattern observers to be notified when a pattern is detected.
 
-    public RuleAutomaton(IRule rule) {
-        _rule = rule;
+    public RuleAutomaton() {
         _states = new HashMap<>();
+        _finalStates = new HashMap<>();
+        _connectionStates = new HashMap<>();
         _matchBuffer = new ArrayList<>();
         _clocks = new HashMap<>();
         _observers = new ArrayList<>();
-    }
-
-    @Override
-    public IRule getRule() {
-        return _rule;
     }
 
     @Override
@@ -53,20 +49,51 @@ public class RuleAutomaton implements IRuleAutomaton {
     }
 
     @Override
-    public IState getStateByLabel(String label) {
-        if (State.LABEL_INITIAL.equals(label)) return _initialState;
-        else if (State.LABEL_FINAL.equals(label)) return _finalState;
-        else return _states.get(label);
+    public IState getState(String label) {
+        return _states.get(label);
     }
 
     @Override
-    public Map<String, IState> getStates() {
-        return _states;
+    public Set<IState> getStates() {
+        Set<IState> states = new HashSet<>();
+        _states.values().forEach(states::add);
+
+        return states;
     }
 
     @Override
-    public IState getFinalState() {
-        return _finalState;
+    public IState getFinalState(String label) {
+        return _finalStates.get(label);
+    }
+
+    @Override
+    public Set<IState> getFinalStates() {
+        Set<IState> finalStates = new HashSet<>();
+        _finalStates.values().forEach(finalStates::add);
+
+        return finalStates;
+    }
+
+    @Override
+    public IState getConnectionState(String label) {
+        return _connectionStates.get(label);
+    }
+
+    @Override
+    public Set<IState> getConnectionStates() {
+        Set<IState> connectionStates = new HashSet<>();
+        _connectionStates.values().forEach(connectionStates::add);
+
+        return connectionStates;
+    }
+
+    @Override
+    public Set<IState> getAllStates() {
+        Set<IState> states = getStates();
+        states.add(_initialState);
+        states.addAll(_finalStates.values());
+
+        return states;
     }
 
     @Override
@@ -77,19 +104,22 @@ public class RuleAutomaton implements IRuleAutomaton {
     @Override
     public Collection<ITransition> getTransitions() {
         Set<ITransition> transitions = new HashSet<>();
+        transitions.addAll(_initialState.getTransitions());
         _states.values().forEach(state -> transitions.addAll(state.getTransitions()));
+        // FIXME final states shouldn't have transitions
+        _finalStates.values().forEach(finalState -> transitions.addAll(finalState.getTransitions()));
 
         return transitions;
     }
 
     @Override
-    public void setInitialState(IState s) throws AutomatonException {
+    public void setInitialState(IState s) throws RuleAutomatonException {
         if (_initialState != null) {
-            throw new AutomatonException(this, "Initial state already set");
+            throw new RuleAutomatonException(this, "Initial state already set");
         }
         s.setLabel(State.LABEL_INITIAL);
+        s.setFinal(false);
         s.setInitial(true);
-        s.setAutomaton(this);
         _initialState = s;
     }
 
@@ -98,66 +128,80 @@ public class RuleAutomaton implements IRuleAutomaton {
         s.setLabel(Integer.toString(_states.size()));
         s.setInitial(false);
         s.setFinal(false);
-        s.setAutomaton(this);
         _states.put(s.getLabel(), s);
     }
 
     @Override
-    public void setFinalState(IState s) throws AutomatonException {
-        if (_finalState != null) {
-            throw new AutomatonException(this, "Final state already set");
-        }
-        s.setLabel(State.LABEL_FINAL);
-        s.setFinal(true);
-        s.setAutomaton(this);
-        _finalState = s;
+    public void addState(IState s, String label) {
+        s.setLabel(label);
+        s.setInitial(false);
+        s.setFinal(false);
+        _states.put(s.getLabel(), s);
     }
 
     @Override
-    public void fire(IEvent e) throws Exception {
-        if (_initialState != null) {
-            // Initialize current state if needed
-            if (_currentState == null) {
-                _currentState = _initialState;
+    public void addFinalState(IState s) {
+        s.setLabel(State.LABEL_FINAL + _finalStates.size());
+        s.setInitial(false);
+        s.setFinal(true);
+        _finalStates.put(s.getLabel(), s);
+    }
+
+    @Override
+    public void addFinalState(IState s, String label) {
+        s.setLabel(label);
+        s.setInitial(false);
+        s.setFinal(true);
+        _finalStates.put(s.getLabel(), s);
+    }
+
+    @Override
+    public void addConnectionState(IState s) {
+        _connectionStates.put(s.getLabel(), s);
+    }
+
+    @Override
+    public void fire(IEvent e) {
+        // Initialize current state if needed
+        if (_currentState == null) {
+            _currentState = _initialState;
+        }
+
+        ITransition t = _currentState.pickTransition(e);
+
+        // If there is a transition, check its clock guards if any
+        if (t != null
+                && testClockGuard(e.getTimestamp(), t.getClockGuard())
+                && testPredicates(e.getPayload(), t.getPredicates())) {
+
+            logger.debug("Transitioning : " + t + " (" + e + ")");
+
+            // Save current event in match buffer or discard it depending on the transition's type
+            switch (t.getType()) {
+                case TRANSITION_APPEND:
+                    _matchBuffer.add(e);
+                    // Update event clock
+                    _clocks.put(e.getType(), e.getTimestamp());
+                    break;
+                case TRANSITION_DROP:
             }
 
-            ITransition t = _currentState.pickTransition(e);
+            // Any NACs to start ?
 
-            // If there is a transition, check its clock guards if any
-            if (t != null
-                    && testClockGuard(e.getTimestamp(), t.getClockConstraint())
-                    && testPredicates(e.getPayload(), t.getPredicates())) {
+            // Update current state
+            _currentState = t.getTarget();
 
-                logger.debug("Transitioning : " + t + " (" + e + ")");
+            if (_currentState.isFinal()) {
+                logger.debug("Final state reached");
 
-                // Action to perform on the transition
-                switch (t.getType()) {
-                    case TRANSITION_APPEND:
-                        _matchBuffer.add(e);
-                        // Update event clock
-                        _clocks.put(e.getType(), e.getTimestamp());
-                        break;
-                    case TRANSITION_DROP:
-                }
-
-                // Update current state
-                _currentState = t.getTarget();
-
-                if (_currentState.isFinal()) {
-                    logger.debug("Final state reached");
-
-                    // If the final state has been reached, post the found pattern and reset the automaton
-                    patternDetected(_matchBuffer);
-                    reset();
-                }
-            } else {
-                logger.debug("Can't transition (" + e + ")");
-
+                // If the final state has been reached, post the found pattern and reset the automaton
+                patternDetected(_matchBuffer);
                 reset();
             }
-
         } else {
-            throw new Exception("Initial state not set");
+            logger.debug("Can't transition (" + e + ")");
+
+            reset();
         }
     }
 
@@ -187,7 +231,7 @@ public class RuleAutomaton implements IRuleAutomaton {
         if (clockGuard == null) {
             return true;
         } else if (_clocks.get(clockGuard.getEventType()) == null) {
-            return false;
+            return true;
         } else {
             long timeLast = _clocks.get(clockGuard.getEventType());
             long timeSinceLast = currentTime - timeLast;
@@ -230,6 +274,27 @@ public class RuleAutomaton implements IRuleAutomaton {
     }
 
     @Override
+    public void validate() throws NoInitialStateException, NoFinalStateException, UnreachableStatesException, NonDeterministicException {
+        if (_initialState == null)
+            throw new NoInitialStateException(this);
+
+        if (_finalStates.isEmpty())
+            throw new NoFinalStateException(this);
+
+        for (IState finalState : getFinalStates()) {
+            if (finalState.getTransitions().size() > 0)
+                throw new UnreachableStatesException(this);
+        }
+
+        // Check that all states have exactly one transition for each different label (deterministic)
+        for (IState state : getAllStates()) {
+            long numDistinctTransitionLabels = state.getTransitions().stream().map(ITransition::getLabel).distinct().count();
+            if (numDistinctTransitionLabels != state.getTransitions().size())
+                throw new NonDeterministicException(this);
+        }
+    }
+
+    @Override
     public String toString() {
         StringBuilder transitions = new StringBuilder("[");
         if (_initialState != null) {
@@ -238,8 +303,8 @@ public class RuleAutomaton implements IRuleAutomaton {
         for (IState state : _states.values()) {
             transitions.append(" (").append(state).append(",").append(state.getTransitions()).append(")");
         }
-        if (_finalState != null) {
-            transitions.append(" (").append(_finalState).append(",").append(_finalState.getTransitions()).append(")");
+        for (IState finalState : _finalStates.values()) {
+            transitions.append(" (").append(finalState).append(",").append(finalState.getTransitions()).append(")");
         }
         transitions.append(" ]");
 

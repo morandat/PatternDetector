@@ -1,5 +1,6 @@
-package fr.labri.patterndetector.rules;
+package fr.labri.patterndetector.rule;
 
+import java.util.Map;
 import java.util.function.Predicate;
 
 /**
@@ -16,6 +17,8 @@ public interface IAtom extends ITerminalRule {
      */
     String getEventType();
 
+    Map<String, Predicate<Integer>> getPredicates();
+
     /**
      * Set a predicate for a given data field of the event represented by the atom.
      *
@@ -23,5 +26,5 @@ public interface IAtom extends ITerminalRule {
      * @param predicate The predicate of the field.
      * @return The atom itself.
      */
-    IAtom setPredicate(String field, Predicate<Integer> predicate); // TODO replace Integer by generic type '?'
+    IAtom addPredicate(String field, Predicate<Integer> predicate); // TODO replace Integer by generic type '?'
 }

@@ -1,5 +1,6 @@
 package fr.labri.patterndetector.automaton;
 
+import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,14 +22,27 @@ public final class AutomatonUtils {
     private AutomatonUtils() {
     }
 
+    /**
+     * Performs the copy of a rule automaton.
+     *
+     * @param automaton The rule automaton to copy.
+     * @return A copy of the rule automaton.
+     */
     public static IRuleAutomaton copy(IRuleAutomaton automaton) {
-        IRuleAutomaton automatonCopy = new RuleAutomaton(automaton.getRule());
-        startCopy(automaton.getInitialState(), automatonCopy);
+        IRuleAutomaton automatonCopy = new RuleAutomaton();
+        doCopy(automaton.getInitialState(), automatonCopy);
 
         return automatonCopy;
     }
 
-    private static IState startCopy(IState currentState, IRuleAutomaton automatonCopy) {
+    /**
+     * Recursive function called by the copy() method to perform the automaton copy.
+     *
+     * @param currentState  The current state to copy.
+     * @param automatonCopy The automaton copy.
+     * @return A copy of the current state.
+     */
+    private static IState doCopy(IState currentState, IRuleAutomaton automatonCopy) {
         IState stateCopy = new State();
         stateCopy.setFinal(currentState.isFinal());
         stateCopy.setInitial(currentState.isInitial());
@@ -37,53 +51,70 @@ public final class AutomatonUtils {
             if (stateCopy.isInitial()) {
                 automatonCopy.setInitialState(stateCopy);
             } else if (stateCopy.isFinal()) {
-                automatonCopy.setFinalState(stateCopy);
+                automatonCopy.addFinalState(stateCopy);
             } else {
-                automatonCopy.addState(stateCopy);
+                automatonCopy.addState(stateCopy, currentState.getLabel());
             }
 
             currentState.getTransitions().forEach(t -> {
                 IState target = t.getTarget();
-                try {
-                    if (automatonCopy.getStateByLabel(target.getLabel()) == null) {
-                        target = startCopy(target, automatonCopy);
-                        stateCopy.registerTransition(target, t.getLabel(), t.getType(), t.getClockConstraint());
-                    } else {
-                        stateCopy.registerTransition(automatonCopy.getStateByLabel(target.getLabel()), t.getLabel(), t.getType(), t.getClockConstraint());
-                    }
-                } catch (Exception e) {
-                    logger.error("Automaton copy failed (" + e.getMessage() + ")");
+
+                if (automatonCopy.getState(target.getLabel()) == null) {
+                    target = doCopy(target, automatonCopy);
+                    stateCopy.registerTransition(target, t.getLabel(), t.getType(), t.getClockGuard());
+                } else {
+                    stateCopy.registerTransition(automatonCopy.getState(target.getLabel()), t.getLabel(), t.getType(),
+                            t.getClockGuard());
                 }
             });
-        } catch (Exception e) {
-            logger.error("Automaton copy failed (" + e.getMessage() + ")");
+        } catch (RuleAutomatonException e) {
+            logger.error("Automaton copy failed : " + e.getMessage() + "\n"
+                    + e.getRuleAutomaton());
+
+            throw new RuntimeException("Automaton copy failed : " + e.getMessage() + "\n"
+                    + e.getRuleAutomaton());
         }
 
         return stateCopy;
     }
 
     /**
-     * Powerset construction algorithm : transform a NFA into a DFA.
+     * The Powerset construction algorithm. Transforms a NFA into a DFA.
+     *
+     * @param automaton The NFA to transform.
+     * @return The corresponding DFA.
      */
     public static IRuleAutomaton powerset(IRuleAutomaton automaton) {
-        IRuleAutomaton powersetAutomaton = new RuleAutomaton(automaton.getRule());
+        IRuleAutomaton powersetAutomaton = new RuleAutomaton();
         Set<IState> initialStateSet = new HashSet<>();
         initialStateSet.add(automaton.getInitialState());
+        initialStateSet = extendStateSet(initialStateSet, new HashSet<>());
         IState initialState = new State();
         Map<Set<String>, IState> allStateSets = new HashMap<>();
         allStateSets.put(initialStateSet.stream().map(IState::getLabel).collect(Collectors.toSet()), initialState);
 
         try {
             powersetAutomaton.setInitialState(initialState);
-            startPowerset(initialStateSet, allStateSets, powersetAutomaton);
-        } catch (Exception e) {
-            logger.error("An error occured during Powerset (" + e.getMessage() + ")");
+            doPowerset(initialStateSet, allStateSets, powersetAutomaton);
+        } catch (RuleAutomatonException e) {
+            logger.error("Powerset failed : " + e.getMessage() + "\n" + e.getRuleAutomaton());
+
+            throw new RuntimeException("Powerset failed : " + e.getMessage() + "\n"
+                    + e.getRuleAutomaton());
         }
 
         return powersetAutomaton;
     }
 
-    private static void startPowerset(Set<IState> currentStateSet, Map<Set<String>, IState> allStateSets, IRuleAutomaton finalAutomaton) {
+    /**
+     * Recursive function called by the powerset() method to perform the Powerset.
+     *
+     * @param currentStateSet The current state set.
+     * @param allStateSets    All state sets.
+     * @param finalAutomaton  The final DFA.
+     */
+    private static void doPowerset(Set<IState> currentStateSet, Map<Set<String>, IState> allStateSets,
+                                   IRuleAutomaton finalAutomaton) {
         Map<String, Set<IState>> targetStateSets = new HashMap<>();
         Map<String, TransitionType> transitionTypes = new HashMap<>();
         Map<String, ClockGuard> clockGuards = new HashMap<>();
@@ -97,51 +128,57 @@ public final class AutomatonUtils {
                         stateSet = new HashSet<>();
                     }
 
+                    // FIXME Potential bugs if two transitions with the same label originate from the same state set ;
+                    // FIXME In that case, the transition picked last "wins" (its attribute overwrite the previous ones)
                     stateSet.add(t.getTarget());
                     targetStateSets.put(t.getLabel(), stateSet);
                     transitionTypes.put(t.getLabel(), t.getType());
-                    clockGuards.put(t.getLabel(), t.getClockConstraint());
+                    clockGuards.put(t.getLabel(), t.getClockGuard());
                     predicates.put(t.getLabel(), t.getPredicates());
                 }
             }
         }
 
         targetStateSets.forEach((label, targetStateSet) -> {
-            Set<IState> extendedStateSet = extendStateSet(targetStateSet, new HashSet<>());
+            Set<IState> extendedStateSet = extendStateSet(targetStateSet, new HashSet<>()); // TODO hide second arg
             targetStateSets.put(label, extendedStateSet);
         });
 
         targetStateSets.forEach((label, targetStateSet) -> {
-            IState targetState = allStateSets.get(targetStateSet.stream().map(IState::getLabel).collect(Collectors.toSet()));
+            IState targetState = allStateSets.get(targetStateSet.stream().map(IState::getLabel).collect(
+                    Collectors.toSet()));
 
             if (targetState == null) {
-                // New state set detected, must create new target state
+                // New state set found, create a new state which corresponds to it
                 targetState = new State();
 
-                if (isFinalStateSet(targetStateSet)) {
-                    try {
-                        finalAutomaton.setFinalState(targetState);
-                    } catch (Exception e) {
-                        logger.error("An error occured during Powerset (" + e.getMessage() + ")");
-                    }
+                if (isStateSetFinal(targetStateSet)) {
+                    finalAutomaton.addFinalState(targetState);
                 } else {
                     finalAutomaton.addState(targetState);
                 }
 
                 allStateSets.put(targetStateSet.stream().map(IState::getLabel).collect(Collectors.toSet()), targetState);
 
-                startPowerset(targetStateSet, allStateSets, finalAutomaton);
+                doPowerset(targetStateSet, allStateSets, finalAutomaton);
             }
 
-            IState currentState = allStateSets.get(currentStateSet.stream().map(IState::getLabel).collect(Collectors.toSet()));
-            currentState.registerTransition(targetState, label, transitionTypes.get(label), clockGuards.get(label), predicates.get(label));
+            // Create a transition to the target state set with the attributes which correspond to the label.
+            IState currentState = allStateSets.get(currentStateSet.stream().map(IState::getLabel).collect(
+                    Collectors.toSet()));
+            currentState.registerTransition(targetState, label, transitionTypes.get(label), clockGuards.get(label),
+                    predicates.get(label));
         });
     }
 
     /**
-     * Extend the state set by running the epsilon transitions from each state of the set.
-     * Used by the powerset construction algorithm.
-     **/
+     * Extend a state set by absorbing the target states of all outgoing epsilon transitions.
+     * Used by the Powerset algorithm.
+     *
+     * @param stateSet      The state set to extend.
+     * @param checkedStates The states that have already been absorbed into the state set.
+     * @return The extended state set.
+     */
     private static Set<IState> extendStateSet(Set<IState> stateSet, Set<String> checkedStates) {
         Set<IState> extendedStateSet = new HashSet<>();
         extendedStateSet.addAll(stateSet);
@@ -160,8 +197,7 @@ public final class AutomatonUtils {
             }
         }
 
-        /* If new states have been added to the state set, we need to check those for epsilon transitions, so keep the
-        extension going. If no epsilon transitions were found in any state, we can stop the extension. */
+        // Recursion : if new states were added to the state set, the state set potentially needs to be extended again.
         if (statesAdded) {
             extendedStateSet = extendStateSet(extendedStateSet, checkedStates);
         }
@@ -170,9 +206,12 @@ public final class AutomatonUtils {
     }
 
     /**
-     * Check if the state set contains at least one accepting state
-     **/
-    private static boolean isFinalStateSet(Set<IState> stateSet) {
+     * Check whether the state set if final, i.e. contains at least one final state.
+     *
+     * @param stateSet The state set to check.
+     * @return A boolean stating whether the state set contains a final state.
+     */
+    private static boolean isStateSetFinal(Set<IState> stateSet) {
         boolean isFinal = false;
 
         for (IState s : stateSet) {

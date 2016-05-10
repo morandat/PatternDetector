@@ -8,7 +8,7 @@ import java.util.function.Predicate;
 /**
  * Created by William Braik on 6/28/2015.
  * <p>
- * A state of a rule's automaton. Can be initial, final, or regular.
+ * A state of a rule automaton. Can be initial, final, or regular.
  */
 public class State implements IState {
 
@@ -19,14 +19,12 @@ public class State implements IState {
     protected Map<String, List<ITransition>> _transitions;
     protected boolean _initial;
     protected boolean _final;
-    protected IRuleAutomaton _automaton;
 
     public State() {
         _label = null;
         _transitions = new HashMap<>();
         _final = false;
         _initial = false;
-        _automaton = null;
     }
 
     @Override
@@ -36,10 +34,20 @@ public class State implements IState {
 
     @Override
     public Set<ITransition> getTransitions() {
-        Set<ITransition> set = new HashSet<>();
-        _transitions.values().forEach(list -> list.forEach(set::add));
+        Set<ITransition> transitions = new HashSet<>();
+        _transitions.values().forEach(list -> list.forEach(transitions::add));
 
-        return set;
+        return transitions;
+    }
+
+    @Override
+    public List<ITransition> getTransitionsByLabel(String label) {
+        Collection<ITransition> transitions = _transitions.get(label);
+
+        if (transitions == null)
+            return null;
+
+        return _transitions.get(label);
     }
 
     @Override
@@ -50,11 +58,6 @@ public class State implements IState {
     @Override
     public boolean isFinal() {
         return _final;
-    }
-
-    @Override
-    public IRuleAutomaton getAutomaton() {
-        return _automaton;
     }
 
     @Override
@@ -70,11 +73,6 @@ public class State implements IState {
     @Override
     public void setFinal(boolean isFinal) {
         _final = isFinal;
-    }
-
-    @Override
-    public void setAutomaton(IRuleAutomaton automaton) {
-        _automaton = automaton;
     }
 
     @Override
@@ -182,36 +180,20 @@ public class State implements IState {
 
     @Override
     public ITransition pickTransition(IEvent event) {
-        List<ITransition> list = _transitions.get(event.getType());
-        if (list == null) {
-            list = _transitions.get(Transition.LABEL_STAR);
+        List<ITransition> transitions = _transitions.get(event.getType());
+        if (transitions == null) {
+            transitions = _transitions.get(Transition.LABEL_STAR);
         }
 
         ITransition t;
-
-        if (list == null) {
+        if (transitions == null) {
             t = null;
-        } else if (list.size() > 1) {
-            throw new RuntimeException("The automaton is not deterministic");
         } else {
-            t = list.get(0);
+            // Pick a transition randomly if several match.
+            t = transitions.get(new Random().nextInt(transitions.size()));
         }
 
         return t;
-    }
-
-    @Override
-    public ITransition getTransitionByLabel(String label) throws Exception {
-        Collection<ITransition> transitions = _transitions.get(label);
-        if (transitions == null)
-            return null;
-        else {
-            if (transitions.size() > 1) {
-                throw new Exception("The automaton is not deterministic");
-            } else {
-                return _transitions.get(label).get(0);
-            }
-        }
     }
 
     @Override

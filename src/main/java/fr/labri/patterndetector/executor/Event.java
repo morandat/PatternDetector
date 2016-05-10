@@ -52,7 +52,7 @@ public class Event implements IEvent {
 
     @Override
     public String toString() {
-        return _type + "<" + _timestamp + ">" + (_payload == null ? "" : " {" + _payload + "}");
+        return _type + "<" + _timestamp + ">" + (_payload == null ? "" : " " + _payload);
     }
 
     @Override

@@ -14,16 +14,15 @@ public class Transition implements ITransition {
     private IState _source;
     private IState _target;
     private String _label;
-    TransitionType _type;
-    ClockGuard _clockGuard;
-    Map<String, Predicate<Integer>> _predicates;
+    private TransitionType _type;
+    private ClockGuard _clockGuard;
+    private Map<String, Predicate<Integer>> _predicates;
 
     public Transition(IState source, IState target, String label, TransitionType type) {
         _source = source;
         _target = target;
         _label = label;
         _type = type;
-        _clockGuard = null;
     }
 
     public Transition(IState source, IState target, String label, TransitionType type, ClockGuard clockGuard) {
@@ -34,7 +33,8 @@ public class Transition implements ITransition {
         _clockGuard = clockGuard;
     }
 
-    public Transition(IState source, IState target, String label, TransitionType type, Map<String, Predicate<Integer>> predicates) {
+    public Transition(IState source, IState target, String label, TransitionType type,
+                      Map<String, Predicate<Integer>> predicates) {
         _source = source;
         _target = target;
         _label = label;
@@ -42,7 +42,8 @@ public class Transition implements ITransition {
         _predicates = predicates;
     }
 
-    public Transition(IState source, IState target, String label, TransitionType type, ClockGuard clockGuard, Map<String, Predicate<Integer>> predicates) {
+    public Transition(IState source, IState target, String label, TransitionType type, ClockGuard clockGuard,
+                      Map<String, Predicate<Integer>> predicates) {
         _source = source;
         _target = target;
         _label = label;
@@ -72,7 +73,7 @@ public class Transition implements ITransition {
     }
 
     @Override
-    public ClockGuard getClockConstraint() {
+    public ClockGuard getClockGuard() {
         return _clockGuard;
     }
 
@@ -97,17 +98,17 @@ public class Transition implements ITransition {
     }
 
     @Override
-    public void setClockConstraint(ClockGuard clockGuard) {
+    public void setClockGuard(ClockGuard clockGuard) {
         _clockGuard = clockGuard;
     }
 
     @Override
-    public void setClockConstraint(String eventType, int value) {
+    public void setClockGuard(String eventType, int value) {
         _clockGuard = new ClockGuard(eventType, value);
     }
 
     @Override
-    public void setClockConstraint(String eventType, int value, boolean lowerThan) {
+    public void setClockGuard(String eventType, int value, boolean lowerThan) {
         _clockGuard = new ClockGuard(eventType, value, lowerThan);
     }
 
@@ -123,7 +124,8 @@ public class Transition implements ITransition {
 
     @Override
     public String toString() {
-        return _source + ":" + _label + " => " + _target + " [" + _type + "]" + (_clockGuard == null ? "" : " {" + _clockGuard + "}");
+        return _source + ":" + _label + " => " + _target + " [" + _type + "]"
+                + (_clockGuard == null ? "" : " {" + _clockGuard + "}");
     }
 
     @Override

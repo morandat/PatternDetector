@@ -6,7 +6,9 @@ package fr.labri.patterndetector.executor;
  */
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
-import fr.labri.patterndetector.rules.IRule;
+import fr.labri.patterndetector.automaton.exception.*;
+import fr.labri.patterndetector.rule.visitors.RuleAutomatonMaker;
+import fr.labri.patterndetector.rule.IRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,21 +36,34 @@ public final class RuleManager implements IPatternObserver {
      * @return The rule's name.
      */
     public String addRule(IRule rule) {
-        if (rule.getAutomaton() == null) { // Could not obtain the rule's automaton, invalid rule
-            throw new RuntimeException("Invalid rule : " + rule);
-        }
+        IRuleAutomaton automaton = RuleAutomatonMaker.makeAutomaton(rule); // Try to build the rule automaton.
 
-        rule.setName(rule.getName() == null ?
-                rule.getClass().getSimpleName() + "-" + _ruleCounter++
+        rule.setName(rule.getName() == null ? rule.getClass().getSimpleName() + "-" + _ruleCounter++
                 : rule.getName() + "-" + _ruleCounter++);
 
-        IRuleAutomaton powerset = rule.getAutomaton().powerset();
+        IRuleAutomaton powerset = automaton.powerset();
 
-        validateRuleAutomaton(powerset);
+        try {
+            powerset.validate();
+        } catch (NoFinalStateException e) {
+            logger.error("Non-terminating rule : " + rule + " (" + e.getMessage() + ")\n" + e.getRuleAutomaton());
 
-        // If the rule is valid, add it to the rule set
-        _rules.put(rule.getName(), rule);
+            throw new RuntimeException("Non-terminating rule : " + rule + " (" + e.getMessage() + ")\n"
+                    + e.getRuleAutomaton());
+        } catch (UnreachableStatesException e) {
+            logger.error("Ambiguous rule : " + rule + " (" + e.getMessage() + ")\n" + e.getRuleAutomaton());
+
+            throw new RuntimeException("Ambiguous rule : " + rule + " (" + e.getMessage() + ")\n"
+                    + e.getRuleAutomaton());
+        } catch (RuleAutomatonException e) {
+            logger.error("Invalid rule : " + rule + " (" + e.getMessage() + ")\n" + e.getRuleAutomaton());
+
+            throw new RuntimeException("Invalid rule : " + rule + " (" + e.getMessage() + ")\n" + e.getRuleAutomaton());
+        }
+
+        // If the rule is valid, add it to the rule set, then register and observe the rule automaton.
         powerset.registerPatternObserver(this);
+        _rules.put(rule.getName(), rule);
         _automata.put(rule.getName(), powerset);
 
         logger.info("Rule " + rule.getName() + " added : " + rule);
@@ -104,39 +119,16 @@ public final class RuleManager implements IPatternObserver {
         _automata.clear();
     }
 
-    /**
-     * Check whether a rule automaton is valid for execution.
-     *
-     * @param automaton The automaton to validate.
-     */
-    private void validateRuleAutomaton(IRuleAutomaton automaton) {
-        if (automaton.getInitialState() == null) {
-            throw new RuntimeException("Invalid automaton (" + automaton.getRule() + ") : rule can't start");
-        } else if (automaton.getFinalState() == null) {
-            throw new RuntimeException("Invalid automaton (" + automaton.getRule() + ") : rule doesn't terminate");
-        } else if (automaton.getFinalState().getTransitions().size() > 0) {
-            throw new RuntimeException("Invalid automaton (" + automaton.getRule() + ") : rule is ambiguous");
-        }
+    public void dispatchEvent(IEvent event) {
+        _automata.values().forEach(automaton -> automaton.fire(event));
     }
 
     @Override
     public void notifyPattern(IRuleAutomaton ruleAutomaton, Collection<IEvent> pattern) {
         _lastPattern.clear();
         _lastPattern.addAll(pattern);
-        IRule rule = ruleAutomaton.getRule();
 
-        logger.info("Pattern found by " + rule.getName() + " : " + rule);
         logger.info("Pattern found : " + pattern);
-    }
-
-    public void dispatchEvent(IEvent event) {
-        _automata.values().forEach(automaton -> {
-            try {
-                automaton.fire(event);
-            } catch (Exception e) {
-                logger.error(e.getMessage());
-            }
-        });
     }
 
     @Override
