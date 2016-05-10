@@ -1,0 +1,137 @@
+module fr.labri.patterndetector.lang.Parser;
+
+header {
+    import java.util.concurrent.TimeUnit;
+
+    import fr.labri.patterndetector.lang.AST.*;
+    import static fr.labri.patterndetector.lang.AST.*;
+}
+
+public Pair<Rule> script
+    = (rule EOL*)*
+    ;
+
+Rule rule
+    = n:SYMBOL COLON { Rule r = newRule(n);}
+    ((m:match { r.appendPattern(m); })* (c:condition { r.appendConstraint(c); })* EOL)* EOL { yyValue = r; }
+    ;
+
+Constraint condition
+    = CONDITION ( function / binary )
+    ;
+
+void function
+    = SYMBOL args
+    ;
+
+void binary
+    = arg operator arg
+    ;
+
+Pattern match
+    = p:pattern tl:(transition)* { p.addTransitions(tl); } (s:sequence  ntl:(transition*) { p = newKleene(p); p.addAlias(s); p.addTransitions(ntl); })? { yyValue = p; }
+    ;
+
+Transition transition
+    = '[' function ']' {yyValue = newTransition();}
+    / SLASH restricted_match SLASH {yyValue = newNak();}
+    ;
+
+void restricted_match
+    = SYMBOL
+    ; // TODO restricted_match
+
+Pattern pattern
+  =  '(' m:match { Pattern p = newCompositePattern(m); } ')' (COLON s:SYMBOL { p.addAlias(s); })? { yyValue = p; }
+  / s:SYMBOL { Pattern p = newSimplePattern(s); } (COLON SYMBOL { p.addAlias(s); })? { yyValue = p; }
+  / REFERENCE SYMBOL // FIXME (put some code here)
+  ;
+
+String sequence
+    = KLEENE {yyValue = null;} (COLON yyValue:SYMBOL)?
+    ;
+
+void args
+    = arg (',' arg)*
+    ;
+
+void arg
+    = literal
+    / selector
+    ;
+
+void selector
+    = SYMBOL range? ('.' selector)*
+    ;
+
+void range
+    = '[' range_spec ']'
+    ;
+
+void range_spec
+    = simple_arith (RANGE simple_arith?)?
+    / RANGE simple_arith
+    ;
+
+void simple_arith
+    = (SYMBOL / number) (arith_symbol SYMBOL/number)?  // TODO Parentesis
+    ;
+
+void literal
+    = number
+    / STRING
+    / timeunit
+    ;
+
+void number
+    = DECIMAL
+    / HEX
+    ;
+
+TimeValue timeunit
+    = v:(DECIMAL / HEX)
+    ([dD] { yyValue = newTimeValue(v, TimeUnit.DAYS); }
+    / [hH] { yyValue = newTimeValue(v, TimeUnit.HOURS); }
+    / [mM][sS] { yyValue = newTimeValue(v, TimeUnit.MILLISECONDS); }
+    / [uU][sS] { yyValue = newTimeValue(v, TimeUnit.MICROSECONDS); }
+    / [nN][sS] { yyValue = newTimeValue(v, TimeUnit.NANOSECONDS); }
+    / [mM] { yyValue = newTimeValue(v, TimeUnit.MINUTES); }
+    / [sS] { yyValue = newTimeValue(v, TimeUnit.SECONDS); })
+    ;
+
+String KLEENE = '+';
+String SLASH = '/' ;
+
+String STRING = ["] (!["\\] _)* ["] ;
+
+String operator
+    = arith_symbol
+    / ">=" / "<=" / '>' / '<' / '=' / "!="
+    ;
+
+String arith_symbol
+    = '-' / KLEENE / '*' / SLASH
+    ;
+
+String RANGE = "..";
+
+String SYMBOL = ([a-zA-Z][a-zA-Z0-9]*/_[a-zA-Z0-9_]+);
+
+void REFERENCE = '@';
+
+String digit = [0-9];
+String DECIMAL = digit+;
+
+String hex_digit = [0-9a-fA-F] ;
+String HEX = "0x" hex_digit+;
+
+String COLON = ':';
+String CONDITION = '#';
+
+void n       = (Space / SLComment / MLComment)*;
+void nn      = (Space / SLComment / MLComment)+;
+void Space         = [ ] / [\t] / [\f];
+void SLComment     = ("//" / [#;]) (![\n\r] _)* ; // Surprisingly this eof do not work
+void MLComment     = "/*" ([*] ![/] / ![*] _)* "*/";
+void EOL           = "\r\n" / [\r] / [\n];
+void EOF           = !_;
