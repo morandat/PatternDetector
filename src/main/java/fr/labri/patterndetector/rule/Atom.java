@@ -18,10 +18,6 @@ public class Atom extends AbstractAtom {
         super("", eventType);
     }
 
-    public Atom(String eventType, Map<String, Predicate<Integer>> predicates) {
-        super(eventType, predicates);
-    }
-
     @Override
     public void accept(IRuleVisitor visitor) {
         visitor.visit(this);

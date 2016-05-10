@@ -24,35 +24,11 @@ public interface IRule {
     String getSymbol();
 
     /**
-     * Get the time constraint specified for the rule.
-     *
-     * @return The time constraint specification of the rule.
-     */
-    TimeConstraint getTimeConstraint();
-
-    /**
      * Set the name of the rule.
      *
      * @param name The name of the rule.
      */
     void setName(String name);
-
-    /**
-     * Specify a time constraint for the rule.
-     *
-     * @param timeConstraint The time constraint to specify for the rule.
-     * @return The rule itself.
-     */
-    // FIXME should probably not be here. Create interface for rules that can be time-constrained
-    IRule setTimeConstraint(TimeConstraint timeConstraint);
-
-    /**
-     * Specify a time constraint for the rule.
-     *
-     * @param value The value of the time constraint to specify for the rule.
-     * @return The rule itself.
-     */
-    IRule setTimeConstraint(int value);
 
     void accept(IRuleVisitor visitor);
 

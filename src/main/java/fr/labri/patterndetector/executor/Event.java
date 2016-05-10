@@ -1,5 +1,10 @@
 package fr.labri.patterndetector.executor;
 
+import fr.labri.patterndetector.types.AbstractValue;
+import fr.labri.patterndetector.types.IValue;
+import fr.labri.patterndetector.types.IntegerValue;
+import fr.labri.patterndetector.types.StringValue;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,9 +13,9 @@ import java.util.Map;
  */
 public class Event implements IEvent {
 
-    String _type; // Type of event (ex: View, Add...)
-    long _timestamp; // Time of occurence of the event
-    Map<String, Integer> _payload; // Some data (or payload) attached to the event. Maps field names to values
+    private String _type; // Type of event (ex: View, Add...)
+    private long _timestamp; // Time of occurence of the event
+    private Map<String, IValue<?>> _payload; // Some data (or payload) attached to the event. Maps field names to values
 
     public Event(String type, long timestamp) {
         _type = type;
@@ -18,7 +23,7 @@ public class Event implements IEvent {
         _payload = null;
     }
 
-    public Event(String type, long timestamp, Map<String, Integer> payload) {
+    public Event(String type, long timestamp, Map<String, IValue<?>> payload) {
         _type = type;
         _timestamp = timestamp;
         _payload = payload;
@@ -35,7 +40,7 @@ public class Event implements IEvent {
     }
 
     @Override
-    public Map<String, Integer> getPayload() {
+    public Map<String, IValue<?>> getPayload() {
         return _payload;
     }
 
@@ -45,7 +50,18 @@ public class Event implements IEvent {
             _payload = new HashMap<>();
         }
 
-        _payload.put(key, value);
+        _payload.put(key, new IntegerValue(value));
+
+        return this;
+    }
+
+    @Override
+    public IEvent setData(String key, String value) {
+        if (_payload == null) {
+            _payload = new HashMap<>();
+        }
+
+        _payload.put(key, new StringValue(value));
 
         return this;
     }

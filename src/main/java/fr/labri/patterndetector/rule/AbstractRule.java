@@ -16,7 +16,6 @@ public abstract class AbstractRule implements IRule {
 
     protected String _name;
     protected String _symbol;
-    protected TimeConstraint _timeConstraint;
 
     public AbstractRule(String symbol) {
         _symbol = symbol;
@@ -35,23 +34,6 @@ public abstract class AbstractRule implements IRule {
     @Override
     public String getSymbol() {
         return _symbol;
-    }
-
-    @Override
-    public TimeConstraint getTimeConstraint() {
-        return _timeConstraint;
-    }
-
-    @Override
-    public IRule setTimeConstraint(TimeConstraint timeConstraint) {
-        _timeConstraint = timeConstraint;
-
-        return this;
-    }
-
-    @Override
-    public IRule setTimeConstraint(int value) {
-        return setTimeConstraint(new TimeConstraint(value));
     }
 
     @Override

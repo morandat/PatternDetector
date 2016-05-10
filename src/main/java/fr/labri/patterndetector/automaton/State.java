@@ -92,54 +92,6 @@ public class State implements IState {
     }
 
     @Override
-    public void registerTransition(IState target, String label, TransitionType type, ClockGuard clockGuard) {
-        ITransition t = new Transition(this, target, label, type, clockGuard);
-
-        if (_transitions.get(label) == null) {
-            List<ITransition> list = new ArrayList<>();
-            list.add(t);
-            _transitions.put(label, list);
-        } else {
-            if (!_transitions.get(label).contains(t)) { // Check duplicate transitions
-                // TODO throw DuplicateTransitionException
-                _transitions.get(label).add(t);
-            }
-        }
-    }
-
-    @Override
-    public void registerTransition(IState target, String label, TransitionType type, Map<String, Predicate<Integer>> predicates) {
-        ITransition t = new Transition(this, target, label, type, predicates);
-
-        if (_transitions.get(label) == null) {
-            List<ITransition> list = new ArrayList<>();
-            list.add(t);
-            _transitions.put(label, list);
-        } else {
-            if (!_transitions.get(label).contains(t)) { // Check duplicate transitions
-                // TODO throw DuplicateTransitionException
-                _transitions.get(label).add(t);
-            }
-        }
-    }
-
-    @Override
-    public void registerTransition(IState target, String label, TransitionType type, ClockGuard clockGuard, Map<String, Predicate<Integer>> predicates) {
-        ITransition t = new Transition(this, target, label, type, clockGuard, predicates);
-
-        if (_transitions.get(label) == null) {
-            List<ITransition> list = new ArrayList<>();
-            list.add(t);
-            _transitions.put(label, list);
-        } else {
-            if (!_transitions.get(label).contains(t)) { // Check duplicate transitions
-                // TODO throw DuplicateTransitionException
-                _transitions.get(label).add(t);
-            }
-        }
-    }
-
-    @Override
     public void registerEpsilonTransition(IState target) {
         String label = Transition.LABEL_EPSILON;
         ITransition t = new Transition(this, target, label, TransitionType.TRANSITION_DROP);

@@ -15,41 +15,12 @@ public class Transition implements ITransition {
     private IState _target;
     private String _label;
     private TransitionType _type;
-    private ClockGuard _clockGuard;
-    private Map<String, Predicate<Integer>> _predicates;
 
     public Transition(IState source, IState target, String label, TransitionType type) {
         _source = source;
         _target = target;
         _label = label;
         _type = type;
-    }
-
-    public Transition(IState source, IState target, String label, TransitionType type, ClockGuard clockGuard) {
-        _source = source;
-        _target = target;
-        _label = label;
-        _type = type;
-        _clockGuard = clockGuard;
-    }
-
-    public Transition(IState source, IState target, String label, TransitionType type,
-                      Map<String, Predicate<Integer>> predicates) {
-        _source = source;
-        _target = target;
-        _label = label;
-        _type = type;
-        _predicates = predicates;
-    }
-
-    public Transition(IState source, IState target, String label, TransitionType type, ClockGuard clockGuard,
-                      Map<String, Predicate<Integer>> predicates) {
-        _source = source;
-        _target = target;
-        _label = label;
-        _type = type;
-        _clockGuard = clockGuard;
-        _predicates = predicates;
     }
 
     @Override
@@ -73,21 +44,6 @@ public class Transition implements ITransition {
     }
 
     @Override
-    public ClockGuard getClockGuard() {
-        return _clockGuard;
-    }
-
-    @Override
-    public Predicate<Integer> getPredicate(String field) {
-        return _predicates.get(field);
-    }
-
-    @Override
-    public Map<String, Predicate<Integer>> getPredicates() {
-        return _predicates;
-    }
-
-    @Override
     public boolean isEpsilon() {
         return _label.equals(Transition.LABEL_EPSILON);
     }
@@ -98,34 +54,8 @@ public class Transition implements ITransition {
     }
 
     @Override
-    public void setClockGuard(ClockGuard clockGuard) {
-        _clockGuard = clockGuard;
-    }
-
-    @Override
-    public void setClockGuard(String eventType, int value) {
-        _clockGuard = new ClockGuard(eventType, value);
-    }
-
-    @Override
-    public void setClockGuard(String eventType, int value, boolean lowerThan) {
-        _clockGuard = new ClockGuard(eventType, value, lowerThan);
-    }
-
-    @Override
-    public void setPredicate(String field, Predicate<Integer> predicate) {
-        _predicates.put(field, predicate);
-    }
-
-    @Override
-    public void setPredicates(Map<String, Predicate<Integer>> predicates) {
-        _predicates = predicates;
-    }
-
-    @Override
     public String toString() {
-        return _source + ":" + _label + " => " + _target + " [" + _type + "]"
-                + (_clockGuard == null ? "" : " {" + _clockGuard + "}");
+        return _source + ":" + _label + " => " + _target + " [" + _type + "]";
     }
 
     @Override

@@ -54,7 +54,8 @@ public class PatternDetectionTest {
 
     @Test
     public void shouldDetectAtomWithPredicate() {
-        IRule r = new Atom("a").addPredicate("x", x -> x > 5);
+        // FIXME predicates are now global
+        IRule r = new Atom("a"); //.addPredicate("x", x -> x > 5);
 
         _ruleManager.addRule(r);
         _detector.detect(_generator.generateAtom());
@@ -69,7 +70,8 @@ public class PatternDetectionTest {
 
     @Test
     public void shouldNotDetectAtomWithPredicate() {
-        IRule r = new Atom("a").addPredicate("x", x -> x > 20);
+        // FIXME predicates are now global
+        IRule r = new Atom("a"); //.addPredicate("x", x -> x > 20);
 
         _ruleManager.addRule(r);
         _detector.detect(_generator.generateAtom());
@@ -243,7 +245,8 @@ public class PatternDetectionTest {
 
     @Test
     public void shouldDetectAFollowedByBWithTimeConstraint() {
-        IRule r = new FollowedBy("a", "b").setTimeConstraint(5);
+        // FIXME time constraints are now global
+        IRule r = new FollowedBy("a", "b"); //.setTimeConstraint(5);
 
         _ruleManager.addRule(r);
         _detector.detect(_generator.generateFollowedBy());
@@ -259,7 +262,8 @@ public class PatternDetectionTest {
 
     @Test
     public void shouldNotDetectAFollowedByBWithTimeConstraint() {
-        IRule r = new FollowedBy("a", "b").setTimeConstraint(3);
+        // FIXME time constraints are now global
+        IRule r = new FollowedBy("a", "b"); //.setTimeConstraint(3);
 
         _ruleManager.addRule(r);
         _detector.detect(_generator.generateFollowedBy());
@@ -273,8 +277,11 @@ public class PatternDetectionTest {
 
     @Test
     public void shouldDetectASeqWithTimeConstraint() {
+        // FIXME time constraints are now global
+
         IRule r = new FollowedBy(
-                new Kleene("a").setTimeConstraint(5),
+                //.setTimeConstraint(5),
+                new Kleene("a"),
                 "end");
 
         _ruleManager.addRule(r);
@@ -295,8 +302,11 @@ public class PatternDetectionTest {
 
     @Test
     public void shouldNotDetectASeqWithTimeConstraint() {
+        // FIXME time constraints are now global
+
         IRule r = new FollowedBy(
-                new Kleene("a").setTimeConstraint(3),
+                //.setTimeConstraint(3),
+                new Kleene("a"),
                 "end");
 
         _ruleManager.addRule(r);
@@ -311,8 +321,11 @@ public class PatternDetectionTest {
 
     @Test
     public void shouldDetectAFollowedByBSeqWithTimeConstraint() {
+        // FIXME time constraints are now global
+
         IRule r = new FollowedBy(
-                new Kleene(new FollowedBy("a", "b")).setTimeConstraint(5),
+                //.setTimeConstraint(5),
+                new Kleene(new FollowedBy("a", "b")),
                 "end");
 
         _ruleManager.addRule(r);
@@ -332,8 +345,11 @@ public class PatternDetectionTest {
 
     @Test
     public void shouldNotDetectAFollowedByBSeqWithTimeConstraint() {
+        // FIXME time constraints are now global
+
         IRule r = new FollowedBy(
-                new Kleene(new FollowedBy("a", "b")).setTimeConstraint(4),
+                //.setTimeConstraint(4),
+                new Kleene(new FollowedBy("a", "b")),
                 "end");
 
         _ruleManager.addRule(r);

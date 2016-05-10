@@ -14,9 +14,6 @@ import fr.labri.patterndetector.rule.*;
 public class Main {
 
     public static void main(String[] args) {
-
-        Main main = new Main();
-
         //IRule r = new Atom("a");
         //IRule r = new FollowedBy("a", "b");
         // .setTimeConstraint(5);
@@ -33,9 +30,7 @@ public class Main {
         RulePrinter.printRule(System.out, r);
 
         IRuleAutomaton automaton = RuleAutomatonMaker.makeAutomaton(r);
-        System.out.println("### NFA");
-        System.out.println(automaton);
-        System.out.println("### POWERSET");
-        System.out.println(automaton.powerset());
+        System.out.println("NFA : " + automaton);
+        System.out.println("DFA : " + automaton.powerset());
     }
 }

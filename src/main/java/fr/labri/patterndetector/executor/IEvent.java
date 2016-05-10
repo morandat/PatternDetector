@@ -1,5 +1,7 @@
 package fr.labri.patterndetector.executor;
 
+import fr.labri.patterndetector.types.IValue;
+
 import java.util.Map;
 
 /**
@@ -11,7 +13,7 @@ public interface IEvent {
 
     long getTimestamp();
 
-    Map<String, Integer> getPayload();
+    Map<String, ? extends IValue<?>> getPayload();
 
     /**
      * Add new data to the event's payload
@@ -21,4 +23,6 @@ public interface IEvent {
      * @return The event itself
      */
     IEvent setData(String key, Integer value);
+
+    IEvent setData(String key, String value);
 }

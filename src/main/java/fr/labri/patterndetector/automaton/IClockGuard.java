@@ -7,7 +7,7 @@ public interface IClockGuard {
 
     int getValue();
 
-    boolean getLowerThan();
+    boolean isLowerThan();
 
     String getEventType();
 }

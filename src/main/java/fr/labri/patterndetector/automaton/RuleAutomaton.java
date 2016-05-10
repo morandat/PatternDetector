@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 /**
  * Created by William Braik on 6/28/2015.
@@ -20,14 +19,14 @@ public class RuleAutomaton implements IRuleAutomaton {
 
     private final Logger logger = LoggerFactory.getLogger(RuleAutomaton.class);
 
-    protected IState _initialState;
-    protected Map<String, IState> _finalStates;
-    protected Map<String, IState> _connectionStates;
-    protected Map<String, IState> _states;
-    protected IState _currentState;
-    protected ArrayList<IEvent> _matchBuffer; // Events matching the current pattern
-    protected Map<String, Long> _clocks;
-    protected Collection<IPatternObserver> _observers; // Pattern observers to be notified when a pattern is detected.
+    private IState _initialState;
+    private Map<String, IState> _finalStates;
+    private Map<String, IState> _connectionStates;
+    private Map<String, IState> _states;
+    private IState _currentState;
+    private ArrayList<IEvent> _matchBuffer; // Events matching the current pattern
+    private Map<String, Long> _clocks;
+    private Collection<IPatternObserver> _observers; // Pattern observers to be notified when a pattern is detected.
 
     public RuleAutomaton() {
         _states = new HashMap<>();
@@ -106,7 +105,6 @@ public class RuleAutomaton implements IRuleAutomaton {
         Set<ITransition> transitions = new HashSet<>();
         transitions.addAll(_initialState.getTransitions());
         _states.values().forEach(state -> transitions.addAll(state.getTransitions()));
-        // FIXME final states shouldn't have transitions
         _finalStates.values().forEach(finalState -> transitions.addAll(finalState.getTransitions()));
 
         return transitions;
@@ -170,9 +168,9 @@ public class RuleAutomaton implements IRuleAutomaton {
         ITransition t = _currentState.pickTransition(e);
 
         // If there is a transition, check its clock guards if any
-        if (t != null
-                && testClockGuard(e.getTimestamp(), t.getClockGuard())
-                && testPredicates(e.getPayload(), t.getPredicates())) {
+        if (t != null) {
+
+            // TODO check clock constraints and predicates globally
 
             logger.debug("Transitioning : " + t + " (" + e + ")");
 
@@ -236,41 +234,12 @@ public class RuleAutomaton implements IRuleAutomaton {
             long timeLast = _clocks.get(clockGuard.getEventType());
             long timeSinceLast = currentTime - timeLast;
 
-            if (clockGuard.getLowerThan()) {
+            if (clockGuard.isLowerThan()) {
                 return timeSinceLast <= clockGuard.getValue();
             } else {
                 return timeSinceLast > clockGuard.getValue();
             }
         }
-    }
-
-    /**
-     * Returns true if the predicates pass, false otherwise
-     */
-    public boolean testPredicates(Map<String, Integer> payload, Map<String, Predicate<Integer>> predicates) {
-        // No predicates to test
-        if (predicates == null) {
-            return true;
-        }
-
-        // Some predicates to test, but no data
-        if (payload == null) {
-            return false;
-        }
-
-        // Some predicates to test, and some data
-        for (Map.Entry<String, Predicate<Integer>> entry : predicates.entrySet()) {
-            String field = entry.getKey();
-            Predicate<Integer> predicate = entry.getValue();
-            Integer value = payload.get(field);
-
-            /* If the payload misses a field that is required by a predicate, then ''value'' will be null,
-            and ''predicate.test(null)'' will return false (which is the expected behaviour). */
-            if (!predicate.test(value))
-                return false;
-        }
-
-        return true;
     }
 
     @Override

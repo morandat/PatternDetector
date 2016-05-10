@@ -5,8 +5,8 @@ package fr.labri.patterndetector.automaton;
  */
 public final class ClockGuard implements IClockGuard {
 
-    private String _eventType; // to which event types's clock this time constraint applies
-    private int _value; // in seconds
+    private String _eventType; // to which event types clock this time constraint applies
+    private int _value;
     private boolean _lowerThan; // whether the time constraint specifies a min value or max value for the clock
 
     /**
@@ -40,7 +40,7 @@ public final class ClockGuard implements IClockGuard {
     }
 
     @Override
-    public boolean getLowerThan() {
+    public boolean isLowerThan() {
         return _lowerThan;
     }
 

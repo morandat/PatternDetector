@@ -117,10 +117,12 @@ public final class Generator {
 
         Collection<IEvent> eventStream = new ArrayList<>();
 
-        eventStream.add(new Event("q", _t++)); // TODO add referrer / url constraints
+        eventStream.add(new Event("q", _t++).setData("url","q"));
         eventStream.add(new Event("f", _t++));
         eventStream.add(new Event("f", _t++));
         eventStream.add(new Event("a", _t++));
+
+        // TODO add referrer / url constraints
 
         return eventStream;
     }

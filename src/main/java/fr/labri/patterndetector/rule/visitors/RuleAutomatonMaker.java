@@ -37,7 +37,7 @@ public final class RuleAutomatonMaker {
                 IState i = new State(); // Initial state
                 IState f = new State(); // Final state
 
-                i.registerTransition(f, atom.getEventType(), TransitionType.TRANSITION_APPEND, atom.getPredicates());
+                i.registerTransition(f, atom.getEventType(), TransitionType.TRANSITION_APPEND);
 
                 IRuleAutomaton automaton = new RuleAutomaton();
                 automaton.setInitialState(i);
@@ -109,16 +109,6 @@ public final class RuleAutomatonMaker {
                 leftAutomaton.getConnectionStates().forEach(connectionState -> connectionState.registerEpsilonTransition(s));
                 s.registerEpsilonTransition(rightInitialState);
 
-                // If a time constraint is specified, create clock constraints.
-                if (followedBy.getTimeConstraint() != null) {
-                    int value = followedBy.getTimeConstraint().getValue();
-
-                    rightAutomaton.getTransitions().forEach(t ->
-                            t.setClockGuard(followedBy.getLeftChildRule().getRightmostAtom().getEventType(), value));
-                    s.getTransitionsByLabel(Transition.LABEL_STAR).get(0)
-                            .setClockGuard(followedBy.getLeftChildRule().getRightmostAtom().getEventType(), value);
-                }
-
                 _automaton = automaton;
             } catch (RuleAutomatonException e) {
                 logger.error("Compilation failed : " + e.getMessage() + "(" + followedBy + ")\n"
@@ -155,16 +145,6 @@ public final class RuleAutomatonMaker {
                 s.registerStarTransition(s, TransitionType.TRANSITION_DROP);
                 s.registerEpsilonTransition(baseInitialState);
                 automaton.addState(s);
-
-                // If a time constraint is specified, create clock constraints.
-                if (kleene.getTimeConstraint() != null) {
-                    int value = kleene.getTimeConstraint().getValue();
-
-                    baseAutomaton.getInitialState().getTransitions().forEach(t ->
-                            t.setClockGuard(kleene.getChildRule().getRightmostAtom().getEventType(), value));
-                    s.getTransitionsByLabel(Transition.LABEL_STAR).get(0)
-                            .setClockGuard(kleene.getChildRule().getRightmostAtom().getEventType(), value);
-                }
 
                 _automaton = automaton;
             } catch (RuleAutomatonException e) {

@@ -38,14 +38,6 @@ public interface IState {
 
     void registerTransition(IState target, String label, TransitionType type);
 
-    void registerTransition(IState target, String label, TransitionType type, ClockGuard clockGuard);
-
-    void registerTransition(IState target, String label, TransitionType type,
-                            Map<String, Predicate<Integer>> predicates);
-
-    void registerTransition(IState target, String label, TransitionType type, ClockGuard clockGuard,
-                            Map<String, Predicate<Integer>> predicates);
-
     void registerEpsilonTransition(IState target);
 
     void registerStarTransition(IState target, TransitionType type);

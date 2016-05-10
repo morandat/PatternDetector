@@ -18,23 +18,7 @@ public interface ITransition {
 
     TransitionType getType();
 
-    ClockGuard getClockGuard();
-
-    Predicate<Integer> getPredicate(String field);
-
-    Map<String, Predicate<Integer>> getPredicates();
-
     boolean isEpsilon();
 
     boolean isStar();
-
-    void setClockGuard(ClockGuard clockGuard);
-
-    void setClockGuard(String eventType, int value);
-
-    void setClockGuard(String eventType, int value, boolean lowerThan);
-
-    void setPredicate(String field, Predicate<Integer> predicate); // TODO replace Integer by generic type '?'
-
-    void setPredicates(Map<String, Predicate<Integer>> predicates);
 }

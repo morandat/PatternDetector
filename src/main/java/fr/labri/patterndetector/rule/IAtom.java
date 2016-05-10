@@ -16,15 +16,4 @@ public interface IAtom extends ITerminalRule {
      * @return The type of the event represented by the atom.
      */
     String getEventType();
-
-    Map<String, Predicate<Integer>> getPredicates();
-
-    /**
-     * Set a predicate for a given data field of the event represented by the atom.
-     *
-     * @param field     The field to set the predicate on.
-     * @param predicate The predicate of the field.
-     * @return The atom itself.
-     */
-    IAtom addPredicate(String field, Predicate<Integer> predicate); // TODO replace Integer by generic type '?'
 }
