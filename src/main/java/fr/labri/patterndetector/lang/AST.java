@@ -2,6 +2,8 @@ package fr.labri.patterndetector.lang;
 
 import xtc.util.Pair;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -10,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 public class AST {
 
     public static Rule newRule(String name) {
-        return null;
+        return new Rule(name);
     }
     public static Transition newTransition() {
         return null;
@@ -18,41 +20,76 @@ public class AST {
     public static Transition newNak() {
         return null;
     }
-    public static Pattern newSimplePattern() {
-        return null;
-    }
-    public static Pattern newCompositePattern(Pattern p) {
-        return null;
-    }
+
     public static Pattern newSimplePattern(String name) {
-        return null;
+        return new SymbolPattern(name);
     }
-    public static Pattern newKleene(Pattern p) {
-        return null;
+
+    public static Pattern newCompositePattern(Pair<Pattern> patterns) {
+        return new CompositePattern(patterns);
     }
+
+    public static Pattern newKleene(Pattern pattern) {
+        return new KleenePattern(pattern);
+    }
+
     public static TimeValue newTimeValue(String value, TimeUnit unit) {
         int v = Integer.parseInt(value);
-        return null;
+        return new TimeValue(v, unit);
+    }
+
+    public static Pattern newReferencePattern(String name) {
+        throw new NotYetImplementedException();
     }
 
     public static class Rule {
-        public void appendConstraint(Constraint c) {
+        public final String _name;
+        List<Pattern> _patterns = new ArrayList<>();
+        List<Constraint> _constraints = new ArrayList<>();
+
+        Rule(String name) {
+            _name = name;
         }
 
-        public void appendPattern(Pattern m) {
+        public void appendConstraint(Constraint constraint) {
+            _constraints.add(constraint);
+        }
+
+        public void appendPattern(Pattern pattern) {
+            _patterns.add(pattern);
         }
     }
 
     public static class Pattern {
+        List<Transition> _transitions = new ArrayList<>();
+
         public void addAlias(String name) {
         }
 
         public void addTransitions(Pair<Transition> transitions) {
-            for(Transition t: transitions)
-                appendTransition(t);
+            transitions.addTo(_transitions);
         }
+    }
 
-        public void appendTransition(Transition t) {
+    public static class SymbolPattern extends Pattern {
+        public final String _symbol;
+        SymbolPattern(String name) {
+            _symbol = name;
+        }
+    }
+
+    public static class CompositePattern extends Pattern {
+        public final List<Pattern> _patterns = new ArrayList<>();
+
+        CompositePattern(Pair<Pattern> patterns) {
+            patterns.addTo(_patterns);
+        }
+    }
+
+    public static class KleenePattern extends Pattern {
+        public final Pattern _pattern;
+        KleenePattern(Pattern pattern) {
+            _pattern = pattern;
         }
     }
 
@@ -63,6 +100,15 @@ public class AST {
     }
 
     public static class TimeValue {
+        public final int _value;
+        public final TimeUnit _unit;
+        TimeValue(int value, TimeUnit unit) {
+            _value = value;
+            _unit = unit;
+        }
+    }
+
+    public static class NotYetImplementedException extends RuntimeException {
 
     }
 }

@@ -42,9 +42,9 @@ void restricted_match
     ; // TODO restricted_match
 
 Pattern pattern
-  =  '(' m:match { Pattern p = newCompositePattern(m); } ')' (COLON s:SYMBOL { p.addAlias(s); })? { yyValue = p; }
-  / s:SYMBOL { Pattern p = newSimplePattern(s); } (COLON SYMBOL { p.addAlias(s); })? { yyValue = p; }
-  / REFERENCE SYMBOL // FIXME (put some code here)
+  = s:SYMBOL { Pattern p = newSimplePattern(s); } (COLON SYMBOL { p.addAlias(s); })? { yyValue = p; }
+  / '(' m:match* { Pattern p = newCompositePattern(m); } ')' (COLON s:SYMBOL { p.addAlias(s); })? { yyValue = p; }
+  / REFERENCE s:SYMBOL { yyValue = newReferencePattern(s); }
   ;
 
 String sequence
