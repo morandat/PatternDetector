@@ -1,3 +1,4 @@
+import fr.labri.patterndetector.executor.DefaultAutomatonRunner;
 import fr.labri.patterndetector.executor.Detector;
 import fr.labri.patterndetector.executor.RuleManager;
 import fr.labri.patterndetector.rule.Atom;
@@ -27,8 +28,8 @@ public class ExceptionTest {
 
     private final Logger logger = LoggerFactory.getLogger(PatternDetectionTest.class);
 
-    private RuleManager _ruleManager = new RuleManager();
-    private Detector _detector = new Detector(_ruleManager);
+    private RuleManager _ruleManager;
+    private Detector _detector;
 
     private String _testName;
     private IRule _testRule;
@@ -52,6 +53,9 @@ public class ExceptionTest {
         _expectedExceptionClass = expectedExceptionClass;
         _expectedExceptionMsg = expectedExceptionMsg;
         _generator = generator;
+
+        _ruleManager = new RuleManager();
+        _detector = new Detector(_ruleManager);
     }
 
     @Parameterized.Parameters
@@ -60,7 +64,7 @@ public class ExceptionTest {
                 new Object[][]
                         {
                                 {
-                                        "Should throw non-terminating rule exception",
+                                        " Should throw non-terminating rule exception ",
                                         new Kleene("a"),
                                         RuntimeException.class,
                                         "Non-terminating rule",
@@ -68,7 +72,7 @@ public class ExceptionTest {
                                 },
 
                                 {
-                                        "Should throw non-terminating rule exception",
+                                        " Should throw non-terminating rule exception ",
                                         new FollowedBy("a", new Kleene("b")),
                                         RuntimeException.class,
                                         "Non-terminating rule",
@@ -82,7 +86,7 @@ public class ExceptionTest {
         _thrown.expect(_expectedExceptionClass);
         _thrown.expectMessage(StringContains.containsString(_expectedExceptionMsg));
 
-        _ruleManager.addRule(_testRule);
+        _ruleManager.addRule(_testRule, DefaultAutomatonRunner.class);
         _detector.detect(_generator.generate());
     }
 }

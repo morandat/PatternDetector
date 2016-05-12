@@ -4,6 +4,7 @@ import fr.labri.patterndetector.automaton.exception.*;
 import fr.labri.patterndetector.executor.IEvent;
 import fr.labri.patterndetector.executor.IPatternObserver;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
@@ -14,14 +15,6 @@ import java.util.Set;
  * A type of timed automaton. Contains clocks for each event type.
  */
 public interface IRuleAutomaton {
-
-    /**
-     * Get the current state of the rule automaton.
-     *
-     * @return The current state of the rule automaton.
-     */
-    IState getCurrentState();
-
     /**
      * Get the initial state of the rule automaton.
      *
@@ -81,8 +74,6 @@ public interface IRuleAutomaton {
      */
     Set<IState> getAllStates();
 
-    Collection<IEvent> getMatchBuffer();
-
     Collection<ITransition> getTransitions();
 
     void setInitialState(IState s) throws RuleAutomatonException;
@@ -96,24 +87,6 @@ public interface IRuleAutomaton {
     void addFinalState(IState s, String label);
 
     void addConnectionState(IState s);
-
-    void fire(IEvent e);
-
-    void reset();
-
-    /**
-     * Register a pattern observer.
-     *
-     * @param observer The pattern observer to register.
-     */
-    void registerPatternObserver(IPatternObserver observer);
-
-    /**
-     * Action performed when a pattern is found (i.e. when the final state is reached)
-     *
-     * @param pattern The detected pattern.
-     */
-    void patternDetected(Collection<IEvent> pattern);
 
     /**
      * Check whether the rule automaton is valid, i.e. can be executed.

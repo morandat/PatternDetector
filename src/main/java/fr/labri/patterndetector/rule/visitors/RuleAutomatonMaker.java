@@ -25,7 +25,7 @@ public final class RuleAutomatonMaker {
         return visitor.getAutomaton();
     }
 
-    static class RuleAutomatonMakerVisitor extends AbstractRuleVisitor {
+    private static class RuleAutomatonMakerVisitor extends AbstractRuleVisitor {
 
         private final Logger logger = LoggerFactory.getLogger(RuleAutomatonMakerVisitor.class);
 

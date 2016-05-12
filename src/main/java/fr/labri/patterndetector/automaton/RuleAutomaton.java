@@ -23,23 +23,11 @@ public class RuleAutomaton implements IRuleAutomaton {
     private Map<String, IState> _finalStates;
     private Map<String, IState> _connectionStates;
     private Map<String, IState> _states;
-    private IState _currentState;
-    private ArrayList<IEvent> _matchBuffer; // Events matching the current pattern
-    private Map<String, Long> _clocks;
-    private Collection<IPatternObserver> _observers; // Pattern observers to be notified when a pattern is detected.
 
     public RuleAutomaton() {
         _states = new HashMap<>();
         _finalStates = new HashMap<>();
         _connectionStates = new HashMap<>();
-        _matchBuffer = new ArrayList<>();
-        _clocks = new HashMap<>();
-        _observers = new ArrayList<>();
-    }
-
-    @Override
-    public IState getCurrentState() {
-        return _currentState;
     }
 
     @Override
@@ -93,11 +81,6 @@ public class RuleAutomaton implements IRuleAutomaton {
         states.addAll(_finalStates.values());
 
         return states;
-    }
-
-    @Override
-    public Collection<IEvent> getMatchBuffer() {
-        return _matchBuffer;
     }
 
     @Override
@@ -156,90 +139,6 @@ public class RuleAutomaton implements IRuleAutomaton {
     @Override
     public void addConnectionState(IState s) {
         _connectionStates.put(s.getLabel(), s);
-    }
-
-    @Override
-    public void fire(IEvent e) {
-        // Initialize current state if needed
-        if (_currentState == null) {
-            _currentState = _initialState;
-        }
-
-        ITransition t = _currentState.pickTransition(e);
-
-        // If there is a transition, check its clock guards if any
-        if (t != null) {
-
-            // TODO check clock constraints and predicates globally
-
-            logger.debug("Transitioning : " + t + " (" + e + ")");
-
-            // Save current event in match buffer or discard it depending on the transition's type
-            switch (t.getType()) {
-                case TRANSITION_APPEND:
-                    _matchBuffer.add(e);
-                    // Update event clock
-                    _clocks.put(e.getType(), e.getTimestamp());
-                    break;
-                case TRANSITION_DROP:
-            }
-
-            // Any NACs to start ?
-
-            // Update current state
-            _currentState = t.getTarget();
-
-            if (_currentState.isFinal()) {
-                logger.debug("Final state reached");
-
-                // If the final state has been reached, post the found pattern and reset the automaton
-                patternDetected(_matchBuffer);
-                reset();
-            }
-        } else {
-            logger.debug("Can't transition (" + e + ")");
-
-            reset();
-        }
-    }
-
-    @Override
-    public void reset() {
-        _currentState = _initialState;
-        _matchBuffer.clear();
-        _clocks.clear();
-
-        logger.debug("Automaton reset");
-    }
-
-    @Override
-    public void registerPatternObserver(IPatternObserver observer) {
-        _observers.add(observer);
-    }
-
-    @Override
-    public void patternDetected(Collection<IEvent> pattern) {
-        _observers.forEach(observer -> observer.notifyPattern(this, pattern)); // Notify observers
-    }
-
-    /**
-     * Returns true if the clock guard passes, false otherwise
-     */
-    public boolean testClockGuard(long currentTime, ClockGuard clockGuard) {
-        if (clockGuard == null) {
-            return true;
-        } else if (_clocks.get(clockGuard.getEventType()) == null) {
-            return true;
-        } else {
-            long timeLast = _clocks.get(clockGuard.getEventType());
-            long timeSinceLast = currentTime - timeLast;
-
-            if (clockGuard.isLowerThan()) {
-                return timeSinceLast <= clockGuard.getValue();
-            } else {
-                return timeSinceLast > clockGuard.getValue();
-            }
-        }
     }
 
     @Override

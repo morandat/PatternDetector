@@ -20,12 +20,14 @@ public final class RuleManager implements IPatternObserver {
     private int _ruleCounter; // Internal rule counter, used to build rule IDs
     private Map<String, IRule> _rules; // Maps rule names to the rules themselves
     private Map<String, IRuleAutomaton> _automata; // Maps rule names to rule automata
+    private Map<String, IAutomatonRunner> _runners; // Maps rule names to rule automaton runners
     private Collection<IEvent> _lastPattern; // Last detected pattern
 
     public RuleManager() {
         _ruleCounter = 0;
         _rules = new HashMap<>();
         _automata = new HashMap<>();
+        _runners = new HashMap<>();
         _lastPattern = new ArrayList<>();
     }
 
@@ -35,7 +37,7 @@ public final class RuleManager implements IPatternObserver {
      * @param rule The rule to add.
      * @return The rule's name.
      */
-    public String addRule(IRule rule) {
+    public String addRule(IRule rule, Class<? extends IAutomatonRunner> runnerClass) {
         IRuleAutomaton automaton = RuleAutomatonMaker.makeAutomaton(rule); // Try to build the rule automaton.
 
         rule.setName(rule.getName() == null ? rule.getClass().getSimpleName() + "-" + _ruleCounter++
@@ -61,8 +63,16 @@ public final class RuleManager implements IPatternObserver {
             throw new RuntimeException("Invalid rule : " + rule + " (" + e.getMessage() + ")\n" + e.getRuleAutomaton());
         }
 
+        // Instantiate runner
+        try {
+            IAutomatonRunner runner = runnerClass.getConstructor(IRuleAutomaton.class).newInstance(powerset);
+            runner.registerPatternObserver(this);
+            _runners.put(rule.getName(), runner);
+        } catch (Exception e) {
+            throw new RuntimeException("Could not instantiate runner class : " + e.getClass());
+        }
+
         // If the rule is valid, add it to the rule set, then register and observe the rule automaton.
-        powerset.registerPatternObserver(this);
         _rules.put(rule.getName(), rule);
         _automata.put(rule.getName(), powerset);
 
@@ -120,7 +130,7 @@ public final class RuleManager implements IPatternObserver {
     }
 
     public void dispatchEvent(IEvent event) {
-        _automata.values().forEach(automaton -> automaton.fire(event));
+        _runners.values().forEach(runner -> runner.fire(event));
     }
 
     @Override

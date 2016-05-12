@@ -17,21 +17,16 @@ public class PatternDetectionTest {
 
     private final Logger logger = LoggerFactory.getLogger(PatternDetectionTest.class);
 
-    private RuleManager _ruleManager = new RuleManager();
-    private Detector _detector = new Detector(_ruleManager);
+    private RuleManager _ruleManager;
+    private Detector _detector;
 
     private String _testName;
     private IRule _testRule;
     private Collection<IEvent> _expectedPattern;
     private IGenerator _generator;
 
-    @Rule
-    public TestName _name = new TestName();
-
     @Before
     public void initializeTest() {
-        logger.info("## Executing test : " + _name.getMethodName());
-
         _ruleManager.removeAllRules();
     }
 
@@ -40,9 +35,12 @@ public class PatternDetectionTest {
         _testRule = testRule;
         _expectedPattern = expectedPattern;
         _generator = generator;
+
+        _ruleManager = new RuleManager();
+        _detector = new Detector(_ruleManager);
     }
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name = "{0}")
     public static Collection patterns() {
         return Arrays.asList(
                 new Object[][]
@@ -58,7 +56,7 @@ public class PatternDetectionTest {
 
                                 {
                                         " Detect A, with predicate ",
-                                        new Atom("a"),//.addPredicate("x", x -> x > 5);
+                                        new Atom("a"),//TODO .addPredicate("x", x -> x > 5);
                                         new ArrayList<IEvent>() {{
                                             new Event("a", 2);
                                         }},
@@ -67,7 +65,7 @@ public class PatternDetectionTest {
 
                                 {
                                         " NOT detect A, with predicate ",
-                                        new Atom("a"),//.addPredicate("x", x -> x > 20);
+                                        new Atom("a"),//TODO .addPredicate("x", x -> x > 20);
                                         new ArrayList<IEvent>(),
                                         new AtomGenerator()
                                 },
@@ -143,7 +141,7 @@ public class PatternDetectionTest {
                                 },
 
                                 {
-                                        " Detect A followed by A ",
+                                        " Detect Kleene(A) followed by B ",
                                         new FollowedBy(new Kleene("a"), "b"),
                                         new ArrayList<IEvent>() {{
                                             add(new Event("a", 2));
@@ -156,7 +154,7 @@ public class PatternDetectionTest {
                                 },
 
                                 {
-                                        " Detect Kleene(A) followed by B, followed by C ",
+                                        " Detect Kleene(A) followed by B followed by C ",
                                         new FollowedBy(new Kleene("a"), new FollowedBy("b", "c")),
                                         new ArrayList<IEvent>() {{
                                             add(new Event("a", 2));
@@ -171,7 +169,7 @@ public class PatternDetectionTest {
 
                                 {
                                         " Detect A followed by B, with time constraint ",
-                                        new FollowedBy("a", "b"), //.setTimeConstraint(5);
+                                        new FollowedBy("a", "b"), //TODO .setTimeConstraint(5);
                                         new ArrayList<IEvent>() {{
                                             add(new Event("a", 2));
                                             add(new Event("b", 6));
@@ -181,14 +179,14 @@ public class PatternDetectionTest {
 
                                 {
                                         " NOT detect A followed by B, with time constraint ",
-                                        new FollowedBy("a", "b"), //.setTimeConstraint(3);
+                                        new FollowedBy("a", "b"), //TODO .setTimeConstraint(3);
                                         new ArrayList<IEvent>(),
                                         new FollowedByGenerator()
                                 },
 
                                 {
                                         " Detect Kleene(A), with time constraint ",
-                                        new FollowedBy(new Kleene("a"), "end"),//.setTimeConstraint(5)
+                                        new FollowedBy(new Kleene("a"), "end"), //TODO .setTimeConstraint(5)
                                         new ArrayList<IEvent>() {{
                                             add(new Event("a", 2));
                                             add(new Event("a", 4));
@@ -202,14 +200,14 @@ public class PatternDetectionTest {
 
                                 {
                                         " NOT detect Kleene(A), with time constraint ",
-                                        new FollowedBy(new Kleene("a"), "end"),//.setTimeConstraint(3)
+                                        new FollowedBy(new Kleene("a"), "end"), // TODO .setTimeConstraint(3)
                                         new ArrayList<IEvent>(),
                                         new KleeneGenerator2()
                                 },
 
                                 {
                                         " Detect Kleene(A followed by B), with time constraint ",
-                                        new FollowedBy(new Kleene(new FollowedBy("a", "b")), "end"),//.setTimeConstraint(5),
+                                        new FollowedBy(new Kleene(new FollowedBy("a", "b")), "end"), //TODO .setTimeConstraint(5),
                                         new ArrayList<IEvent>() {{
                                             add(new Event("a", 2));
                                             add(new Event("b", 4));
@@ -222,7 +220,7 @@ public class PatternDetectionTest {
 
                                 {
                                         " NOT detect Kleene(A followed by B), with time constraint ",
-                                        new FollowedBy(new Kleene(new FollowedBy("a", "b")), "end"),//.setTimeConstraint(4),
+                                        new FollowedBy(new Kleene(new FollowedBy("a", "b")), "end"),//TODO .setTimeConstraint(4),
                                         new ArrayList<IEvent>(),
                                         new KleeneGenerator2()
                                 },
@@ -231,10 +229,10 @@ public class PatternDetectionTest {
                                         " NOT detect search scenario ",
                                         new FollowedBy("q", new FollowedBy(new Kleene("f"), "a")),
                                         new ArrayList<IEvent>() {{
-                                            add(new Event("q", 0));
-                                            add(new Event("f", 1));
+                                            add(new Event("q", 1));
                                             add(new Event("f", 2));
-                                            add(new Event("a", 3));
+                                            add(new Event("f", 3));
+                                            add(new Event("a", 4));
                                         }},
                                         new SearchGenerator()
                                 },
@@ -243,7 +241,7 @@ public class PatternDetectionTest {
 
     @Test
     public void patternDetectionTest() {
-        _ruleManager.addRule(_testRule);
+        _ruleManager.addRule(_testRule, DefaultAutomatonRunner.class);
         _detector.detect(_generator.generate());
         Collection<IEvent> actualPattern = _ruleManager.getLastPattern();
         Assert.assertEquals(_expectedPattern, actualPattern);

@@ -3,7 +3,6 @@ package fr.labri.patterndetector.automaton;
 import fr.labri.patterndetector.executor.IEvent;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 /**
  * Created by William Braik on 6/28/2015.
@@ -141,8 +140,8 @@ public class State implements IState {
         if (transitions == null) {
             t = null;
         } else {
-            // Pick a transition randomly if several match.
-            t = transitions.get(new Random().nextInt(transitions.size()));
+            // FIXME for now, pick first transition if several match (NFA)
+            t = transitions.get(0);
         }
 
         return t;
