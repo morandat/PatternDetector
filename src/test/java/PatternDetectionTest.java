@@ -2,7 +2,6 @@ import fr.labri.patterndetector.executor.*;
 import fr.labri.patterndetector.rule.*;
 import generators.*;
 import org.junit.*;
-import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
@@ -27,6 +26,8 @@ public class PatternDetectionTest {
 
     @Before
     public void initializeTest() {
+        logger.info("## Executing test : " + _testName);
+
         _ruleManager.removeAllRules();
     }
 
@@ -226,7 +227,7 @@ public class PatternDetectionTest {
                                 },
 
                                 {
-                                        " NOT detect search scenario ",
+                                        " Detect search scenario ",
                                         new FollowedBy("q", new FollowedBy(new Kleene("f"), "a")),
                                         new ArrayList<IEvent>() {{
                                             add(new Event("q", 1));
@@ -241,9 +242,10 @@ public class PatternDetectionTest {
 
     @Test
     public void patternDetectionTest() {
-        _ruleManager.addRule(_testRule, DefaultAutomatonRunner.class);
+        String ruleName = _ruleManager.addRule(_testRule, DefaultAutomatonRunner.class);
+        _ruleManager.getRunner(ruleName).registerPatternObserver(
+                (Collection<IEvent> pattern) -> Assert.assertEquals(_expectedPattern, pattern));
+
         _detector.detect(_generator.generate());
-        Collection<IEvent> actualPattern = _ruleManager.getLastPattern();
-        Assert.assertEquals(_expectedPattern, actualPattern);
     }
 }

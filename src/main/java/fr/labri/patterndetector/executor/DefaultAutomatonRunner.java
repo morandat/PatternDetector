@@ -61,7 +61,7 @@ public class DefaultAutomatonRunner extends AbstractAutomatonRunner {
                 logger.debug("Final state reached");
 
                 // If the final state has been reached, post the found pattern and reset the automaton
-                patternDetected(_matchBuffer);
+                postPattern(_matchBuffer);
                 reset();
             }
         }

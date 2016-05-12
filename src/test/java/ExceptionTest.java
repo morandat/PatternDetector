@@ -1,7 +1,6 @@
 import fr.labri.patterndetector.executor.DefaultAutomatonRunner;
 import fr.labri.patterndetector.executor.Detector;
 import fr.labri.patterndetector.executor.RuleManager;
-import fr.labri.patterndetector.rule.Atom;
 import fr.labri.patterndetector.rule.FollowedBy;
 import fr.labri.patterndetector.rule.IRule;
 import fr.labri.patterndetector.rule.Kleene;

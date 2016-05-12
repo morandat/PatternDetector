@@ -47,8 +47,8 @@ public abstract class AbstractAutomatonRunner implements IAutomatonRunner {
     }
 
     @Override
-    public void patternDetected(Collection<IEvent> pattern) {
-        _observers.forEach(observer -> observer.notifyPattern(_automaton, pattern));
+    public void postPattern(Collection<IEvent> pattern) {
+        _observers.forEach(observer -> observer.notifyPattern(pattern));
     }
 
     /**

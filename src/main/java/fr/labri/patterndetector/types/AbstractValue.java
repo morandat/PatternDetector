@@ -15,4 +15,9 @@ public abstract class AbstractValue<T> implements IValue<T> {
     public T getValue() {
         return _value;
     }
+
+    @Override
+    public String toString() {
+        return _value.toString();
+    }
 }

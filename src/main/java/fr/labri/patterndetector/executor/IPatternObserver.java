@@ -1,6 +1,6 @@
 package fr.labri.patterndetector.executor;
 
-import fr.labri.patterndetector.automaton.IRuleAutomaton;
+import fr.labri.patterndetector.automaton.IState;
 
 import java.util.Collection;
 
@@ -14,8 +14,7 @@ public interface IPatternObserver {
     /**
      * This method must be called by a rule automaton when a pattern is detected.
      *
-     * @param ruleAutomaton The rule automaton which detected the pattern.
      * @param pattern       The detected pattern.
      */
-    void notifyPattern(IRuleAutomaton ruleAutomaton, Collection<IEvent> pattern);
+    void notifyPattern(Collection<IEvent> pattern);
 }

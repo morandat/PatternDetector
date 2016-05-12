@@ -6,6 +6,7 @@ package fr.labri.patterndetector.executor;
  */
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
+import fr.labri.patterndetector.automaton.IState;
 import fr.labri.patterndetector.automaton.exception.*;
 import fr.labri.patterndetector.rule.visitors.RuleAutomatonMaker;
 import fr.labri.patterndetector.rule.IRule;
@@ -21,14 +22,12 @@ public final class RuleManager implements IPatternObserver {
     private Map<String, IRule> _rules; // Maps rule names to the rules themselves
     private Map<String, IRuleAutomaton> _automata; // Maps rule names to rule automata
     private Map<String, IAutomatonRunner> _runners; // Maps rule names to rule automaton runners
-    private Collection<IEvent> _lastPattern; // Last detected pattern
 
     public RuleManager() {
         _ruleCounter = 0;
         _rules = new HashMap<>();
         _automata = new HashMap<>();
         _runners = new HashMap<>();
-        _lastPattern = new ArrayList<>();
     }
 
     /**
@@ -98,17 +97,18 @@ public final class RuleManager implements IPatternObserver {
      * @param ruleName The name of the rule.
      * @return The rule's automaton.
      */
-    public IRuleAutomaton getRuleAutomaton(String ruleName) {
+    public IRuleAutomaton getAutomaton(String ruleName) {
         return _automata.get(ruleName);
     }
 
     /**
-     * Get the last detected pattern.
+     * Get a runner by its rule name.
      *
-     * @return The last detected pattern.
+     * @param ruleName The name of the rule.
+     * @return The runner
      */
-    public Collection<IEvent> getLastPattern() {
-        return _lastPattern;
+    public IAutomatonRunner getRunner(String ruleName) {
+        return _runners.get(ruleName);
     }
 
     /**
@@ -134,10 +134,7 @@ public final class RuleManager implements IPatternObserver {
     }
 
     @Override
-    public void notifyPattern(IRuleAutomaton ruleAutomaton, Collection<IEvent> pattern) {
-        _lastPattern.clear();
-        _lastPattern.addAll(pattern);
-
+    public void notifyPattern(Collection<IEvent> pattern) {
         logger.info("Pattern found : " + pattern);
     }
 

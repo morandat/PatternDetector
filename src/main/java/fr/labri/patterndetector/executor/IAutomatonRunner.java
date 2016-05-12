@@ -43,7 +43,7 @@ public interface IAutomatonRunner {
      *
      * @param pattern The detected pattern.
      */
-    void patternDetected(Collection<IEvent> pattern);
+    void postPattern(Collection<IEvent> pattern);
 
     boolean testClockGuard(long currentTime, ClockGuard clockGuard);
 }
