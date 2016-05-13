@@ -41,6 +41,12 @@ public class ForkAutomatonRunner extends AbstractAutomatonRunner {
                 // Save current event in match buffer or discard it depending on the transition's type
                 switch (t.getType()) {
                     case TRANSITION_APPEND:
+                        // Update current state
+                        IState nextState = t.getTarget();
+                        if (!nextState.isFinal()) {
+                            _currentStates.add(nextState);
+                        }
+                        // Update match buffer
                         _matchBuffer.add(e);
                         // Update event clock
                         // FIXME _clocks.put(e.getType(), e.getTimestamp());
@@ -51,12 +57,6 @@ public class ForkAutomatonRunner extends AbstractAutomatonRunner {
                 // TODO Any NACs to start ?
 
                 // TODO exec callback function on state ?
-
-                // Update current state
-                IState nextState = t.getTarget();
-                if (!nextState.isFinal()) {
-                    _currentStates.add(nextState);
-                }
             }
         }
     }
