@@ -25,7 +25,8 @@ public class Main {
         /*IRule r = new Or(
                 new FollowedBy(new Kleene("a"), "b"),
                 new FollowedBy("a", "b"));*/
-        IRule r = new FollowedBy("q", new FollowedBy(new Kleene("f"), "a"));
+        //IRule r = new FollowedBy("q", new FollowedBy(new Kleene("f"), "a"));
+        IRule r = new FollowedBy("a", new FollowedBy("b", "c"));
 
         RulePrinter.printRule(System.out, r);
 

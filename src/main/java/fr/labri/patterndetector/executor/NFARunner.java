@@ -15,11 +15,11 @@ import java.util.ArrayList;
 /**
  * Fork and play, no reset
  */
-public class ForkAutomatonRunner extends AbstractAutomatonRunner {
+public class NFARunner extends AbstractAutomatonRunner {
 
-    private final Logger logger = LoggerFactory.getLogger(ForkAutomatonRunner.class);
+    private final Logger logger = LoggerFactory.getLogger(NFARunner.class);
 
-    public ForkAutomatonRunner(IRuleAutomaton automaton) {
+    public NFARunner(IRuleAutomaton automaton) {
         super(automaton);
     }
 

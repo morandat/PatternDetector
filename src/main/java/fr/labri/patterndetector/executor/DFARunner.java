@@ -15,13 +15,13 @@ import java.util.ArrayList;
 /**
  * Deterministic, reset when no transition found
  */
-public class DefaultAutomatonRunner extends AbstractAutomatonRunner {
+public class DFARunner extends AbstractAutomatonRunner {
 
-    private final Logger logger = LoggerFactory.getLogger(DefaultAutomatonRunner.class);
+    private final Logger logger = LoggerFactory.getLogger(DFARunner.class);
 
     private IState _currentState;
 
-    public DefaultAutomatonRunner(IRuleAutomaton automaton) {
+    public DFARunner(IRuleAutomaton automaton) {
         super(automaton);
 
         _currentState = _currentStates.get(0);

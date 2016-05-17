@@ -64,7 +64,7 @@ public final class RuleManager implements IPatternObserver {
 
         // Instantiate runner
         try {
-            IAutomatonRunner runner = runnerClass.getConstructor(IRuleAutomaton.class).newInstance(powerset);
+            IAutomatonRunner runner = runnerClass.getConstructor(IRuleAutomaton.class).newInstance(powerset); // FIXME probably not good practice
             runner.registerPatternObserver(this);
             _runners.put(rule.getName(), runner);
         } catch (Exception e) {

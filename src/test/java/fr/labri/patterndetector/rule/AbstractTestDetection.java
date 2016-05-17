@@ -28,7 +28,7 @@ abstract public class AbstractTestDetection {
     public void patternDetectionTest() {
         RuleManager ruleManager = new RuleManager();
         Detector detector = new Detector(ruleManager);
-        String ruleName = ruleManager.addRule(_testRule, DefaultAutomatonRunner.class);
+        String ruleName = ruleManager.addRule(_testRule, DFARunner.class);
         final AtomicInteger found = new AtomicInteger();
         ruleManager.getRunner(ruleName).registerPatternObserver(
                 (Collection<IEvent> pattern) -> {

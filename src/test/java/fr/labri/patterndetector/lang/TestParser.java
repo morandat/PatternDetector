@@ -1,4 +1,3 @@
-
 package fr.labri.patterndetector.lang;
 
 import org.hamcrest.Description;

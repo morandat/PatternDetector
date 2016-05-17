@@ -32,16 +32,10 @@ public interface IRule {
 
     void accept(IRuleVisitor visitor);
 
-    /**
-     * @return The corresponding powerset automaton of this automaton.
-     */
     default IAtom getLeftmostAtom() {
         return RuleUtils.getLeftmostAtom(this);
     }
-
-    /**
-     * @return A copy of this automaton.
-     */
+    
     default IAtom getRightmostAtom() {
         return RuleUtils.getRightmostAtom(this);
     }

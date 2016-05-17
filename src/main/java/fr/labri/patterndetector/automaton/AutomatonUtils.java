@@ -126,7 +126,7 @@ public final class AutomatonUtils {
                     }
 
                     // FIXME Potential bugs if two transitions with the same label originate from the same state set ;
-                    // FIXME In that case, the transition picked last "wins" (its attribute overwrite the previous ones)
+                    // FIXME In that case, the transition picked last "wins" (its attribute overwrites the previous ones)
                     stateSet.add(t.getTarget());
                     targetStateSets.put(t.getLabel(), stateSet);
                     transitionTypes.put(t.getLabel(), t.getType());

@@ -16,7 +16,7 @@ public class Atom extends AbstractAtom {
 
     public Atom(String eventType) {
         super("", eventType);
-    }
+    } // FIXME ""
 
     @Override
     public void accept(IRuleVisitor visitor) {
