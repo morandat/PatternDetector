@@ -1,0 +1,5 @@
+rule: foo bar baz
+
+another: foo+ bar+ baz+
+
+yetanother: foo (bar)+ baz
