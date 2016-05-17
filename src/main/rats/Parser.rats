@@ -7,13 +7,19 @@ header {
     import static fr.labri.patterndetector.lang.AST.*;
 }
 
+body {
+    Rule _currentRule;
+}
+
 public Pair<Rule> script
-    = (rule EOL*)*
+    = rule (EOL rule)* EOL? EOF
     ;
 
 Rule rule
-    = n:SYMBOL COLON { Rule r = newRule(n);}
-    ((m:match { r.appendPattern(m); })* (c:condition { r.appendConstraint(c); })* EOL)* EOL { yyValue = r; }
+    = n:SYMBOL n COLON n { Rule r = newRule(n);  _currentRule = r; }
+    ((((m:match { _currentRule.appendPattern(m); })+ (c:condition { _currentRule.appendConstraint(c); })*)
+    / (c:condition { _currentRule.appendConstraint(c); })+) EOL)*
+    {yyValue = r; }
     ;
 
 Constraint condition
@@ -29,7 +35,7 @@ void binary
     ;
 
 Pattern match
-    = p:pattern tl:(transition)* { p.addTransitions(tl); } (s:sequence  ntl:(transition*) { p = newKleene(p); p.addAlias(s); p.addTransitions(ntl); })? { yyValue = p; }
+    = p:pattern n tl:(transition n)* { p.addTransitions(tl); } (s:sequence  n ntl:(transition* n) { p = newKleene(p); p.addAlias(s); p.addTransitions(ntl); })? { yyValue = p; }
     ;
 
 Transition transition
@@ -42,9 +48,9 @@ void restricted_match
     ; // TODO restricted_match
 
 Pattern pattern
-  = s:SYMBOL { Pattern p = newSimplePattern(s); } (COLON SYMBOL { p.addAlias(s); })? { yyValue = p; }
-  / '(' m:match* { Pattern p = newCompositePattern(m); } ')' (COLON s:SYMBOL { p.addAlias(s); })? { yyValue = p; }
-  / REFERENCE s:SYMBOL { yyValue = newReferencePattern(s); }
+  = s:SYMBOL n { Pattern p = newSimplePattern(s); } (COLON n a:SYMBOL n { p.addAlias(a); })? { yyValue = p; }
+  / '(' n m:match* { Pattern p = newCompositePattern(m); } ')' n (COLON s:SYMBOL n { p.addAlias(s); })? { yyValue = p; }
+  / REFERENCE n s:SYMBOL n { yyValue = newReferencePattern(s); }
   ;
 
 String sequence
@@ -115,7 +121,7 @@ String arith_symbol
 
 String RANGE = "..";
 
-String SYMBOL = ([a-zA-Z][a-zA-Z0-9]*/_[a-zA-Z0-9_]+);
+String SYMBOL = ([a-zA-Z][a-zA-Z0-9]*/[a-zA-Z0-9_]+);
 
 void REFERENCE = '@';
 
@@ -128,10 +134,10 @@ String HEX = "0x" hex_digit+;
 String COLON = ':';
 String CONDITION = '#';
 
-void n       = (Space / SLComment / MLComment)*;
-void nn      = (Space / SLComment / MLComment)+;
-void Space         = [ ] / [\t] / [\f];
-void SLComment     = ("//" / [#;]) (![\n\r] _)* ; // Surprisingly this eof do not work
-void MLComment     = "/*" ([*] ![/] / ![*] _)* "*/";
-void EOL           = "\r\n" / [\r] / [\n];
-void EOF           = !_;
+transient void n   = (Space / SLComment / MLComment)*;
+transient void nn  = (Space / SLComment / MLComment)+;
+transient void Space     = ' ' / '\t' / '\f';
+transient void SLComment = "//" (![\n\r] _)* EOL;
+transient void MLComment = "/*" (MLComment / !"*/" _)* "*/";
+transient void EOL       = '\r' '\n' / '\r' / '\n';
+transient void EOF       = !_;
