@@ -51,12 +51,39 @@ public class AST {
             _name = name;
         }
 
-        public void appendConstraint(Constraint constraint) {
+        public Rule appendConstraint(Constraint constraint) {
             _constraints.add(constraint);
+            return this;
         }
 
-        public void appendPattern(Pattern pattern) {
+        public Rule appendPattern(Pattern pattern) {
             _patterns.add(pattern);
+            return this;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Rule)) return false;
+
+            Rule rule = (Rule) o;
+
+            if (_name != null ? !_name.equals(rule._name) : rule._name != null) return false;
+            if (_patterns != null ? !_patterns.equals(rule._patterns) : rule._patterns != null) return false;
+            return _constraints != null ? _constraints.equals(rule._constraints) : rule._constraints == null;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = _name != null ? _name.hashCode() : 0;
+            result = 31 * result + (_patterns != null ? _patterns.hashCode() : 0);
+            result = 31 * result + (_constraints != null ? _constraints.hashCode() : 0);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s:\n\t%s\n\t", _name, _patterns, _constraints);
         }
     }
 
@@ -73,8 +100,30 @@ public class AST {
 
     public static class SymbolPattern extends Pattern {
         public final String _symbol;
+
         SymbolPattern(String name) {
             _symbol = name;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof SymbolPattern)) return false;
+
+            SymbolPattern that = (SymbolPattern) o;
+
+            return _symbol != null ? _symbol.equals(that._symbol) : that._symbol == null;
+
+        }
+
+        @Override
+        public int hashCode() {
+            return _symbol != null ? _symbol.hashCode() : 0;
+        }
+
+        @Override
+        public String toString() {
+            return _symbol;
         }
     }
 
@@ -84,12 +133,55 @@ public class AST {
         CompositePattern(Pair<Pattern> patterns) {
             patterns.addTo(_patterns);
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof CompositePattern)) return false;
+
+            CompositePattern that = (CompositePattern) o;
+
+            return _patterns != null ? _patterns.equals(that._patterns) : that._patterns == null;
+
+        }
+
+        @Override
+        public int hashCode() {
+            return _patterns != null ? _patterns.hashCode() : 0;
+        }
+
+        @Override
+        public String toString() {
+            return "(" + _patterns + ")";
+        }
     }
 
     public static class KleenePattern extends Pattern {
         public final Pattern _pattern;
+
         KleenePattern(Pattern pattern) {
             _pattern = pattern;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof KleenePattern)) return false;
+
+            KleenePattern that = (KleenePattern) o;
+
+            return _pattern != null ? _pattern.equals(that._pattern) : that._pattern == null;
+
+        }
+
+        @Override
+        public int hashCode() {
+            return _pattern != null ? _pattern.hashCode() : 0;
+        }
+
+        @Override
+        public String toString() {
+            return "(" + _pattern.toString() + ")*";
         }
     }
 
@@ -102,9 +194,34 @@ public class AST {
     public static class TimeValue {
         public final int _value;
         public final TimeUnit _unit;
+
         TimeValue(int value, TimeUnit unit) {
             _value = value;
             _unit = unit;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof TimeValue)) return false;
+
+            TimeValue timeValue = (TimeValue) o;
+
+            if (_value != timeValue._value) return false;
+            return _unit == timeValue._unit;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = _value;
+            result = 31 * result + (_unit != null ? _unit.hashCode() : 0);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return _value + " " + _unit;
         }
     }
 
