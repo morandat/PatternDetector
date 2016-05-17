@@ -26,7 +26,7 @@ public class Detector {
      *
      * @param events The stream of events.
      */
-    public void detect(Stream<IEvent> events) {
+    public void detect(Stream<? extends IEvent> events) {
         //logger.info("Searching patterns in stream : " + events);
 
         // Each event is forwarded to the rule manager(s) and then dispatched to the rules
