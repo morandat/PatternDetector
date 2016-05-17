@@ -12,7 +12,9 @@ body {
 }
 
 public Pair<Rule> script
-    = rule (EOL rule)* EOL? EOF
+    = EOL? EOF
+    / rule EOL? EOF
+    / (rule (void:EOL rule)*) EOL? EOF
     ;
 
 Rule rule
