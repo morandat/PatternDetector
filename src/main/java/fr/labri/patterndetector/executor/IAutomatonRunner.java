@@ -2,6 +2,9 @@ package fr.labri.patterndetector.executor;
 
 import fr.labri.patterndetector.automaton.ClockGuard;
 import fr.labri.patterndetector.automaton.IState;
+import fr.labri.patterndetector.executor.predicates.IPredicate;
+import fr.labri.patterndetector.types.IValue;
+import fr.labri.patterndetector.types.IntegerValue;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,5 +48,23 @@ public interface IAutomatonRunner {
      */
     void postPattern(Collection<IEvent> pattern);
 
+    /**
+     * @param predicates
+     * @return
+     */
+    boolean testPredicates(ArrayList<IPredicate<IntegerValue>> predicates);
+
+    /**
+     *
+     * @param field
+     * @return
+     */
+    IValue<?> resolveField(String field);
+
+    /**
+     * @param currentTime
+     * @param clockGuard
+     * @return
+     */
     boolean testClockGuard(long currentTime, ClockGuard clockGuard);
 }

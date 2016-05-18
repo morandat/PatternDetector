@@ -34,29 +34,31 @@ public class NFARunner extends AbstractAutomatonRunner {
             if (t == null) {
                 logger.debug("Can't transition (" + e + ")");
             } else {
-                // TODO check clock constraints and predicates globally
+                if (testPredicates(t.getPredicates())) {
+                    // TODO check clock constraints
 
-                logger.debug("Transitioning : " + t + " (" + e + ")");
+                    logger.debug("Transitioning : " + t + " (" + e + ")");
 
-                // Save current event in match buffer or discard it depending on the transition's type
-                switch (t.getType()) {
-                    case TRANSITION_APPEND:
-                        // Update current state
-                        IState nextState = t.getTarget();
-                        if (!nextState.isFinal()) {
-                            _currentStates.add(nextState);
-                        }
-                        // Update match buffer
-                        _matchBuffer.add(e);
-                        // Update event clock
-                        // FIXME _clocks.put(e.getType(), e.getTimestamp());
-                        break;
-                    case TRANSITION_DROP:
+                    // Save current event in match buffer or discard it depending on the transition's type
+                    switch (t.getType()) {
+                        case TRANSITION_APPEND:
+                            // Update current state
+                            IState nextState = t.getTarget();
+                            if (!nextState.isFinal()) {
+                                _currentStates.add(nextState);
+                            }
+                            // Update match buffer
+                            _matchBuffer.add(e);
+                            // Update event clock
+                            // FIXME _clocks.put(e.getType(), e.getTimestamp());
+                            break;
+                        case TRANSITION_DROP:
+                    }
+
+                    // TODO Any NACs to start ?
+
+                    // TODO exec callback function on state ?
                 }
-
-                // TODO Any NACs to start ?
-
-                // TODO exec callback function on state ?
             }
         }
     }

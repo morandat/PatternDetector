@@ -36,7 +36,7 @@ public interface IState {
 
     void setFinal(boolean isFinal);
 
-    void registerTransition(IState target, String label, TransitionType type);
+    ITransition registerTransition(IState target, String label, TransitionType type);
 
     void registerEpsilonTransition(IState target);
 

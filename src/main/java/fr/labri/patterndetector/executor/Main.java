@@ -1,9 +1,16 @@
 package fr.labri.patterndetector.executor;
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
+import fr.labri.patterndetector.executor.predicates.IPredicate;
+import fr.labri.patterndetector.executor.predicates.PredicateArity1;
 import fr.labri.patterndetector.rule.visitors.RuleAutomatonMaker;
 import fr.labri.patterndetector.rule.visitors.RulePrinter;
 import fr.labri.patterndetector.rule.*;
+import fr.labri.patterndetector.types.IValue;
+import fr.labri.patterndetector.types.IntegerValue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by William Braik on 6/22/2015.
@@ -25,13 +32,18 @@ public class Main {
         /*IRule r = new Or(
                 new FollowedBy(new Kleene("a"), "b"),
                 new FollowedBy("a", "b"));*/
-        //IRule r = new FollowedBy("q", new FollowedBy(new Kleene("f"), "a"));
-        IRule r = new FollowedBy("a", new FollowedBy("b", "c"));
+
+        IRule r = new FollowedBy("q", new FollowedBy("f", "a"));
 
         RulePrinter.printRule(System.out, r);
 
         IRuleAutomaton automaton = RuleAutomatonMaker.makeAutomaton(r);
         System.out.println("NFA : " + automaton);
         System.out.println("DFA : " + automaton.powerset());
+
+        //new Atom("a").addPredicate(
+        ArrayList<IntegerValue> values = new ArrayList<>();
+        values.add(new IntegerValue(20));
+        System.out.println(new PredicateArity1<IntegerValue>("a.x", x -> x.getValue() > 15).eval(values));
     }
 }

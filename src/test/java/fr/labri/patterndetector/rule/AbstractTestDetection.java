@@ -21,16 +21,15 @@ abstract public class AbstractTestDetection {
     @Parameterized.Parameter(2)
     public Collection<IEvent> _expectedPattern;
 
-
     public abstract Stream<? extends IEvent> generate();
 
     @Test
     public void patternDetectionTest() {
         RuleManager ruleManager = new RuleManager();
         Detector detector = new Detector(ruleManager);
-        String ruleName = ruleManager.addRule(_testRule, DFARunner.class);
+        IAutomatonRunner runner = ruleManager.addRule(_testRule, AutomatonRunnerType.DFA);
         final AtomicInteger found = new AtomicInteger();
-        ruleManager.getRunner(ruleName).registerPatternObserver(
+        runner.registerPatternObserver(
                 (Collection<IEvent> pattern) -> {
                     found.incrementAndGet();
                     assertThat(pattern, is(equalTo(_expectedPattern)));

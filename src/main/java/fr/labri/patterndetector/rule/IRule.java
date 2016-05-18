@@ -1,6 +1,11 @@
 package fr.labri.patterndetector.rule;
 
+import fr.labri.patterndetector.executor.predicates.IPredicate;
 import fr.labri.patterndetector.rule.visitors.IRuleVisitor;
+import fr.labri.patterndetector.types.IValue;
+import fr.labri.patterndetector.types.IntegerValue;
+
+import java.util.ArrayList;
 
 /**
  * Created by William Braik on 6/25/2015.
@@ -8,7 +13,6 @@ import fr.labri.patterndetector.rule.visitors.IRuleVisitor;
  * Operator which binds atoms or sub-patterns together to form patterns.
  */
 public interface IRule {
-
     /**
      * Get the name of the rule.
      *
@@ -23,6 +27,8 @@ public interface IRule {
      */
     String getSymbol();
 
+    ArrayList<IPredicate<IntegerValue>> getPredicates();
+
     /**
      * Set the name of the rule.
      *
@@ -30,12 +36,14 @@ public interface IRule {
      */
     void setName(String name);
 
+    IRule addPredicate(IPredicate<IntegerValue> predicate);
+
     void accept(IRuleVisitor visitor);
 
     default IAtom getLeftmostAtom() {
         return RuleUtils.getLeftmostAtom(this);
     }
-    
+
     default IAtom getRightmostAtom() {
         return RuleUtils.getRightmostAtom(this);
     }

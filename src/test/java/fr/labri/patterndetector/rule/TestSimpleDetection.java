@@ -31,18 +31,7 @@ public class TestSimpleDetection extends AbstractTestDetection {
                     new Atom("a"),
                     Arrays.asList(
                     new Event("a", 2))
-                },
-                {
-                    "Detect A, with predicate",
-                    new Atom("a"), //TODO .addPredicate("x", x -> x > 5);
-                    Arrays.asList(
-                        new Event("a", 2))
-                },
-                {
-                    "NOT detect A, with predicate",
-                    new Atom("a"), //TODO .addPredicate("x", x -> x > 20);
-                    new ArrayList<IEvent>(),
-                },
+                }
             });
      }
 }

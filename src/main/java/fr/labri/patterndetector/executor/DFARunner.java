@@ -36,39 +36,41 @@ public class DFARunner extends AbstractAutomatonRunner {
 
             reset();
         } else {
-            // TODO check clock constraints and predicates globally
+            if (testPredicates(t.getPredicates())) {
+                // TODO check clock constraints
 
-            logger.debug("Transitioning : " + t + " (" + e + ")");
+                logger.debug("Transitioning : " + t + " (" + e + ")");
 
-            // Save current event in match buffer or discard it depending on the transition's type
-            switch (t.getType()) {
-                case TRANSITION_APPEND:
-                    _matchBuffer.add(e);
-                    // Update event clock
-                    // FIXME _clocks.put(e.getType(), e.getTimestamp());
-                    break;
-                case TRANSITION_DROP:
-            }
+                // Save current event in match buffer or discard it depending on the transition's type
+                switch (t.getType()) {
+                    case TRANSITION_APPEND:
+                        _matchBuffer.add(e);
+                        // Update event clock
+                        // FIXME _clocks.put(e.getType(), e.getTimestamp());
+                        break;
+                    case TRANSITION_DROP:
+                }
 
-            // TODO Any NACs to start ?
+                // TODO Any NACs to start ?
 
-            // Update current state
-            _currentState = t.getTarget();
+                // Update current state
+                _currentState = t.getTarget();
 
-            // TODO exec callback function on state ?
+                // TODO exec callback function on state ?
 
-            if (_currentState.isFinal()) {
-                logger.debug("Final state reached");
+                if (_currentState.isFinal()) {
+                    logger.debug("Final state reached");
 
-                // If the final state has been reached, post the found pattern and reset the automaton
-                postPattern(_matchBuffer);
-                reset();
+                    // If the final state has been reached, post the found pattern and reset the automaton
+                    postPattern(_matchBuffer);
+                    reset();
+                }
             }
         }
     }
 
     /**
-     * Go back to initial state, clear match buffer
+     * Get back to initial state, clear match buffer
      */
     private void reset() {
         _currentStates.clear();

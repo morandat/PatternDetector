@@ -75,7 +75,7 @@ public class State implements IState {
     }
 
     @Override
-    public void registerTransition(IState target, String label, TransitionType type) {
+    public ITransition registerTransition(IState target, String label, TransitionType type) {
         ITransition t = new Transition(this, target, label, type);
 
         if (_transitions.get(label) == null) {
@@ -84,10 +84,12 @@ public class State implements IState {
             _transitions.put(label, list);
         } else {
             if (!_transitions.get(label).contains(t)) { // Check duplicate transitions
-                // TODO throw DuplicateTransitionException
+                // TODO throw DuplicateTransitionException?
                 _transitions.get(label).add(t);
             }
         }
+
+        return t;
     }
 
     @Override
@@ -101,7 +103,7 @@ public class State implements IState {
             _transitions.put(label, list);
         } else {
             if (!_transitions.get(label).contains(t)) { // Check duplicate transitions
-                // TODO throw DuplicateTransitionException
+                // TODO throw DuplicateTransitionException?
                 _transitions.get(label).add(t);
             }
         }

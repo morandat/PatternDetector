@@ -1,7 +1,4 @@
-import fr.labri.patterndetector.executor.DFARunner;
-import fr.labri.patterndetector.executor.Detector;
-import fr.labri.patterndetector.executor.IEvent;
-import fr.labri.patterndetector.executor.RuleManager;
+import fr.labri.patterndetector.executor.*;
 import fr.labri.patterndetector.rule.FollowedBy;
 import fr.labri.patterndetector.rule.IRule;
 import fr.labri.patterndetector.rule.Kleene;
@@ -62,6 +59,6 @@ public class ExceptionTest {
         _thrown.expect(_expectedExceptionClass);
         _thrown.expectMessage(StringContains.containsString(_expectedExceptionMsg));
 
-        ruleManager.addRule(_testRule, DFARunner.class);
+        ruleManager.addRule(_testRule, AutomatonRunnerType.DFA);
     }
 }

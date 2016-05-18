@@ -1,13 +1,12 @@
 package fr.labri.patterndetector.automaton;
 
 import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
+import fr.labri.patterndetector.executor.predicates.IPredicate;
+import fr.labri.patterndetector.types.IntegerValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -116,6 +115,7 @@ public final class AutomatonUtils {
                                    IRuleAutomaton finalAutomaton) {
         Map<String, Set<IState>> targetStateSets = new HashMap<>();
         Map<String, TransitionType> transitionTypes = new HashMap<>();
+        Map<String, ArrayList<IPredicate<IntegerValue>>> predicates = new HashMap<>();
 
         for (IState state : currentStateSet) {
             for (ITransition t : state.getTransitions()) {
@@ -130,6 +130,7 @@ public final class AutomatonUtils {
                     stateSet.add(t.getTarget());
                     targetStateSets.put(t.getLabel(), stateSet);
                     transitionTypes.put(t.getLabel(), t.getType());
+                    predicates.put(t.getLabel(), t.getPredicates());
                 }
             }
         }
@@ -161,7 +162,8 @@ public final class AutomatonUtils {
             // Create a transition to the target state set with the attributes which correspond to the label.
             IState currentState = allStateSets.get(currentStateSet.stream().map(IState::getLabel).collect(
                     Collectors.toSet()));
-            currentState.registerTransition(targetState, label, transitionTypes.get(label));
+            currentState.registerTransition(targetState, label, transitionTypes.get(label))
+                    .setPredicates(predicates.get(label));
         });
     }
 

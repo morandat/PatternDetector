@@ -13,7 +13,7 @@ public interface IEvent {
 
     long getTimestamp();
 
-    Map<String, ? extends IValue<?>> getPayload();
+    Map<String, IValue<?>> getPayload();
 
     /**
      * Add new data to the event's payload

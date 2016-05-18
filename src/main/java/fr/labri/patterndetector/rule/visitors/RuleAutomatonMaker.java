@@ -37,7 +37,8 @@ public final class RuleAutomatonMaker {
                 IState i = new State(); // Initial state
                 IState f = new State(); // Final state
 
-                i.registerTransition(f, atom.getEventType(), TransitionType.TRANSITION_APPEND);
+                i.registerTransition(f, atom.getEventType(), TransitionType.TRANSITION_APPEND)
+                        .setPredicates(atom.getPredicates()); // transfer atom predicates onto atom transition
 
                 IRuleAutomaton automaton = new RuleAutomaton();
                 automaton.setInitialState(i);
@@ -52,8 +53,6 @@ public final class RuleAutomatonMaker {
                 throw new RuntimeException("Compilation failed : " + e.getMessage() + "(" + atom + ")");
             }
         }
-
-        // TODO visit(AtomNot atomNot)
 
         @Override
         public void visit(FollowedBy followedBy) {

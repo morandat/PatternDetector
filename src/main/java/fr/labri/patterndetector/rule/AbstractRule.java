@@ -1,8 +1,13 @@
 package fr.labri.patterndetector.rule;
 
+import fr.labri.patterndetector.executor.predicates.IPredicate;
 import fr.labri.patterndetector.rule.visitors.RuleStringifier;
+import fr.labri.patterndetector.types.IValue;
+import fr.labri.patterndetector.types.IntegerValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
 
 /**
  * Created by William Braik on 6/25/2015.
@@ -16,9 +21,11 @@ public abstract class AbstractRule implements IRule {
 
     protected String _name;
     protected String _symbol;
+    protected ArrayList<IPredicate<IntegerValue>> _predicates;
 
     public AbstractRule(String symbol) {
         _symbol = symbol;
+        _predicates = null;
     }
 
     @Override
@@ -34,6 +41,21 @@ public abstract class AbstractRule implements IRule {
     @Override
     public String getSymbol() {
         return _symbol;
+    }
+
+    @Override
+    public ArrayList<IPredicate<IntegerValue>> getPredicates() {
+        return _predicates;
+    }
+
+    @Override
+    public IRule addPredicate(IPredicate<IntegerValue> predicate) {
+        if (_predicates == null)
+            _predicates = new ArrayList<>();
+
+        _predicates.add(predicate);
+
+        return this;
     }
 
     @Override

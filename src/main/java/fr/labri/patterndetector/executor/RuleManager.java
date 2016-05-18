@@ -18,16 +18,13 @@ import java.util.*;
 public final class RuleManager implements IPatternObserver {
 
     private final Logger logger = LoggerFactory.getLogger(RuleManager.class);
-    private int _ruleCounter; // Internal rule counter, used to build rule IDs
-    private Map<String, IRule> _rules; // Maps rule names to the rules themselves
-    private Map<String, IRuleAutomaton> _automata; // Maps rule names to rule automata
-    private Map<String, IAutomatonRunner> _runners; // Maps rule names to rule automaton runners
+
+    private ArrayList<IAutomatonRunner> _runners; // Maps rule names to rule automaton runners
+    private AutomatonRunnerFactory _runnerFactory;
 
     public RuleManager() {
-        _ruleCounter = 0;
-        _rules = new HashMap<>();
-        _automata = new HashMap<>();
-        _runners = new HashMap<>();
+        _runners = new ArrayList<>();
+        _runnerFactory = new AutomatonRunnerFactory();
     }
 
     /**
@@ -36,11 +33,8 @@ public final class RuleManager implements IPatternObserver {
      * @param rule The rule to add.
      * @return The rule's name.
      */
-    public String addRule(IRule rule, Class<? extends IAutomatonRunner> runnerClass) {
+    public IAutomatonRunner addRule(IRule rule, AutomatonRunnerType runnerType) {
         IRuleAutomaton automaton = RuleAutomatonMaker.makeAutomaton(rule); // Try to build the rule automaton.
-
-        rule.setName(rule.getName() == null ? rule.getClass().getSimpleName() + "-" + _ruleCounter++
-                : rule.getName() + "-" + _ruleCounter++);
 
         IRuleAutomaton powerset = automaton.powerset();
 
@@ -64,82 +58,25 @@ public final class RuleManager implements IPatternObserver {
 
         // Instantiate runner
         try {
-            IAutomatonRunner runner = runnerClass.getConstructor(IRuleAutomaton.class).newInstance(powerset); // FIXME probably not good practice
+            IAutomatonRunner runner = _runnerFactory.getRunner(runnerType, powerset);
             runner.registerPatternObserver(this);
-            _runners.put(rule.getName(), runner);
+            _runners.add(runner);
+
+            logger.info("Rule added : " + rule);
+            logger.debug("Powerset : " + powerset);
+
+            return runner;
         } catch (Exception e) {
             throw new RuntimeException("Could not instantiate runner class : " + e.getClass());
         }
-
-        // If the rule is valid, add it to the rule set, then register and observe the rule automaton.
-        _rules.put(rule.getName(), rule);
-        _automata.put(rule.getName(), powerset);
-
-        logger.info("Rule " + rule.getName() + " added : " + rule);
-        logger.debug("Powerset : " + powerset);
-
-        return rule.getName();
-    }
-
-    /**
-     * Get a rule by its name.
-     *
-     * @param ruleName The name of the rule to get.
-     * @return The rule.
-     */
-    public IRule getRule(String ruleName) {
-        return _rules.get(ruleName);
-    }
-
-    /**
-     * Get an automaton by its rule name.
-     *
-     * @param ruleName The name of the rule.
-     * @return The rule's automaton.
-     */
-    public IRuleAutomaton getAutomaton(String ruleName) {
-        return _automata.get(ruleName);
-    }
-
-    /**
-     * Get a runner by its rule name.
-     *
-     * @param ruleName The name of the rule.
-     * @return The runner
-     */
-    public IAutomatonRunner getRunner(String ruleName) {
-        return _runners.get(ruleName);
-    }
-
-    /**
-     * Remove a rule by its name.
-     *
-     * @param ruleName The name of the rule to remove.
-     */
-    public void removeRule(String ruleName) {
-        _rules.remove(ruleName);
-        _automata.remove(ruleName);
-    }
-
-    /**
-     * Remove all rules from the rule set.
-     */
-    public void removeAllRules() {
-        _rules.clear();
-        _automata.clear();
     }
 
     public void dispatchEvent(IEvent event) {
-        _runners.values().forEach(runner -> runner.fire(event));
+        _runners.forEach(runner -> runner.fire(event));
     }
 
     @Override
     public void notifyPattern(Collection<IEvent> pattern) {
         logger.info("Pattern found : " + pattern);
-    }
-
-    @Override
-    public String toString() {
-        return _rules.toString();
     }
 }

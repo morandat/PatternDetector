@@ -1,6 +1,9 @@
 package fr.labri.patterndetector.executor;
 
 import fr.labri.patterndetector.automaton.*;
+import fr.labri.patterndetector.executor.predicates.IPredicate;
+import fr.labri.patterndetector.types.IValue;
+import fr.labri.patterndetector.types.IntegerValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,9 +54,34 @@ public abstract class AbstractAutomatonRunner implements IAutomatonRunner {
         _observers.forEach(observer -> observer.notifyPattern(pattern));
     }
 
-    /**
-     * Returns true if the clock guard passes, false otherwise
-     */
+    @Override
+    public boolean testPredicates(ArrayList<IPredicate<IntegerValue>> predicates) {
+        // No predicates to test
+        if (predicates == null) {
+            return true;
+        }
+
+        for (IPredicate<IntegerValue> p : predicates) {
+            ArrayList<String> fields = p.getFields();
+            ArrayList<IntegerValue> values = new ArrayList<>();
+
+            for (String field : fields) {
+                IntegerValue value = resolveField(field);
+                values.add(value);
+            }
+
+            if (!p.eval(values))
+                return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public IntegerValue resolveField(String field) {
+        return new IntegerValue(10); //TODO
+    }
+
     @Override
     public boolean testClockGuard(long currentTime, ClockGuard clockGuard) {
         // TODO

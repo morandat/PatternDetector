@@ -1,11 +1,14 @@
 package fr.labri.patterndetector.automaton;
 
-import java.util.Map;
-import java.util.function.Predicate;
+import fr.labri.patterndetector.executor.predicates.IPredicate;
+import fr.labri.patterndetector.types.IValue;
+import fr.labri.patterndetector.types.IntegerValue;
+
+import java.util.ArrayList;
 
 /**
  * Created by William Braik on 7/27/2015.
- *
+ * <p>
  * Interface for the transitions of a rule automaton.
  */
 public interface ITransition {
@@ -18,7 +21,9 @@ public interface ITransition {
 
     TransitionType getType();
 
-    boolean isEpsilon();
+    ArrayList<IPredicate<IntegerValue>> getPredicates();
 
-    boolean isStar();
+    void addPredicate(IPredicate<IntegerValue> predicate);
+
+    void setPredicates(ArrayList<IPredicate<IntegerValue>> predicates);
 }
