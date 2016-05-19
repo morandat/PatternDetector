@@ -115,7 +115,7 @@ public final class AutomatonUtils {
                                    IRuleAutomaton finalAutomaton) {
         Map<String, Set<IState>> targetStateSets = new HashMap<>();
         Map<String, TransitionType> transitionTypes = new HashMap<>();
-        Map<String, ArrayList<IPredicate<IntegerValue>>> predicates = new HashMap<>();
+        Map<String, ArrayList<IPredicate>> predicates = new HashMap<>();
         Map<String, String> matchBufferKeys = new HashMap<>();
 
         for (IState state : currentStateSet) {

@@ -21,7 +21,6 @@ public abstract class AbstractAutomatonRunner implements IAutomatonRunner {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected ArrayList<IState> _currentStates;
-    //protected ArrayList<IEvent> _matchBuffer; // Events matching the current pattern
     protected Map<String, ArrayList<IEvent>> _matchBuffers;
     // FIXME protected Map<String, Long> _clocks;
     protected Collection<IPatternObserver> _observers; // Pattern observers to be notified when a pattern is detected.
@@ -30,7 +29,6 @@ public abstract class AbstractAutomatonRunner implements IAutomatonRunner {
     public AbstractAutomatonRunner(IRuleAutomaton automaton) {
         _automaton = automaton;
         _currentStates = new ArrayList<>();
-        //_matchBuffer = new ArrayList<>();
         _matchBuffers = new HashMap<>();
         //_clocks = new HashMap<>();
         _observers = new ArrayList<>();
@@ -59,22 +57,24 @@ public abstract class AbstractAutomatonRunner implements IAutomatonRunner {
     }
 
     @Override
-    public boolean testPredicates(ArrayList<IPredicate<IntegerValue>> predicates, String currentMatchBufferKey, IEvent currentEvent) {
+    public boolean testPredicates(ArrayList<IPredicate> predicates, String currentMatchBufferKey, IEvent currentEvent) {
         // No predicates to test
         if (predicates == null) {
             return true;
         }
 
-        for (IPredicate<IntegerValue> p : predicates) {
+        for (IPredicate p : predicates) {
             ArrayList<String> fields = p.getFields();
-            ArrayList<IntegerValue> values = new ArrayList<>();
+            ArrayList<IValue<?>> values = new ArrayList<>();
 
             for (String field : fields) {
-                IntegerValue value = resolveField(field, currentMatchBufferKey, currentEvent);
+                IValue<?> value = resolveField(field, currentMatchBufferKey, currentEvent);
                 values.add(value);
             }
 
-            if (!p.eval(values))
+            IValue<?>[] valuesArr = new IValue<?>[values.size()];
+            valuesArr = values.toArray(valuesArr);
+            if (!p.eval(valuesArr))
                 return false;
         }
 
@@ -82,15 +82,21 @@ public abstract class AbstractAutomatonRunner implements IAutomatonRunner {
     }
 
     @Override
-    public IntegerValue resolveField(String field, String currentMatchBufferKey, IEvent currentEvent) {
+    public IValue<?> resolveField(String field, String currentMatchBufferKey, IEvent currentEvent) {
         String[] splittedField = field.split("\\.");
         String patternKey = splittedField[0];
         String patternField = splittedField[1];
 
         if (patternKey.equals(currentMatchBufferKey)) {
-            return (IntegerValue) currentEvent.getPayload().get(patternField);
+            return currentEvent.getPayload().get(patternField);
         } else {
-            return (IntegerValue) _matchBuffers.get(patternKey).get(0).getPayload().get(patternField);
+            ArrayList<IEvent> matchBuffer = _matchBuffers.get(patternKey);
+            if (matchBuffer != null) {
+                IEvent firstEvent = matchBuffer.get(0); // TODO only works for atoms ! for kleene, need an index k[i]
+                return firstEvent.getPayload().get(patternField);
+            } else {
+                throw new RuntimeException("Could not resolve field : " + field);
+            }
         }
     }
 

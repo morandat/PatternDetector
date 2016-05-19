@@ -27,7 +27,7 @@ public interface IRule {
      */
     String getSymbol();
 
-    ArrayList<IPredicate<IntegerValue>> getPredicates();
+    ArrayList<IPredicate> getPredicates();
 
     /**
      * Set the name of the rule.
@@ -36,7 +36,7 @@ public interface IRule {
      */
     void setName(String name);
 
-    IRule addPredicate(IPredicate<IntegerValue> predicate);
+    IRule addPredicate(IPredicate predicate);
 
     void accept(IRuleVisitor visitor);
 

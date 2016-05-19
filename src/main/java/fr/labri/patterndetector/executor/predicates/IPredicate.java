@@ -7,9 +7,9 @@ import java.util.ArrayList;
 /**
  * Created by wbraik on 5/18/2016.
  */
-public interface IPredicate<T extends IValue<?>> {
+public interface IPredicate {
 
     ArrayList<String> getFields();
 
-    boolean eval(ArrayList<T> values);
+    boolean eval(IValue<?>... values);
 }

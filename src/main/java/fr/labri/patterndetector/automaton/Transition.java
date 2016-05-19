@@ -19,7 +19,7 @@ public class Transition implements ITransition {
     private String _label;
     private TransitionType _type;
     private String _matchBufferKey;
-    private ArrayList<IPredicate<IntegerValue>> _predicates;
+    private ArrayList<IPredicate> _predicates;
 
     public Transition(IState source, IState target, String label, TransitionType type) {
         _source = source;
@@ -56,7 +56,7 @@ public class Transition implements ITransition {
     }
 
     @Override
-    public ArrayList<IPredicate<IntegerValue>> getPredicates() {
+    public ArrayList<IPredicate> getPredicates() {
         return _predicates;
     }
 
@@ -66,15 +66,7 @@ public class Transition implements ITransition {
     }
 
     @Override
-    public void addPredicate(IPredicate<IntegerValue> predicate) {
-        if (_predicates == null)
-            _predicates = new ArrayList<>();
-
-        _predicates.add(predicate);
-    }
-
-    @Override
-    public ITransition setPredicates(ArrayList<IPredicate<IntegerValue>> predicates) {
+    public ITransition setPredicates(ArrayList<IPredicate> predicates) {
         _predicates = predicates;
 
         return this;

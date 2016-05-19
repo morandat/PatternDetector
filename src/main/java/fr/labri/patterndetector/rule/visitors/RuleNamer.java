@@ -16,6 +16,7 @@ public final class RuleNamer {
     }
 
     public static void nameRules(IRule rule) {
+        _ruleCounter = 0;
         RuleNamer.RuleNamerVisitor visitor = new RuleNamer.RuleNamerVisitor();
         rule.accept(visitor);
     }
@@ -24,13 +25,13 @@ public final class RuleNamer {
 
         @Override
         public void visit(AbstractUnaryRule unaryRule) {
-            RuleNamer.nameRules(unaryRule);
+            unaryRule.getChildRule().accept(new RuleNamer.RuleNamerVisitor());
         }
 
         @Override
         public void visit(AbstractBinaryRule binaryRule) {
-            RuleNamer.nameRules(binaryRule.getLeftChildRule());
-            RuleNamer.nameRules(binaryRule.getRightChildRule());
+            binaryRule.getLeftChildRule().accept(new RuleNamer.RuleNamerVisitor());
+            binaryRule.getRightChildRule().accept(new RuleNamer.RuleNamerVisitor());
         }
 
         @Override

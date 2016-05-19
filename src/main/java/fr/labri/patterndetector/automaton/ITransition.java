@@ -21,13 +21,11 @@ public interface ITransition {
 
     TransitionType getType();
 
-    ArrayList<IPredicate<IntegerValue>> getPredicates();
+    ArrayList<IPredicate> getPredicates();
 
     String getMatchbufferKey();
 
-    void addPredicate(IPredicate<IntegerValue> predicate);
-
-    ITransition setPredicates(ArrayList<IPredicate<IntegerValue>> predicates);
+    ITransition setPredicates(ArrayList<IPredicate> predicates);
 
     ITransition setMatchBufferKey(String matchBufferKey);
 }

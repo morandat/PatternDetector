@@ -1,5 +1,6 @@
 package fr.labri.patterndetector.rule;
 
+import fr.labri.patterndetector.executor.AutomatonRunnerType;
 import fr.labri.patterndetector.executor.Event;
 import fr.labri.patterndetector.executor.IEvent;
 import org.junit.runner.RunWith;
@@ -27,35 +28,40 @@ public class TestFollowedByDetection extends AbstractTestDetection {
     @Parameterized.Parameters(name = "{index}: {0}")
     public static Collection patterns() {
         return Arrays.asList(
-            new Object[][]{
+                new Object[][]{
+                        {
+                                " Detect A followed by B ",
+                                new FollowedBy("a", "b"),
+                                Arrays.asList(
+                                        new Event("a", 2),
+                                        new Event("b", 6)),
+                                AutomatonRunnerType.DFA
+                        },
 
-                    {
-                            " Detect A followed by B ",
-                            new FollowedBy("a", "b"),
-                            Arrays.asList(
-                                    new Event("a", 2),
-                                    new Event("b", 6))
-                    },
-                    {
-                            " Detect A followed by A ",
-                            new FollowedBy("a", "a"),
-                            Arrays.asList(
-                                    new Event("a", 2),
-                                    new Event("a", 4))
-                    },
+                        {
+                                " Detect A followed by A ",
+                                new FollowedBy("a", "a"),
+                                Arrays.asList(
+                                        new Event("a", 2),
+                                        new Event("a", 4)),
+                                AutomatonRunnerType.DFA
+                        },
 
-                    {
-                            " Detect A followed by B, with time constraint ",
-                            new FollowedBy("a", "b"), //TODO .setTimeConstraint(5);
-                            Arrays.asList(
-                                    new Event("a", 2),
-                                    new Event("b", 6))
-                    },
-                    {
-                            " NOT detect A followed by B, with time constraint ",
-                            new FollowedBy("a", "b"), //TODO .setTimeConstraint(3);
-                            new ArrayList<IEvent>(),
-                    },
-            });
+                        /*{
+                                " Detect A followed by B, with time constraint ",
+                                new FollowedBy("a", "b"), //TODO .setTimeConstraint(5);
+                                Arrays.asList(
+                                        new Event("a", 2),
+                                        new Event("b", 6)),
+                                AutomatonRunnerType.DFA
+                        },
+
+                        {
+                                " NOT detect A followed by B, with time constraint ",
+                                new FollowedBy("a", "b"), //TODO .setTimeConstraint(3);
+                                new ArrayList<IEvent>(),
+                                AutomatonRunnerType.DFA
+                        },*/
+                });
     }
 }

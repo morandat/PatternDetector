@@ -1,5 +1,6 @@
 package fr.labri.patterndetector.rule;
 
+import fr.labri.patterndetector.executor.AutomatonRunnerType;
 import fr.labri.patterndetector.executor.Event;
 import fr.labri.patterndetector.executor.IEvent;
 import org.junit.runner.RunWith;
@@ -36,29 +37,30 @@ public class TestSequenceDetection extends AbstractTestDetection {
     @Parameterized.Parameters(name = "{index}: {0}")
     public static Collection patterns() {
         return Arrays.asList(
-            new Object[][]{
-
-                    {
-                            " Detect Kleene(A) followed by B ",
-                            new FollowedBy(new Kleene("a"), "b"),
-                            Arrays.asList(
-                                    new Event("a", 2),
-                                    new Event("a", 4),
-                                    new Event("a", 5),
-                                    new Event("a", 7),
-                                    new Event("b", 8))
-                    },
-                    {
-                            " Detect Kleene(A) followed by B followed by C ",
-                            new FollowedBy(new Kleene("a"), new FollowedBy("b", "c")),
-                            Arrays.asList(
-                                    new Event("a", 2),
-                                    new Event("a", 4),
-                                    new Event("a", 5),
-                                    new Event("a", 7),
-                                    new Event("b", 8),
-                                    new Event("c", 10))
-                    },
-            });
+                new Object[][]{
+                        {
+                                " Detect Kleene(A) followed by B ",
+                                new FollowedBy(new Kleene("a"), "b"),
+                                Arrays.asList(
+                                        new Event("a", 2),
+                                        new Event("a", 4),
+                                        new Event("a", 5),
+                                        new Event("a", 7),
+                                        new Event("b", 8)),
+                                AutomatonRunnerType.DFA
+                        },
+                        {
+                                " Detect Kleene(A) followed by B followed by C ",
+                                new FollowedBy(new Kleene("a"), new FollowedBy("b", "c")),
+                                Arrays.asList(
+                                        new Event("a", 2),
+                                        new Event("a", 4),
+                                        new Event("a", 5),
+                                        new Event("a", 7),
+                                        new Event("b", 8),
+                                        new Event("c", 10)),
+                                AutomatonRunnerType.DFA
+                        },
+                });
     }
 }

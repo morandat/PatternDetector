@@ -1,5 +1,6 @@
 package fr.labri.patterndetector.rule;
 
+import fr.labri.patterndetector.executor.AutomatonRunnerType;
 import fr.labri.patterndetector.executor.Event;
 import fr.labri.patterndetector.executor.IEvent;
 import org.junit.runner.RunWith;
@@ -25,13 +26,14 @@ public class TestSimpleDetection extends AbstractTestDetection {
     @Parameterized.Parameters(name = "{index}: {0}")
     public static Collection patterns() {
         return Arrays.asList(
-            new Object[][] {
-                {
-                    "Detect A",
-                    new Atom("a"),
-                    Arrays.asList(
-                    new Event("a", 2))
-                }
-            });
-     }
+                new Object[][]{
+                        {
+                                "Detect A",
+                                new Atom("a"),
+                                Arrays.asList(
+                                        new Event("a", 2)),
+                                AutomatonRunnerType.DFA
+                        }
+                });
+    }
 }

@@ -1,5 +1,6 @@
 package fr.labri.patterndetector.rule;
 
+import fr.labri.patterndetector.executor.AutomatonRunnerType;
 import fr.labri.patterndetector.executor.Event;
 import fr.labri.patterndetector.executor.IEvent;
 import org.junit.runner.RunWith;
@@ -31,21 +32,24 @@ public class TestAlternativeDetection extends AbstractTestDetection {
                             new Or(new FollowedBy("a", "b"), new FollowedBy("a", "c")),
                             Arrays.asList(
                                     new Event("a", 1),
-                                    new Event("b", 3))
+                                    new Event("b", 3)),
+                            AutomatonRunnerType.DFA
                     },
 
                     {
                             "Detect A or B",
                             new Or("a", "b"),
                             Arrays.asList(
-                                    new Event("b", 3))
+                                    new Event("a", 1)),
+                            AutomatonRunnerType.DFA
                     },
 
                     {
                             " Detect A or B or C or D ",
                             new Or(new Or("a", "b"), new Or("c", "d")),
                             Arrays.asList(
-                                    new Event("c", 4))
+                                    new Event("a", 1)),
+                            AutomatonRunnerType.DFA
                     },
 
                     {
@@ -53,15 +57,8 @@ public class TestAlternativeDetection extends AbstractTestDetection {
                             new Or(new FollowedBy("a", "b"), new FollowedBy("a", "c")),
                             Arrays.asList(
                                     new Event("a", 1),
-                                    new Event("b", 3))
-                    },
-                    {
-                            " Detect Kleene(A) followed by B, or A followed by B ",
-                            new Or(new FollowedBy(new Kleene("a"), "b"), new FollowedBy("a", "b")),
-                            Arrays.asList(
-                                    new Event("a", 1),
-                                    new Event("a", 2),
-                                    new Event("b", 3))
+                                    new Event("b", 3)),
+                            AutomatonRunnerType.DFA
                     },
 
                     {
@@ -70,7 +67,8 @@ public class TestAlternativeDetection extends AbstractTestDetection {
                             Arrays.asList(
                                     new Event("a", 1),
                                     new Event("a", 2),
-                                    new Event("b", 3))
+                                    new Event("b", 3)),
+                            AutomatonRunnerType.DFA
                     },
             });
        }

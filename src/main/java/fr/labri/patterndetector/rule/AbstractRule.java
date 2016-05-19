@@ -21,7 +21,7 @@ public abstract class AbstractRule implements IRule {
 
     protected String _name;
     protected String _symbol;
-    protected ArrayList<IPredicate<IntegerValue>> _predicates;
+    protected ArrayList<IPredicate> _predicates;
 
     public AbstractRule(String symbol) {
         _symbol = symbol;
@@ -44,12 +44,12 @@ public abstract class AbstractRule implements IRule {
     }
 
     @Override
-    public ArrayList<IPredicate<IntegerValue>> getPredicates() {
+    public ArrayList<IPredicate> getPredicates() {
         return _predicates;
     }
 
     @Override
-    public IRule addPredicate(IPredicate<IntegerValue> predicate) {
+    public IRule addPredicate(IPredicate predicate) {
         if (_predicates == null)
             _predicates = new ArrayList<>();
 

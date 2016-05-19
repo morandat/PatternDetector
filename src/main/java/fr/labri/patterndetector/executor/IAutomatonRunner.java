@@ -52,7 +52,7 @@ public interface IAutomatonRunner {
      * @param predicates
      * @return
      */
-    boolean testPredicates(ArrayList<IPredicate<IntegerValue>> predicates, String currentMatchBufferKey, IEvent currentEvent);
+    boolean testPredicates(ArrayList<IPredicate> predicates, String currentMatchBufferKey, IEvent currentEvent);
 
     /**
      * @param field

@@ -20,6 +20,8 @@ abstract public class AbstractTestDetection {
     public IRule _testRule;
     @Parameterized.Parameter(2)
     public Collection<IEvent> _expectedPattern;
+    @Parameterized.Parameter(3)
+    public AutomatonRunnerType _runnerType;
 
     public abstract Stream<? extends IEvent> generate();
 
@@ -27,7 +29,7 @@ abstract public class AbstractTestDetection {
     public void patternDetectionTest() {
         RuleManager ruleManager = new RuleManager();
         Detector detector = new Detector(ruleManager);
-        IAutomatonRunner runner = ruleManager.addRule(_testRule, AutomatonRunnerType.DFA);
+        IAutomatonRunner runner = ruleManager.addRule(_testRule, _runnerType);
         final AtomicInteger found = new AtomicInteger();
         runner.registerPatternObserver(
                 (Collection<IEvent> pattern) -> {
@@ -36,6 +38,6 @@ abstract public class AbstractTestDetection {
                 });
 
         detector.detect(generate());
-        //assertThat(found.get(), is(equalTo(1)));
+        //assertThat(found.get(), is(equalTo(1))); //FIXME
     }
 }

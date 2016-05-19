@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Deterministic, reset when no transition found
@@ -45,7 +46,6 @@ public class DFARunner extends AbstractAutomatonRunner {
                 // Save current event in match buffer or discard it depending on the transition's type
                 switch (t.getType()) {
                     case TRANSITION_APPEND:
-                        //_matchBuffer.add(e);
                         ArrayList<IEvent> matchBuffer = _matchBuffers.get(t.getMatchbufferKey());
                         if (matchBuffer == null) {
                             matchBuffer = new ArrayList<>();
@@ -72,7 +72,8 @@ public class DFARunner extends AbstractAutomatonRunner {
                     // If the final state has been reached, post the found pattern and reset the automaton
                     Collection<IEvent> pattern = new ArrayList<>();
                     _matchBuffers.values().forEach(pattern::addAll);
-                    postPattern(pattern);
+                    postPattern(pattern.stream().sorted((e1, e2) -> new Long(e1.getTimestamp()).compareTo(e2.getTimestamp()))
+                            .collect(Collectors.toList()));
                     reset();
                 }
             }
