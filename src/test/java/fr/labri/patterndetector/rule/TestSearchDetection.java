@@ -20,11 +20,20 @@ public class TestSearchDetection extends AbstractTestDetection {
 
     public static Stream<? extends IEvent> searchScenario() {
         return Arrays.asList(
-                new Event("q", 1).setData("url", "q").setData("ref", "cdiscount.com"),
-                new Event("x", 2).setData("irrelevant", "data"),
-                new Event("f", 3).setData("url", "f").setData("ref", "q"),
-                new Event("y", 4).setData("irrelevant", "data"),
-                new Event("a", 5).setData("url", "a").setData("ref", "f")).stream();
+                new Event("Search", 1)
+                        .setData("url", "http://www.cdiscount.com/search/10/table+de+jardin.html")
+                        .setData("referrer", "http://www.cdiscount.com"),
+                new Event("whatever", 2)
+                        .setData("irrelevant", "data"),
+                new Event("ViewProduct", 3)
+                        .setData("url", "http://www.cdiscount.com/maison/jardin-plein-air/salon-de-jardin-10-personnes/f-117850208-auc3606504335784.html")
+                        .setData("referrer", "http://www.cdiscount.com/search/10/table+de+jardin.html"),
+                new Event("whatever", 4)
+                        .setData("irrelevant", "data"),
+                new Event("AddBasket", 5)
+                        .setData("url", "http://www.cdiscount.com/maison/jardin-plein-air/salon-de-jardin-10-personnes/r2-117850208-auc3606504335784-972326.html")
+                        .setData("referrer", "http://www.cdiscount.com/maison/jardin-plein-air/salon-de-jardin-10-personnes/f-117850208-auc3606504335784.html"))
+                .stream();
     }
 
     @Parameterized.Parameters(name = "{index}: {0}")
@@ -32,14 +41,21 @@ public class TestSearchDetection extends AbstractTestDetection {
         return Arrays.asList(
                 new Object[][]{
                         {
-                                " Detect search scenario ",
-                                new FollowedBy("q", new FollowedBy(
-                                        new Atom("f").addPredicate(new StringPredicateArity2("$0.url", "$1.ref", (x, y) -> x.getValue().equals(y.getValue()))),
-                                        new Atom("a").addPredicate(new StringPredicateArity2("$1.url", "$2.ref", (x, y) -> x.getValue().equals(y.getValue()))))),
+                                " Detect search scenario : query -> viewProduct -> addProduct ",
+                                new FollowedBy(new Atom("Search").setAction(() -> System.out.println("Found Search event")),
+                                        new FollowedBy(
+                                                new Atom("ViewProduct")
+                                                        .addPredicate(new StringPredicateArity2("$0.url", "$1.referrer",
+                                                                (x, y) -> x.getValue().equals(y.getValue())))
+                                                        .setAction(() -> System.out.println("Then found View event")),
+                                                new Atom("AddBasket")
+                                                        .addPredicate(new StringPredicateArity2("$1.url", "$2.referrer",
+                                                                (x, y) -> x.getValue().equals(y.getValue())))
+                                                        .setAction(() -> System.out.println("And finally found Basket event")))),
                                 Arrays.asList(
-                                        new Event("q", 1),
-                                        new Event("f", 3),
-                                        new Event("a", 5)),
+                                        new Event("Search", 1),
+                                        new Event("ViewProduct", 3),
+                                        new Event("AddBasket", 5)),
                                 AutomatonRunnerType.DFA
                         }
                 });

@@ -2,6 +2,7 @@ package fr.labri.patterndetector.automaton;
 
 import fr.labri.patterndetector.executor.IEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,11 +31,15 @@ public interface IState {
 
     boolean isFinal();
 
+    ArrayList<Runnable> getActions();
+
     void setLabel(String label);
 
     void setInitial(boolean initial);
 
     void setFinal(boolean isFinal);
+
+    void addAction(Runnable action);
 
     ITransition registerTransition(IState target, String label, TransitionType type);
 
@@ -53,4 +58,6 @@ public interface IState {
      * In a non-deterministic rule automaton, if several transitions match, one is picked randomly.
      */
     ITransition pickTransition(IEvent event);
+
+    void performActions();
 }

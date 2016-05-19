@@ -150,6 +150,10 @@ public final class AutomatonUtils {
                 // New state set found, create a new state which corresponds to it
                 targetState = new State();
 
+                for (IState state : targetStateSet) {
+                    state.getActions().forEach(targetState::addAction);
+                }
+
                 if (isStateSetFinal(targetStateSet)) {
                     finalAutomaton.addFinalState(targetState);
                 } else {

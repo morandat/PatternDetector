@@ -29,12 +29,16 @@ public interface IRule {
 
     ArrayList<IPredicate> getPredicates();
 
+    Runnable getAction();
+
     /**
      * Set the name of the rule.
      *
      * @param name The name of the rule.
      */
-    void setName(String name);
+    IRule setName(String name);
+
+    IRule setAction(Runnable run);
 
     IRule addPredicate(IPredicate predicate);
 

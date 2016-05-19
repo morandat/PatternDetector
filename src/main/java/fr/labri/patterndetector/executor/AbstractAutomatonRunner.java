@@ -92,7 +92,7 @@ public abstract class AbstractAutomatonRunner implements IAutomatonRunner {
         } else {
             ArrayList<IEvent> matchBuffer = _matchBuffers.get(patternKey);
             if (matchBuffer != null) {
-                IEvent firstEvent = matchBuffer.get(0); // TODO only works for atoms ! for kleene, need an index k[i]
+                IEvent firstEvent = matchBuffer.get(0); // TODO only works for atoms ! for kleene, need index as parameter (ex: k[i])
                 return firstEvent.getPayload().get(patternField);
             } else {
                 throw new RuntimeException("Could not resolve field : " + field);

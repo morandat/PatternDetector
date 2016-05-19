@@ -18,12 +18,14 @@ public class State implements IState {
     protected Map<String, List<ITransition>> _transitions;
     protected boolean _initial;
     protected boolean _final;
+    protected ArrayList<Runnable> _actions;
 
     public State() {
         _label = null;
         _transitions = new HashMap<>();
         _final = false;
         _initial = false;
+        _actions = new ArrayList<>();
     }
 
     @Override
@@ -60,6 +62,11 @@ public class State implements IState {
     }
 
     @Override
+    public ArrayList<Runnable> getActions() {
+        return _actions;
+    }
+
+    @Override
     public void setLabel(String label) {
         _label = label;
     }
@@ -72,6 +79,11 @@ public class State implements IState {
     @Override
     public void setFinal(boolean isFinal) {
         _final = isFinal;
+    }
+
+    @Override
+    public void addAction(Runnable action) {
+        _actions.add(action);
     }
 
     @Override
@@ -147,6 +159,11 @@ public class State implements IState {
         }
 
         return t;
+    }
+
+    @Override
+    public void performActions() {
+        _actions.forEach(Runnable::run);
     }
 
     @Override

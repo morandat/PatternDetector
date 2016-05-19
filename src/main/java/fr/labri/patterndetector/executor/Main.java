@@ -7,11 +7,8 @@ import fr.labri.patterndetector.rule.visitors.RuleAutomatonMaker;
 import fr.labri.patterndetector.rule.visitors.RuleNamer;
 import fr.labri.patterndetector.rule.visitors.RulePrinter;
 import fr.labri.patterndetector.rule.*;
-import fr.labri.patterndetector.types.IValue;
 import fr.labri.patterndetector.types.IntegerValue;
 import fr.labri.patterndetector.types.StringValue;
-
-import java.util.ArrayList;
 
 /**
  * Created by William Braik on 6/22/2015.
@@ -22,14 +19,21 @@ import java.util.ArrayList;
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println(new IntPredicateArity1("$0.x", x -> x.getValue() > 15)
-                .eval(new IntegerValue(5)));
+        /*IRule r = new FollowedBy("q",
+                new FollowedBy(
+                        new Atom("f").setAction(() -> System.out.println("Fiche produit !")),
+                        "a"));*/
 
-        System.out.println(new StringPredicateArity1("$0.x", x -> x.getValue().equals("chapeau"))
-                .eval(new StringValue("chapeau")));
+        IRule r = new FollowedBy(
+                new Atom("a").setAction(() -> System.out.println("HELLO A!")),
+                new Atom("b").setAction(() -> System.out.println("HELLO B!")));
 
-        IRule r = new FollowedBy(new FollowedBy("q", "f"), "a");
         RuleNamer.nameRules(r);
         RulePrinter.printRule(System.out, r);
+
+        IRuleAutomaton nfa = RuleAutomatonMaker.makeAutomaton(r);
+        System.out.println(nfa);
+        IRuleAutomaton dfa = nfa.powerset();
+        System.out.println(dfa);
     }
 }

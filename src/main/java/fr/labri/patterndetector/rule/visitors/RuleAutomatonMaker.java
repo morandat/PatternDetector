@@ -36,6 +36,8 @@ public final class RuleAutomatonMaker {
             try {
                 IState i = new State(); // Initial state
                 IState f = new State(); // Final state
+                if (atom.getAction() != null)
+                    f.addAction(atom.getAction());
 
                 i.registerTransition(f, atom.getEventType(), TransitionType.TRANSITION_APPEND)
                         .setPredicates(atom.getPredicates())
@@ -86,6 +88,8 @@ public final class RuleAutomatonMaker {
 
                 // The final states of the FollowedBy automaton are the connection states of the right component's automaton.
                 rightAutomaton.getConnectionStates().forEach(connectionState -> {
+                    if (followedBy.getAction() != null)
+                        connectionState.addAction(followedBy.getAction());
                     automaton.addFinalState(connectionState);
                     automaton.addConnectionState(connectionState);
                 });

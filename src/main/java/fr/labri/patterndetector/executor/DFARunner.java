@@ -64,7 +64,8 @@ public class DFARunner extends AbstractAutomatonRunner {
                 // Update current state
                 _currentState = t.getTarget();
 
-                // TODO exec callback function on state ?
+                // function callbacks
+                _currentState.performActions();
 
                 if (_currentState.isFinal()) {
                     logger.debug("Final state reached");

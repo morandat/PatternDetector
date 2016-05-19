@@ -22,10 +22,12 @@ public abstract class AbstractRule implements IRule {
     protected String _name;
     protected String _symbol;
     protected ArrayList<IPredicate> _predicates;
+    protected Runnable _action;
 
     public AbstractRule(String symbol) {
         _symbol = symbol;
         _predicates = null;
+        _action = null;
     }
 
     @Override
@@ -34,8 +36,17 @@ public abstract class AbstractRule implements IRule {
     }
 
     @Override
-    public void setName(String name) {
+    public IRule setName(String name) {
         _name = name;
+
+        return this;
+    }
+
+    @Override
+    public IRule setAction(Runnable action) {
+        _action = action;
+
+        return this;
     }
 
     @Override
@@ -46,6 +57,11 @@ public abstract class AbstractRule implements IRule {
     @Override
     public ArrayList<IPredicate> getPredicates() {
         return _predicates;
+    }
+
+    @Override
+    public Runnable getAction() {
+        return _action;
     }
 
     @Override
