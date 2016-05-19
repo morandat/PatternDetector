@@ -116,6 +116,7 @@ public final class AutomatonUtils {
         Map<String, Set<IState>> targetStateSets = new HashMap<>();
         Map<String, TransitionType> transitionTypes = new HashMap<>();
         Map<String, ArrayList<IPredicate<IntegerValue>>> predicates = new HashMap<>();
+        Map<String, String> matchBufferKeys = new HashMap<>();
 
         for (IState state : currentStateSet) {
             for (ITransition t : state.getTransitions()) {
@@ -131,6 +132,7 @@ public final class AutomatonUtils {
                     targetStateSets.put(t.getLabel(), stateSet);
                     transitionTypes.put(t.getLabel(), t.getType());
                     predicates.put(t.getLabel(), t.getPredicates());
+                    matchBufferKeys.put(t.getLabel(), t.getMatchbufferKey());
                 }
             }
         }
@@ -163,7 +165,8 @@ public final class AutomatonUtils {
             IState currentState = allStateSets.get(currentStateSet.stream().map(IState::getLabel).collect(
                     Collectors.toSet()));
             currentState.registerTransition(targetState, label, transitionTypes.get(label))
-                    .setPredicates(predicates.get(label));
+                    .setPredicates(predicates.get(label))
+                    .setMatchBufferKey(matchBufferKeys.get(label));
         });
     }
 

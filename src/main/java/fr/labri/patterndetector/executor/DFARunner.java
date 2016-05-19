@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Deterministic, reset when no transition found
@@ -36,7 +37,7 @@ public class DFARunner extends AbstractAutomatonRunner {
 
             reset();
         } else {
-            if (testPredicates(t.getPredicates())) {
+            if (testPredicates(t.getPredicates(), t.getMatchbufferKey(), e)) {
                 // TODO check clock constraints
 
                 logger.debug("Transitioning : " + t + " (" + e + ")");
@@ -44,7 +45,14 @@ public class DFARunner extends AbstractAutomatonRunner {
                 // Save current event in match buffer or discard it depending on the transition's type
                 switch (t.getType()) {
                     case TRANSITION_APPEND:
-                        _matchBuffer.add(e);
+                        //_matchBuffer.add(e);
+                        ArrayList<IEvent> matchBuffer = _matchBuffers.get(t.getMatchbufferKey());
+                        if (matchBuffer == null) {
+                            matchBuffer = new ArrayList<>();
+                        }
+                        matchBuffer.add(e);
+                        _matchBuffers.put(t.getMatchbufferKey(), matchBuffer);
+
                         // Update event clock
                         // FIXME _clocks.put(e.getType(), e.getTimestamp());
                         break;
@@ -62,7 +70,9 @@ public class DFARunner extends AbstractAutomatonRunner {
                     logger.debug("Final state reached");
 
                     // If the final state has been reached, post the found pattern and reset the automaton
-                    postPattern(_matchBuffer);
+                    Collection<IEvent> pattern = new ArrayList<>();
+                    _matchBuffers.values().forEach(pattern::addAll);
+                    postPattern(pattern);
                     reset();
                 }
             }
@@ -75,7 +85,7 @@ public class DFARunner extends AbstractAutomatonRunner {
     private void reset() {
         _currentStates.clear();
         _currentStates.add(_automaton.getInitialState());
-        _matchBuffer.clear();
+        _matchBuffers.clear();
         // FIXME _clocks.clear();
 
         logger.debug("Automaton reset");

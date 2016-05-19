@@ -34,7 +34,7 @@ public class NFARunner extends AbstractAutomatonRunner {
             if (t == null) {
                 logger.debug("Can't transition (" + e + ")");
             } else {
-                if (testPredicates(t.getPredicates())) {
+                if (testPredicates(t.getPredicates(), t.getMatchbufferKey(), e)) {
                     // TODO check clock constraints
 
                     logger.debug("Transitioning : " + t + " (" + e + ")");
@@ -48,8 +48,12 @@ public class NFARunner extends AbstractAutomatonRunner {
                                 _currentStates.add(nextState);
                             }
                             // Update match buffer
-                            _matchBuffer.add(e);
-                            // Update event clock
+                            ArrayList<IEvent> matchBuffer = _matchBuffers.get(t.getMatchbufferKey());
+                            if (matchBuffer == null) {
+                                matchBuffer = new ArrayList<>();
+                            }
+                            matchBuffer.add(e);
+                            _matchBuffers.put(t.getMatchbufferKey(), matchBuffer);                            // Update event clock
                             // FIXME _clocks.put(e.getType(), e.getTimestamp());
                             break;
                         case TRANSITION_DROP:

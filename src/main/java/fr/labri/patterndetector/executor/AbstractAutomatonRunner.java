@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by wbraik on 5/12/2016.
@@ -19,7 +21,8 @@ public abstract class AbstractAutomatonRunner implements IAutomatonRunner {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected ArrayList<IState> _currentStates;
-    protected ArrayList<IEvent> _matchBuffer; // Events matching the current pattern
+    //protected ArrayList<IEvent> _matchBuffer; // Events matching the current pattern
+    protected Map<String, ArrayList<IEvent>> _matchBuffers;
     // FIXME protected Map<String, Long> _clocks;
     protected Collection<IPatternObserver> _observers; // Pattern observers to be notified when a pattern is detected.
     protected IRuleAutomaton _automaton;
@@ -27,7 +30,8 @@ public abstract class AbstractAutomatonRunner implements IAutomatonRunner {
     public AbstractAutomatonRunner(IRuleAutomaton automaton) {
         _automaton = automaton;
         _currentStates = new ArrayList<>();
-        _matchBuffer = new ArrayList<>();
+        //_matchBuffer = new ArrayList<>();
+        _matchBuffers = new HashMap<>();
         //_clocks = new HashMap<>();
         _observers = new ArrayList<>();
 
@@ -40,8 +44,8 @@ public abstract class AbstractAutomatonRunner implements IAutomatonRunner {
     }
 
     @Override
-    public Collection<IEvent> getMatchBuffer() {
-        return _matchBuffer;
+    public Collection<IEvent> getMatchBuffer(String key) {
+        return _matchBuffers.get(key);
     }
 
     @Override
@@ -55,7 +59,7 @@ public abstract class AbstractAutomatonRunner implements IAutomatonRunner {
     }
 
     @Override
-    public boolean testPredicates(ArrayList<IPredicate<IntegerValue>> predicates) {
+    public boolean testPredicates(ArrayList<IPredicate<IntegerValue>> predicates, String currentMatchBufferKey, IEvent currentEvent) {
         // No predicates to test
         if (predicates == null) {
             return true;
@@ -66,7 +70,7 @@ public abstract class AbstractAutomatonRunner implements IAutomatonRunner {
             ArrayList<IntegerValue> values = new ArrayList<>();
 
             for (String field : fields) {
-                IntegerValue value = resolveField(field);
+                IntegerValue value = resolveField(field, currentMatchBufferKey, currentEvent);
                 values.add(value);
             }
 
@@ -78,8 +82,16 @@ public abstract class AbstractAutomatonRunner implements IAutomatonRunner {
     }
 
     @Override
-    public IntegerValue resolveField(String field) {
-        return new IntegerValue(10); //TODO
+    public IntegerValue resolveField(String field, String currentMatchBufferKey, IEvent currentEvent) {
+        String[] splittedField = field.split("\\.");
+        String patternKey = splittedField[0];
+        String patternField = splittedField[1];
+
+        if (patternKey.equals(currentMatchBufferKey)) {
+            return (IntegerValue) currentEvent.getPayload().get(patternField);
+        } else {
+            return (IntegerValue) _matchBuffers.get(patternKey).get(0).getPayload().get(patternField);
+        }
     }
 
     @Override

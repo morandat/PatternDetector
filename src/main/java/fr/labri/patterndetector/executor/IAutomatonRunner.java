@@ -32,7 +32,7 @@ public interface IAutomatonRunner {
      *
      * @return The match buffer
      */
-    Collection<IEvent> getMatchBuffer();
+    Collection<IEvent> getMatchBuffer(String key);
 
     /**
      * Register a pattern observer.
@@ -52,14 +52,13 @@ public interface IAutomatonRunner {
      * @param predicates
      * @return
      */
-    boolean testPredicates(ArrayList<IPredicate<IntegerValue>> predicates);
+    boolean testPredicates(ArrayList<IPredicate<IntegerValue>> predicates, String currentMatchBufferKey, IEvent currentEvent);
 
     /**
-     *
      * @param field
      * @return
      */
-    IValue<?> resolveField(String field);
+    IValue<?> resolveField(String field, String currentMatchBufferKey, IEvent currentEvent);
 
     /**
      * @param currentTime

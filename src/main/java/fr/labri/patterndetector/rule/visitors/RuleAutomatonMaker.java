@@ -38,7 +38,8 @@ public final class RuleAutomatonMaker {
                 IState f = new State(); // Final state
 
                 i.registerTransition(f, atom.getEventType(), TransitionType.TRANSITION_APPEND)
-                        .setPredicates(atom.getPredicates()); // transfer atom predicates onto atom transition
+                        .setPredicates(atom.getPredicates())
+                        .setMatchBufferKey(atom.getName());
 
                 IRuleAutomaton automaton = new RuleAutomaton();
                 automaton.setInitialState(i);

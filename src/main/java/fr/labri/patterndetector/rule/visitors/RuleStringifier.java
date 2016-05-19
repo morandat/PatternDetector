@@ -19,13 +19,13 @@ public final class RuleStringifier {
         return visitor.getRuleString();
     }
 
-    static class RuleStringifierVisitor extends AbstractRuleVisitor {
+    private static class RuleStringifierVisitor extends AbstractRuleVisitor {
 
         private String _ruleString;
 
         @Override
         public void visit(Atom atom) {
-            _ruleString = atom.getSymbol() + atom.getEventType();
+            _ruleString = atom.getEventType() + "(" + atom.getName() + ")";
         }
 
         // TODO visit(AtomNot atomNot)
@@ -38,6 +38,7 @@ public final class RuleStringifier {
             _ruleString = "(" + visitor.getRuleString() + ")" + unaryRule.getSymbol();
         }
 
+        @Override
         public void visit(AbstractBinaryRule binaryRule) {
             RuleStringifierVisitor leftVisitor = new RuleStringifierVisitor();
             binaryRule.getLeftChildRule().accept(leftVisitor);

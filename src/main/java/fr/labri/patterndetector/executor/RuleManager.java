@@ -10,6 +10,7 @@ import fr.labri.patterndetector.automaton.IState;
 import fr.labri.patterndetector.automaton.exception.*;
 import fr.labri.patterndetector.rule.visitors.RuleAutomatonMaker;
 import fr.labri.patterndetector.rule.IRule;
+import fr.labri.patterndetector.rule.visitors.RuleNamer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,7 @@ public final class RuleManager implements IPatternObserver {
      * @return The rule's name.
      */
     public IAutomatonRunner addRule(IRule rule, AutomatonRunnerType runnerType) {
+        RuleNamer.nameRules(rule);
         IRuleAutomaton automaton = RuleAutomatonMaker.makeAutomaton(rule); // Try to build the rule automaton.
 
         IRuleAutomaton powerset = automaton.powerset();

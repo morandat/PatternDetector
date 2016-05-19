@@ -4,6 +4,7 @@ import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.executor.predicates.IPredicate;
 import fr.labri.patterndetector.executor.predicates.PredicateArity1;
 import fr.labri.patterndetector.rule.visitors.RuleAutomatonMaker;
+import fr.labri.patterndetector.rule.visitors.RuleNamer;
 import fr.labri.patterndetector.rule.visitors.RulePrinter;
 import fr.labri.patterndetector.rule.*;
 import fr.labri.patterndetector.types.IValue;
@@ -45,5 +46,10 @@ public class Main {
         ArrayList<IntegerValue> values = new ArrayList<>();
         values.add(new IntegerValue(20));
         System.out.println(new PredicateArity1<IntegerValue>("a.x", x -> x.getValue() > 15).eval(values));
+
+
+        IRule fb = new FollowedBy(new FollowedBy("a", "b"), "c");
+        RuleNamer.nameRules(fb);
+        RulePrinter.printRule(System.out, fb);
     }
 }
