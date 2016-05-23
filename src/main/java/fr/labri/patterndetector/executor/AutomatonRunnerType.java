@@ -5,5 +5,6 @@ package fr.labri.patterndetector.executor;
  */
 public enum AutomatonRunnerType {
 
-    NFA, DFA
+    Deterministic,
+    NonDeterministic
 }

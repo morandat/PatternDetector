@@ -6,7 +6,6 @@ import fr.labri.patterndetector.executor.IEvent;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Stream;
@@ -32,7 +31,7 @@ public class TestSimpleDetection extends AbstractTestDetection {
                                 new Atom("a"),
                                 Arrays.asList(
                                         new Event("a", 2)),
-                                AutomatonRunnerType.DFA
+                                AutomatonRunnerType.Deterministic
                         }
                 });
     }

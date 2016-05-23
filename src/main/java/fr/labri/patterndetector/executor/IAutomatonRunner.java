@@ -28,13 +28,6 @@ public interface IAutomatonRunner {
     void fire(IEvent e);
 
     /**
-     * Get the current match buffer
-     *
-     * @return The match buffer
-     */
-    Collection<IEvent> getMatchBuffer(String key);
-
-    /**
      * Register a pattern observer.
      *
      * @param observer The pattern observer to register.
@@ -47,23 +40,4 @@ public interface IAutomatonRunner {
      * @param pattern The detected pattern.
      */
     void postPattern(Collection<IEvent> pattern);
-
-    /**
-     * @param predicates
-     * @return
-     */
-    boolean testPredicates(ArrayList<IPredicate> predicates, String currentMatchBufferKey, IEvent currentEvent);
-
-    /**
-     * @param field
-     * @return
-     */
-    IValue<?> resolveField(String field, String currentMatchBufferKey, IEvent currentEvent);
-
-    /**
-     * @param currentTime
-     * @param clockGuard
-     * @return
-     */
-    boolean testClockGuard(long currentTime, ClockGuard clockGuard);
 }

@@ -35,14 +35,14 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                         .addPredicate(new IntPredicateArity1("$0.x", x -> x.getValue() > 5)),
                                 Arrays.asList(
                                         new Event("a", 1)),
-                                AutomatonRunnerType.DFA
+                                AutomatonRunnerType.Deterministic
                         },
                         {
                                 "NOT Detect A, with simple predicate",
                                 new Atom("a")
                                         .addPredicate(new IntPredicateArity1("$0.x", x -> x.getValue() > 12)),
                                 new ArrayList<>(),
-                                AutomatonRunnerType.DFA
+                                AutomatonRunnerType.Deterministic
                         },
                         {
                                 "Detect A followed by B, with complex predicate",
@@ -53,7 +53,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                 Arrays.asList(
                                         new Event("a", 1),
                                         new Event("b", 3)),
-                                AutomatonRunnerType.DFA
+                                AutomatonRunnerType.Deterministic
                         },
                         {
                                 "Detect A followed by B, with complex predicate",
@@ -64,7 +64,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                 Arrays.asList(
                                         new Event("a", 1),
                                         new Event("b", 2)),
-                                AutomatonRunnerType.DFA
+                                AutomatonRunnerType.Deterministic
                         },
                 });
     }

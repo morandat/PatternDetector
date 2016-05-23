@@ -11,7 +11,6 @@ import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Stream;
 
 /**
  * Created by will on 26/10/15.
@@ -59,6 +58,6 @@ public class ExceptionTest {
         _thrown.expect(_expectedExceptionClass);
         _thrown.expectMessage(StringContains.containsString(_expectedExceptionMsg));
 
-        ruleManager.addRule(_testRule, AutomatonRunnerType.DFA);
+        ruleManager.addRule(_testRule, AutomatonRunnerType.Deterministic);
     }
 }

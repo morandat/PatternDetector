@@ -9,10 +9,10 @@ public class AutomatonRunnerFactory {
 
     public IAutomatonRunner getRunner(AutomatonRunnerType runnerType, IRuleAutomaton automaton) {
         switch (runnerType) {
-            case DFA:
-                return new DFARunner(automaton);
-            case NFA:
-                return new NFARunner(automaton);
+            case Deterministic:
+                return new DeterministicRunner(automaton);
+            case NonDeterministic:
+                return new NonDeterministicRunner(automaton);
             default:
                 throw new RuntimeException("Unknown runner type. Cannot instantiate runner");
         }

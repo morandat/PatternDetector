@@ -4,29 +4,38 @@ package fr.labri.patterndetector.executor;
  * Created by wbraik on 5/12/2016.
  */
 
+import fr.labri.patterndetector.automaton.ClockGuard;
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.automaton.IState;
 import fr.labri.patterndetector.automaton.ITransition;
+import fr.labri.patterndetector.executor.predicates.IPredicate;
+import fr.labri.patterndetector.types.IValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * Deterministic, reset when no transition found
  */
-public class DFARunner extends AbstractAutomatonRunner {
+public final class DeterministicRunner extends AbstractAutomatonRunner {
 
-    private final Logger logger = LoggerFactory.getLogger(DFARunner.class);
+    private final Logger logger = LoggerFactory.getLogger(DeterministicRunner.class);
 
     private IState _currentState;
+    private Map<String, ArrayList<IEvent>> _matchBuffers;
+    // FIXME private Map<String, Long> _clocks;
 
-    public DFARunner(IRuleAutomaton automaton) {
+    public DeterministicRunner(IRuleAutomaton automaton) {
         super(automaton);
 
         _currentState = _currentStates.get(0);
+        _matchBuffers = new HashMap<>();
+        //_clocks = new HashMap<>();
     }
 
     @Override
@@ -56,6 +65,7 @@ public class DFARunner extends AbstractAutomatonRunner {
                         // Update event clock
                         // FIXME _clocks.put(e.getType(), e.getTimestamp());
                         break;
+
                     case TRANSITION_DROP:
                 }
 
@@ -77,6 +87,72 @@ public class DFARunner extends AbstractAutomatonRunner {
                             .collect(Collectors.toList()));
                     reset();
                 }
+            }
+        }
+    }
+
+    public Collection<IEvent> getMatchBuffer(String key) {
+        return _matchBuffers.get(key);
+    }
+
+    public boolean testPredicates(ArrayList<IPredicate> predicates, String currentMatchBufferKey, IEvent currentEvent) {
+        // No predicates to test
+        if (predicates == null) {
+            return true;
+        }
+
+        for (IPredicate p : predicates) {
+            ArrayList<String> fields = p.getFields();
+            ArrayList<IValue<?>> values = new ArrayList<>();
+
+            for (String field : fields) {
+                IValue<?> value = resolveField(field, currentMatchBufferKey, currentEvent);
+                values.add(value);
+            }
+
+            IValue<?>[] valuesArr = new IValue<?>[values.size()];
+            valuesArr = values.toArray(valuesArr);
+            if (!p.eval(valuesArr))
+                return false;
+        }
+
+        return true;
+    }
+
+    public boolean testClockGuard(long currentTime, ClockGuard clockGuard) {
+        // TODO
+        /*if (clockGuard == null) {
+            return true;
+        } else if (_clocks.get(clockGuard.getEventType()) == null) {
+            return true;
+        } else {
+            long timeLast = _clocks.get(clockGuard.getEventType());
+            long timeSinceLast = currentTime - timeLast;
+
+            if (clockGuard.isLowerThan()) {
+                return timeSinceLast <= clockGuard.getValue();
+            } else {
+                return timeSinceLast > clockGuard.getValue();
+            }
+        }*/
+
+        return true;
+    }
+
+    private IValue<?> resolveField(String field, String currentMatchBufferKey, IEvent currentEvent) {
+        String[] splittedField = field.split("\\.");
+        String patternKey = splittedField[0];
+        String patternField = splittedField[1];
+
+        if (patternKey.equals(currentMatchBufferKey)) {
+            return currentEvent.getPayload().get(patternField);
+        } else {
+            ArrayList<IEvent> matchBuffer = _matchBuffers.get(patternKey);
+            if (matchBuffer != null) {
+                IEvent firstEvent = matchBuffer.get(0); // TODO only works for atoms ! for kleene, need index as parameter (ex: k[i])
+                return firstEvent.getPayload().get(patternField);
+            } else {
+                throw new RuntimeException("Could not resolve field : " + field);
             }
         }
     }

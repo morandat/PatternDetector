@@ -47,7 +47,7 @@ public class TestSequenceDetection extends AbstractTestDetection {
                                         new Event("a", 5),
                                         new Event("a", 7),
                                         new Event("b", 8)),
-                                AutomatonRunnerType.DFA
+                                AutomatonRunnerType.Deterministic
                         },
                         {
                                 " Detect Kleene(A) followed by B followed by C ",
@@ -59,7 +59,7 @@ public class TestSequenceDetection extends AbstractTestDetection {
                                         new Event("a", 7),
                                         new Event("b", 8),
                                         new Event("c", 10)),
-                                AutomatonRunnerType.DFA
+                                AutomatonRunnerType.Deterministic
                         },
                 });
     }

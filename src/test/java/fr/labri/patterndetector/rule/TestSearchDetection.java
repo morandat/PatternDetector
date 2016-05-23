@@ -23,16 +23,25 @@ public class TestSearchDetection extends AbstractTestDetection {
                 new Event("Search", 1)
                         .setData("url", "http://www.cdiscount.com/search/10/table+de+jardin.html")
                         .setData("referrer", "http://www.cdiscount.com"),
+
                 new Event("whatever", 2)
                         .setData("irrelevant", "data"),
+
                 new Event("ViewProduct", 3)
                         .setData("url", "http://www.cdiscount.com/maison/jardin-plein-air/salon-de-jardin-10-personnes/f-117850208-auc3606504335784.html")
                         .setData("referrer", "http://www.cdiscount.com/search/10/table+de+jardin.html"),
+
                 new Event("whatever", 4)
                         .setData("irrelevant", "data"),
-                new Event("AddBasket", 5)
+
+                new Event("ViewProduct", 5)
+                        .setData("url", "http://www.cdiscount.com/maison/jardin-plein-air/salon-de-jardin-1-table-4-fauteuils-et-2-repose-p/f-117850208-cbdhs1701kd.html")
+                        .setData("referrer", "http://www.cdiscount.com/search/10/table+de+jardin.html"),
+
+                new Event("AddBasket", 6)
                         .setData("url", "http://www.cdiscount.com/maison/jardin-plein-air/salon-de-jardin-10-personnes/r2-117850208-auc3606504335784-972326.html")
                         .setData("referrer", "http://www.cdiscount.com/maison/jardin-plein-air/salon-de-jardin-10-personnes/f-117850208-auc3606504335784.html"))
+
                 .stream();
     }
 
@@ -55,8 +64,8 @@ public class TestSearchDetection extends AbstractTestDetection {
                                 Arrays.asList(
                                         new Event("Search", 1),
                                         new Event("ViewProduct", 3),
-                                        new Event("AddBasket", 5)),
-                                AutomatonRunnerType.DFA
+                                        new Event("AddBasket", 6)),
+                                AutomatonRunnerType.NonDeterministic
                         }
                 });
     }

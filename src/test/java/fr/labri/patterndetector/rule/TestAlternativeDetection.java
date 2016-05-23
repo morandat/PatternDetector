@@ -33,7 +33,7 @@ public class TestAlternativeDetection extends AbstractTestDetection {
                             Arrays.asList(
                                     new Event("a", 1),
                                     new Event("b", 3)),
-                            AutomatonRunnerType.DFA
+                            AutomatonRunnerType.Deterministic
                     },
 
                     {
@@ -41,7 +41,7 @@ public class TestAlternativeDetection extends AbstractTestDetection {
                             new Or("a", "b"),
                             Arrays.asList(
                                     new Event("a", 1)),
-                            AutomatonRunnerType.DFA
+                            AutomatonRunnerType.Deterministic
                     },
 
                     {
@@ -49,7 +49,7 @@ public class TestAlternativeDetection extends AbstractTestDetection {
                             new Or(new Or("a", "b"), new Or("c", "d")),
                             Arrays.asList(
                                     new Event("a", 1)),
-                            AutomatonRunnerType.DFA
+                            AutomatonRunnerType.Deterministic
                     },
 
                     {
@@ -58,7 +58,7 @@ public class TestAlternativeDetection extends AbstractTestDetection {
                             Arrays.asList(
                                     new Event("a", 1),
                                     new Event("b", 3)),
-                            AutomatonRunnerType.DFA
+                            AutomatonRunnerType.Deterministic
                     },
 
                     {
@@ -68,7 +68,7 @@ public class TestAlternativeDetection extends AbstractTestDetection {
                                     new Event("a", 1),
                                     new Event("a", 2),
                                     new Event("b", 3)),
-                            AutomatonRunnerType.DFA
+                            AutomatonRunnerType.Deterministic
                     },
             });
        }
