@@ -14,13 +14,6 @@ import java.util.Collection;
  */
 public interface IAutomatonRunner {
     /**
-     * Get the current states in the automaton.
-     *
-     * @return The current states in the automaton.
-     */
-    ArrayList<IState> getCurrentStates();
-
-    /**
      * From current state(s), try to find a transition that matches the event, and update the current state(s)
      *
      * @param e the event to read

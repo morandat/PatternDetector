@@ -12,7 +12,7 @@ import java.util.function.Predicate;
  * Given an event type x, it represents an event of any type besides x.
  */
 @Deprecated
-// TODO un-deprecate once the FollowedByContiguous operator comes back
+// TODO undeprecate once the FollowedByContiguous operator comes back
 public class AtomNot extends AbstractAtom {
 
     public AtomNot(String eventType) {

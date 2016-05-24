@@ -33,7 +33,7 @@ public final class DeterministicRunner extends AbstractAutomatonRunner {
     public DeterministicRunner(IRuleAutomaton automaton) {
         super(automaton);
 
-        _currentState = _currentStates.get(0);
+        _currentState = automaton.getInitialState();
         _matchBuffers = new HashMap<>();
         //_clocks = new HashMap<>();
     }
@@ -91,10 +91,6 @@ public final class DeterministicRunner extends AbstractAutomatonRunner {
         }
     }
 
-    public Collection<IEvent> getMatchBuffer(String key) {
-        return _matchBuffers.get(key);
-    }
-
     public boolean testPredicates(ArrayList<IPredicate> predicates, String currentMatchBufferKey, IEvent currentEvent) {
         // No predicates to test
         if (predicates == null) {
@@ -120,7 +116,7 @@ public final class DeterministicRunner extends AbstractAutomatonRunner {
     }
 
     public boolean testClockGuard(long currentTime, ClockGuard clockGuard) {
-        // TODO
+        // TODO time constraints
         /*if (clockGuard == null) {
             return true;
         } else if (_clocks.get(clockGuard.getEventType()) == null) {
@@ -147,12 +143,12 @@ public final class DeterministicRunner extends AbstractAutomatonRunner {
         if (patternKey.equals(currentMatchBufferKey)) {
             return currentEvent.getPayload().get(patternField);
         } else {
-            ArrayList<IEvent> matchBuffer = _matchBuffers.get(patternKey);
+            ArrayList<IEvent> matchBuffer = getMatchBuffer(patternKey);
             if (matchBuffer != null) {
                 IEvent firstEvent = matchBuffer.get(0); // TODO only works for atoms ! for kleene, need index as parameter (ex: k[i])
                 return firstEvent.getPayload().get(patternField);
             } else {
-                throw new RuntimeException("Could not resolve field : " + field);
+                throw new RuntimeException("Could not resolve field : " + field); // FIXME probably should not be a runtime exception
             }
         }
     }
@@ -161,19 +157,18 @@ public final class DeterministicRunner extends AbstractAutomatonRunner {
      * Get back to initial state, clear match buffer
      */
     private void reset() {
-        _currentStates.clear();
-        _currentStates.add(_automaton.getInitialState());
+        _currentState = _automaton.getInitialState();
         _matchBuffers.clear();
         // FIXME _clocks.clear();
 
         logger.debug("Automaton reset");
     }
 
-    @Override
-    public ArrayList<IState> getCurrentStates() {
-        ArrayList<IState> currentStates = new ArrayList<>();
-        currentStates.add(_currentState);
+    public IState getCurrentState() {
+        return _currentState;
+    }
 
-        return currentStates;
+    public ArrayList<IEvent> getMatchBuffer(String key) {
+        return _matchBuffers.get(key);
     }
 }

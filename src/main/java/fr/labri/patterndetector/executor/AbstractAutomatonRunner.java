@@ -20,21 +20,12 @@ public abstract class AbstractAutomatonRunner implements IAutomatonRunner {
     // Concrete subclasses should log with their own class names
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected ArrayList<IState> _currentStates;
     protected Collection<IPatternObserver> _observers; // Pattern observers to be notified when a pattern is detected.
     protected IRuleAutomaton _automaton;
 
     public AbstractAutomatonRunner(IRuleAutomaton automaton) {
         _automaton = automaton;
-        _currentStates = new ArrayList<>();
         _observers = new ArrayList<>();
-
-        _currentStates.add(_automaton.getInitialState());
-    }
-
-    @Override
-    public ArrayList<IState> getCurrentStates() {
-        return _currentStates;
     }
 
     @Override

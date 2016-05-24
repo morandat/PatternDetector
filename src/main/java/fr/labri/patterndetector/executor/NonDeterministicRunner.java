@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Fork and play, no reset
@@ -23,8 +25,15 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
 
     private final Logger logger = LoggerFactory.getLogger(NonDeterministicRunner.class);
 
+    private Map<String, ArrayList<IEvent>> _matchBuffers; // FIXME make class containing a state and its matchbuffer
+    protected ArrayList<IState> _currentStates;
+
     public NonDeterministicRunner(IRuleAutomaton automaton) {
         super(automaton);
+
+        _matchBuffers = new HashMap<>();
+        _currentStates = new ArrayList<>();
+        _currentStates.add(_automaton.getInitialState());
     }
 
     @Override
@@ -140,5 +149,9 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
                 throw new RuntimeException("Could not resolve field : " + field);
             }
         }
+    }
+
+    public ArrayList<IState> getCurrentStates() {
+        return _currentStates;
     }
 }
