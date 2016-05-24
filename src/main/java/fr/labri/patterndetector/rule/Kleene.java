@@ -12,17 +12,12 @@ import fr.labri.patterndetector.rule.visitors.IRuleVisitor;
  * In that case, Kleene terminates as soon as the following rule begins.
  * TODO It can also be used on its own, if a window is specified for the pattern.
  */
-public class Kleene extends AbstractUnaryRule {
+public class Kleene extends AbstractKleene {
 
     public static final String Symbol = "+";
 
-    public Kleene(IRule r) {
-        super(Kleene.Symbol, r);
-    }
-
-    public Kleene(String e) {
-        super(Kleene.Symbol,
-                (e.startsWith("!") ? new AtomNot(e.substring(1)) : new Atom(e)));
+    public Kleene(String eventType) {
+        super(Kleene.Symbol, eventType);
     }
 
     @Override

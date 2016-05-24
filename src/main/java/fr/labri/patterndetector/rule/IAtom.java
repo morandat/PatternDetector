@@ -10,10 +10,4 @@ import java.util.function.Predicate;
  */
 public interface IAtom extends ITerminalRule {
 
-    /**
-     * Get the type of the event represented by the atom.
-     *
-     * @return The type of the event represented by the atom.
-     */
-    String getEventType();
 }

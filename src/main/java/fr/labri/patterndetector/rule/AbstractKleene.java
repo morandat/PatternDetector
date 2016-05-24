@@ -1,15 +1,13 @@
 package fr.labri.patterndetector.rule;
 
 /**
- * Created by wbraik on 11/17/2015.
- * <p>
- * Base class for atoms and atom negations.
+ * Created by wbraik on 5/24/2016.
  */
-public abstract class AbstractAtom extends AbstractTerminalRule implements IAtom {
+public abstract class AbstractKleene extends AbstractTerminalRule implements IKleene {
 
     protected String _eventType; // The event type
 
-    public AbstractAtom(String symbol, String eventType) {
+    public AbstractKleene(String symbol, String eventType) {
         super(symbol);
         _eventType = eventType;
     }

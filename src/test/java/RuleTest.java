@@ -20,9 +20,6 @@ public class RuleTest {
     @Rule
     public TestName _name = new TestName();
 
-    @Rule
-    public ExpectedException _thrown = ExpectedException.none();
-
     @Before
     public void initializeTest() {
         logger.info("## Executing test : " + _name.getMethodName());
@@ -30,7 +27,7 @@ public class RuleTest {
 
     @Test
     public void shouldFindRightmostAtom() {
-        IRule r = new FollowedBy(new Kleene(new FollowedBy("x", "y")), new FollowedBy("b", new Kleene("c")));
+        IRule r = new FollowedBy(new Kleene("x"), new FollowedBy("b", new Kleene("c")));
 
         String expected = "c";
 
@@ -41,7 +38,7 @@ public class RuleTest {
 
     @Test
     public void shouldFindLeftmostAtom() {
-        IRule r = new FollowedBy(new Kleene(new FollowedBy("x", "y")), new FollowedBy("b", new Kleene("c")));
+        IRule r = new FollowedBy(new Kleene("x"), new FollowedBy("b", new Kleene("c")));
 
         String expected = "x";
 

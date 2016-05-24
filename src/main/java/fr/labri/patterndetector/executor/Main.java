@@ -35,5 +35,11 @@ public class Main {
         System.out.println(nfa);
         IRuleAutomaton dfa = nfa.powerset();
         System.out.println(dfa);
+
+        IRule k = new Kleene("a");
+        IRuleAutomaton nfa2 = RuleAutomatonMaker.makeAutomaton(k);
+        System.out.println(nfa2);
+        IRuleAutomaton dfa2 = nfa2.powerset();
+        System.out.println(dfa2);
     }
 }

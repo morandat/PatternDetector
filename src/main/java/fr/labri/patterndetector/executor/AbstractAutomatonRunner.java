@@ -1,16 +1,11 @@
 package fr.labri.patterndetector.executor;
 
 import fr.labri.patterndetector.automaton.*;
-import fr.labri.patterndetector.executor.predicates.IPredicate;
-import fr.labri.patterndetector.types.IValue;
-import fr.labri.patterndetector.types.IntegerValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by wbraik on 5/12/2016.

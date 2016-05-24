@@ -150,8 +150,4 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
             }
         }
     }
-
-    public ArrayList<IState> getCurrentStates() {
-        return _currentStates;
-    }
 }

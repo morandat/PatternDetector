@@ -19,20 +19,20 @@ public class FollowedBy extends AbstractBinaryRule {
     // TODO the following constructors should not exist. This code should be in a BinaryRuleFactory : Binary.Or("a","b")
     public FollowedBy(String e, IRule right) {
         super(FollowedBy.Symbol,
-                (e.startsWith("!") ? new AtomNot(e.substring(1)) : new Atom(e)),
+                new Atom(e),
                 right);
     }
 
     public FollowedBy(IRule left, String e) {
         super(FollowedBy.Symbol,
                 left,
-                (e.startsWith("!") ? new AtomNot(e.substring(1)) : new Atom(e)));
+                new Atom(e));
     }
 
     public FollowedBy(String e1, String e2) {
         super(FollowedBy.Symbol,
-                (e1.startsWith("!") ? new AtomNot(e1.substring(1)) : new Atom(e1)),
-                (e2.startsWith("!") ? new AtomNot(e2.substring(1)) : new Atom(e2)));
+                new Atom(e1),
+                new Atom(e2));
     }
 
     @Override

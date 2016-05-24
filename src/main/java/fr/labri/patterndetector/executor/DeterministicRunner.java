@@ -164,10 +164,6 @@ public final class DeterministicRunner extends AbstractAutomatonRunner {
         logger.debug("Automaton reset");
     }
 
-    public IState getCurrentState() {
-        return _currentState;
-    }
-
     public ArrayList<IEvent> getMatchBuffer(String key) {
         return _matchBuffers.get(key);
     }

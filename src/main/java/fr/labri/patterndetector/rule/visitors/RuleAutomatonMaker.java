@@ -125,7 +125,7 @@ public final class RuleAutomatonMaker {
         @Override
         public void visit(Kleene kleene) {
             try {
-                IRuleAutomaton baseAutomaton = RuleAutomatonMaker.makeAutomaton(kleene.getChildRule());
+                IRuleAutomaton baseAutomaton = RuleAutomatonMaker.makeAutomaton(new Atom(kleene.getEventType()));
                 IRuleAutomaton automaton = new RuleAutomaton();
 
                 // The initial state of the base component becomes the initial state of the Kleene automaton.

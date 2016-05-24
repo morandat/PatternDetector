@@ -44,13 +44,8 @@ public abstract class AbstractRuleVisitor implements IRuleVisitor {
     }
 
     @Override
-    public void visit(AtomNot atomNot) {
-        visit((AbstractAtom) atomNot);
-    }
-
-    @Override
     public void visit(Kleene kleene) {
-        visit((AbstractUnaryRule) kleene);
+        visit((AbstractKleene) kleene);
     }
 
     @Override

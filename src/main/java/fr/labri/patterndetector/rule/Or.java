@@ -4,7 +4,7 @@ import fr.labri.patterndetector.rule.visitors.IRuleVisitor;
 
 /**
  * Created by will on 29/11/15.
- *
+ * <p>
  * TODO must check that left and right rules are both valid.
  * TODO If one of them is invalid, then the Or rule is invalid.
  * TODO Ex: if one of the rules is a+ (non-terminating), Or is invalid.
@@ -19,20 +19,20 @@ public class Or extends AbstractBinaryRule {
 
     public Or(String e, IRule right) {
         super(Or.Symbol,
-                (e.startsWith("!") ? new AtomNot(e.substring(1)) : new Atom(e)),
+                new Atom(e),
                 right);
     }
 
     public Or(IRule left, String e) {
         super(Or.Symbol,
                 left,
-                (e.startsWith("!") ? new AtomNot(e.substring(1)) : new Atom(e)));
+                new Atom(e));
     }
 
     public Or(String e1, String e2) {
         super(Or.Symbol,
-                (e1.startsWith("!") ? new AtomNot(e1.substring(1)) : new Atom(e1)),
-                (e2.startsWith("!") ? new AtomNot(e2.substring(1)) : new Atom(e2)));
+                new Atom(e1),
+                new Atom(e2));
     }
 
     public void accept(IRuleVisitor visitor) {

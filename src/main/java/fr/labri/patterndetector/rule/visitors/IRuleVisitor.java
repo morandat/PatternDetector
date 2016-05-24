@@ -21,8 +21,6 @@ public interface IRuleVisitor {
 
     void visit(Atom atom);
 
-    void visit(AtomNot atomNot);
-
     void visit(Kleene kleene);
 
     void visit(FollowedBy followedBy);
