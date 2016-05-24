@@ -27,7 +27,7 @@ public final class DeterministicRunner extends AbstractAutomatonRunner {
     private final Logger logger = LoggerFactory.getLogger(DeterministicRunner.class);
 
     private IState _currentState;
-    private Map<String, ArrayList<IEvent>> _matchBuffers;
+    private Map<String, ArrayList<IEvent>> _matchBuffers; // FIXME make 'context' class containing current state and corresponding matchbuffer
     // FIXME private Map<String, Long> _clocks;
 
     public DeterministicRunner(IRuleAutomaton automaton) {

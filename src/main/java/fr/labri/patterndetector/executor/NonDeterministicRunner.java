@@ -25,7 +25,7 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
 
     private final Logger logger = LoggerFactory.getLogger(NonDeterministicRunner.class);
 
-    private Map<String, ArrayList<IEvent>> _matchBuffers; // FIXME make class containing a state and its matchbuffer
+    private Map<String, ArrayList<IEvent>> _matchBuffers; // FIXME make 'context' class containing current states and corresponding matchbuffer
     protected ArrayList<IState> _currentStates;
 
     public NonDeterministicRunner(IRuleAutomaton automaton) {
