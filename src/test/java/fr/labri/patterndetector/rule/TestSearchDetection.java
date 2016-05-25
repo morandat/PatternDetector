@@ -54,11 +54,11 @@ public class TestSearchDetection extends AbstractTestDetection {
                                 new FollowedBy(new Atom("Search").setAction(() -> System.out.println("Found Search event")),
                                         new FollowedBy(
                                                 new Atom("ViewProduct")
-                                                        .addPredicate(new StringPredicateArity2("$0.url", "$1.referrer",
+                                                        .addPredicate(new StringPredicateArity2("a0.url", "a1.referrer",
                                                                 (x, y) -> x.getValue().equals(y.getValue())))
                                                         .setAction(() -> System.out.println("Then found View event")),
                                                 new Atom("AddBasket")
-                                                        .addPredicate(new StringPredicateArity2("$1.url", "$2.referrer",
+                                                        .addPredicate(new StringPredicateArity2("a1.url", "a2.referrer",
                                                                 (x, y) -> x.getValue().equals(y.getValue())))
                                                         .setAction(() -> System.out.println("And finally found Basket event")))),
                                 Arrays.asList(

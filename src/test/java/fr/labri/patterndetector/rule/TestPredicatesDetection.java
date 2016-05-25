@@ -32,7 +32,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                         {
                                 "Detect A, with simple predicate",
                                 new Atom("a")
-                                        .addPredicate(new IntPredicateArity1("$0.x", x -> x.getValue() > 5)),
+                                        .addPredicate(new IntPredicateArity1("a0.x", x -> x.getValue() > 5)),
                                 Arrays.asList(
                                         new Event("a", 1)),
                                 AutomatonRunnerType.Deterministic
@@ -40,7 +40,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                         {
                                 "NOT Detect A, with simple predicate",
                                 new Atom("a")
-                                        .addPredicate(new IntPredicateArity1("$0.x", x -> x.getValue() > 12)),
+                                        .addPredicate(new IntPredicateArity1("a0.x", x -> x.getValue() > 12)),
                                 new ArrayList<>(),
                                 AutomatonRunnerType.Deterministic
                         },
@@ -49,7 +49,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                 new FollowedBy(
                                         "a",
                                         new Atom("b")
-                                                .addPredicate(new IntPredicateArity2("$0.x", "$1.y", (x, y) -> x.getValue() == y.getValue()))),
+                                                .addPredicate(new IntPredicateArity2("a0.x", "a1.y", (x, y) -> x.getValue() == y.getValue()))),
                                 Arrays.asList(
                                         new Event("a", 1),
                                         new Event("b", 3)),
@@ -60,7 +60,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                 new FollowedBy(
                                         "a",
                                         new Atom("b")
-                                                .addPredicate(new IntPredicateArity2("$0.x", "$1.y", (x, y) -> x.getValue() != y.getValue()))),
+                                                .addPredicate(new IntPredicateArity2("a0.x", "a1.y", (x, y) -> x.getValue() != y.getValue()))),
                                 Arrays.asList(
                                         new Event("a", 1),
                                         new Event("b", 2)),

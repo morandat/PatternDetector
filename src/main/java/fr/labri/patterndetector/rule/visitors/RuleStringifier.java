@@ -29,6 +29,11 @@ public final class RuleStringifier {
         }
 
         @Override
+        public void visit(Kleene kleene) {
+            _ruleString = kleene.getEventType() + kleene.getSymbol() + "(" + kleene.getName() + ")";
+        }
+
+        @Override
         public void visit(AbstractUnaryRule unaryRule) {
             RuleStringifierVisitor visitor = new RuleStringifierVisitor();
             unaryRule.getChildRule().accept(visitor);
