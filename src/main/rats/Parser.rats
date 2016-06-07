@@ -24,16 +24,16 @@ Rule rule
     {yyValue = r; }
     ;
 
-Constraint condition
-    = CONDITION ( function / binary )
+Expression condition
+    = void:CONDITION n ( function / binary )
     ;
 
-void function
-    = SYMBOL args
+Expression function
+    = SYMBOL n args { yyValue = null; }
     ;
 
-void binary
-    = arg operator arg
+Expression binary
+    = a1:arg n o:operator n a2:arg n { yyValue = newFunctionCall(o, a1, a2); }
     ;
 
 Pattern match
@@ -60,40 +60,40 @@ String sequence
     ;
 
 void args
-    = arg (',' arg)*
+    = arg n (',' n arg n)*
     ;
 
-void arg
+Expression arg
     = literal
     / selector
     ;
 
-void selector
-    = SYMBOL range? ('.' selector)*
+Selector selector
+    = s:range ss:(void:'.' selector)* { yyValue = newSelector(s, ss); }
     ;
 
-void range
-    = '[' range_spec ']'
+Selector range
+    = s:SYMBOL (void:'[' range_spec void:']')? { yyValue = newSelector(s); }
     ;
 
-void range_spec
-    = simple_arith (RANGE simple_arith?)?
-    / RANGE simple_arith
+RangeSpec range_spec
+    = simple_arith (RANGE simple_arith?)? { yyValue = null; }
+    / RANGE simple_arith { yyValue = null; }
     ;
 
 void simple_arith
     = (SYMBOL / number) (arith_symbol SYMBOL/number)?  // TODO Parentesis
     ;
 
-void literal
+Expression literal
     = number
-    / STRING
+    / s:STRING { yyValue = newString(s); }
     / timeunit
     ;
 
-void number
-    = DECIMAL
-    / HEX
+NumberLiteral number
+    = d:DECIMAL { yyValue = newNumber(d, 10); }
+    / h:HEX { yyValue = newNumber(h, 16); }
     ;
 
 TimeValue timeunit

@@ -2,8 +2,7 @@ package fr.labri.patterndetector.lang;
 
 import xtc.util.Pair;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -33,25 +32,66 @@ public class AST {
         return new KleenePattern(pattern);
     }
 
+    public static NumberLiteral newNumber(String value, int base) {
+        return new NumberLiteral(Long.parseLong(value, base));
+    }
+
+    public static StringLiteral newString(String value) {
+        return new StringLiteral(value);
+    }
+
     public static TimeValue newTimeValue(String value, TimeUnit unit) {
-        int v = Integer.parseInt(value);
-        return new TimeValue(v, unit);
+        long v = Long.parseLong(value);
+        switch (unit) {
+            case NANOSECONDS:
+                break;
+            case MICROSECONDS:
+                break;
+            case MILLISECONDS:
+                break;
+            case SECONDS:
+                break;
+            case MINUTES:
+                v *= 60;
+                break;
+            case HOURS:
+                v *= 60 * 60;
+                break;
+            case DAYS:
+                v *= 60 * 60 * 24;
+                break;
+        }
+        return new TimeValue(v);
+    }
+
+    public static Selector newSelector(String s) {
+        return new SimpleSelector(s);
+    }
+
+    public static Selector newSelector(Selector s, Pair<Selector> ss) {
+        if (ss.isEmpty())
+            return s;
+        return new CompositeSelector(s, ss.head());
     }
 
     public static Pattern newReferencePattern(String name) {
         throw new NotYetImplementedException();
     }
 
+    public static Expression newFunctionCall(String name, Expression... args) {
+        return new FunctionCall(name, args);
+    }
+
     public static class Rule {
         public final String _name;
         List<Pattern> _patterns = new ArrayList<>();
-        List<Constraint> _constraints = new ArrayList<>();
+        List<Expression> _constraints = new ArrayList<>();
 
         Rule(String name) {
             _name = name;
         }
 
-        public Rule appendConstraint(Constraint constraint) {
+        public Rule appendConstraint(Expression constraint) {
             _constraints.add(constraint);
             return this;
         }
@@ -83,7 +123,7 @@ public class AST {
 
         @Override
         public String toString() {
-            return String.format("%s:\n\t%s\n\t", _name, _patterns, _constraints);
+            return String.format("%s:\n\t%s\n\t%s", _name, _patterns, _constraints);
         }
     }
 
@@ -185,43 +225,129 @@ public class AST {
         }
     }
 
-    public static class Constraint {
+    public static class Expression {
     }
 
-    public static class Transition {
+    public static class Selector extends Expression {
     }
 
-    public static class TimeValue {
-        public final int _value;
-        public final TimeUnit _unit;
+    public static class SimpleSelector extends Selector {
+        public final String _reference;
 
-        TimeValue(int value, TimeUnit unit) {
+        SimpleSelector(String reference) {
+            _reference = reference;
+        }
+
+        @Override
+        public String toString() {
+            return _reference;
+        }
+    }
+
+    public static class CompositeSelector extends Selector {
+        public final Selector _reference;
+        public final Selector _field;
+
+        CompositeSelector(Selector reference, Selector field) {
+            _reference = reference;
+            _field = field;
+        }
+
+        @Override
+        public String toString() {
+            return _reference + "." + _field;
+        }
+    }
+
+    public class RangeSpec {}
+
+    public static class FunctionCall extends Expression {
+        public final String _name;
+        public final List<Expression> _args = new ArrayList<>();
+
+        FunctionCall(String name, Expression... args) {
+            _name = name;
+            _args.addAll(Arrays.asList(args));
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s(%s)", _name, String.join(", ", new Iterable<CharSequence>() {
+                @Override
+                public Iterator<CharSequence> iterator() {
+                    final Iterator<Expression> it = _args.iterator();
+                    return new Iterator<CharSequence>() {
+                        @Override
+                        public boolean hasNext() {
+                            return it.hasNext();
+                        }
+
+                        @Override
+                        public CharSequence next() {
+                            Expression n = it.next();
+                            return n == null ? null : n.toString();
+                        }
+                    };
+                }
+            }));
+        }
+    }
+
+    public static class Literal<E> extends Expression {
+        public final E _value;
+
+        Literal(E value) {
             _value = value;
-            _unit = unit;
         }
 
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof TimeValue)) return false;
+            if (!(getClass().isInstance(o))) return false;
 
-            TimeValue timeValue = (TimeValue) o;
+            return _value.equals(((Literal)o)._value);
+        }
 
-            if (_value != timeValue._value) return false;
-            return _unit == timeValue._unit;
+    }
 
+    public static class NumberLiteral extends Literal<Long> {
+        NumberLiteral(long value) {
+            super(value);
         }
 
         @Override
         public int hashCode() {
-            int result = _value;
-            result = 31 * result + (_unit != null ? _unit.hashCode() : 0);
-            return result;
+            return (int) (_value % Integer.MAX_VALUE);
+        }
+    }
+
+    public static class StringLiteral extends Literal<String> {
+        StringLiteral(String value) {
+            super(value);
         }
 
         @Override
-        public String toString() {
-            return _value + " " + _unit;
+        public int hashCode() {
+            return _value.hashCode();
+        }
+    }
+
+    public static class Transition {
+    }
+
+    public static class TimeValue extends Literal<Long> {
+
+        TimeValue(long value) {
+            super(value);
+        }
+
+        @Override
+        public int hashCode() {
+            return (int) (_value % Integer.MAX_VALUE);
+        }
+        @Override
+        public String toString(){
+            return _value + "s";
         }
     }
 

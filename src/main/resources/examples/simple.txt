@@ -1,1 +1,1 @@
-rule: foo bar baz
+rule: foo bar baz # foo.url.truc = bar.referer
