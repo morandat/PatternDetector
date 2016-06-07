@@ -72,10 +72,6 @@ public final class DeterministicRunner extends AbstractAutomatonRunner {
         }
     }
 
-    public DeterministicRunContext getContext() {
-        return _context;
-    }
-
     /**
      * Get back to initial state, clear match buffer
      */
