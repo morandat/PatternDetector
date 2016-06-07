@@ -33,7 +33,7 @@ public class DeterministicRunContext {
         return _currentState;
     }
 
-    public void updateState(IState newState) {
+    public void updateCurrentState(IState newState) {
         _currentState = newState;
     }
 
@@ -111,16 +111,29 @@ public class DeterministicRunContext {
         String patternKey = splittedField[0];
         String patternField = splittedField[1];
 
-        if (patternKey.equals(currentMatchBufferKey)) {
+
+
+        if (patternKey.equals(currentMatchBufferKey)) { // Fixme ONLY FOR ATOMS ! Kleene
             return currentEvent.getPayload().get(patternField);
         } else {
             ArrayList<IEvent> matchBuffer = getMatchBuffer(patternKey);
             if (matchBuffer != null) {
-                IEvent firstEvent = matchBuffer.get(0); // TODO only works for atoms ! for kleene, need index as parameter (ex: k[i])
+                int currentIndex = matchBuffer.size() - 1;
+                IEvent firstEvent = matchBuffer.get(currentIndex); // TODO only works for atoms ! for kleene, need index as parameter (ex: k[i])
+
                 return firstEvent.getPayload().get(patternField);
             } else {
                 throw new RuntimeException("Could not resolve field : " + field); // FIXME probably should not be a runtime exception
             }
         }
+    }
+
+    private boolean isKleene(String patternKey) {
+        String ruleType = patternKey.substring(0, 1);
+        return ruleType.equals("k");
+    }
+
+    public String toString() {
+        return "(" + _currentState + ", " + _matchBuffers + ")";
     }
 }

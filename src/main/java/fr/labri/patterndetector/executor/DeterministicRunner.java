@@ -4,19 +4,11 @@ package fr.labri.patterndetector.executor;
  * Created by wbraik on 5/12/2016.
  */
 
-import fr.labri.patterndetector.automaton.ClockGuard;
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
-import fr.labri.patterndetector.automaton.IState;
 import fr.labri.patterndetector.automaton.ITransition;
-import fr.labri.patterndetector.executor.predicates.IPredicate;
-import fr.labri.patterndetector.types.IValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -64,9 +56,9 @@ public final class DeterministicRunner extends AbstractAutomatonRunner {
                 // TODO Any NACs to start ?
 
                 // update current state
-                _context.updateState(t.getTarget());
+                _context.updateCurrentState(t.getTarget());
 
-                // activate function callbacks
+                // function callbacks
                 _context.getCurrentState().performActions();
 
                 if (_context.isCurrentStateFinal()) {
@@ -88,7 +80,7 @@ public final class DeterministicRunner extends AbstractAutomatonRunner {
      * Get back to initial state, clear match buffer
      */
     private void reset() {
-        _context.updateState(_automaton.getInitialState());
+        _context.updateCurrentState(_automaton.getInitialState());
         _context.clearMatchBuffers();
         // TODO _clocks.clear();
 

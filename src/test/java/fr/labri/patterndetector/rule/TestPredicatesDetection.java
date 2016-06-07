@@ -37,6 +37,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                         new Event("a", 1)),
                                 AutomatonRunnerType.Deterministic
                         },
+
                         {
                                 "NOT Detect A, with simple predicate",
                                 new Atom("a")
@@ -44,6 +45,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                 new ArrayList<>(),
                                 AutomatonRunnerType.Deterministic
                         },
+
                         {
                                 "Detect A followed by B, with complex predicate",
                                 new FollowedBy(
@@ -55,6 +57,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                         new Event("b", 3)),
                                 AutomatonRunnerType.Deterministic
                         },
+
                         {
                                 "Detect A followed by B, with complex predicate",
                                 new FollowedBy(

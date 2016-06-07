@@ -12,7 +12,7 @@ import java.util.ArrayList;
 /**
  * Created by William Braik on 6/25/2015.
  * <p>
- * Composes sub-rules and/or atoms to form patterns.
+ * A pattern.
  */
 public abstract class AbstractRule implements IRule {
 

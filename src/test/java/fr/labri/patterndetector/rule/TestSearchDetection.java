@@ -50,20 +50,21 @@ public class TestSearchDetection extends AbstractTestDetection {
         return Arrays.asList(
                 new Object[][]{
                         {
-                                " Detect search scenario : query -> viewProduct -> addProduct ",
+                                " Detect search scenario : query -> viewProduct -> addBasket ",
                                 new FollowedBy(new Atom("Search").setAction(() -> System.out.println("Found Search event")),
                                         new FollowedBy(
                                                 new Atom("ViewProduct")
                                                         .addPredicate(new StringPredicateArity2("a0.url", "a1.referrer",
                                                                 (x, y) -> x.getValue().equals(y.getValue())))
-                                                        .setAction(() -> System.out.println("Then found View event")),
+                                                        .setAction(() -> System.out.println("Found View event")),
                                                 new Atom("AddBasket")
                                                         .addPredicate(new StringPredicateArity2("a1.url", "a2.referrer",
                                                                 (x, y) -> x.getValue().equals(y.getValue())))
-                                                        .setAction(() -> System.out.println("And finally found Basket event")))),
+                                                        .setAction(() -> System.out.println("Found Basket event")))),
                                 Arrays.asList(
                                         new Event("Search", 1),
                                         new Event("ViewProduct", 3),
+                                        new Event("ViewProduct", 5),
                                         new Event("AddBasket", 6)),
                                 AutomatonRunnerType.NonDeterministic
                         }

@@ -2,6 +2,7 @@ package fr.labri.patterndetector.executor;
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.executor.predicates.IntPredicateArity1;
+import fr.labri.patterndetector.executor.predicates.IntPredicateArity2;
 import fr.labri.patterndetector.executor.predicates.StringPredicateArity1;
 import fr.labri.patterndetector.rule.visitors.RuleAutomatonMaker;
 import fr.labri.patterndetector.rule.visitors.RuleNamer;
@@ -36,10 +37,11 @@ public class Main {
         IRuleAutomaton dfa = nfa.powerset();
         System.out.println(dfa);
 
-        IRule k = new Kleene("a");
-        IRuleAutomaton nfa2 = RuleAutomatonMaker.makeAutomaton(k);
-        System.out.println(nfa2);
-        IRuleAutomaton dfa2 = nfa2.powerset();
-        System.out.println(dfa2);
+        IRule k = new FollowedBy(
+                new Kleene("a")
+                        .addPredicate(new IntPredicateArity2("k0.x", "k0.x", (x, y) -> x.getValue() + 1 == y.getValue())),
+                "b");
+        RuleNamer.nameRules(k);
+        RulePrinter.printRule(System.out, k);
     }
 }

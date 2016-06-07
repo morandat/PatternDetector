@@ -3,6 +3,7 @@ package fr.labri.patterndetector.rule;
 import fr.labri.patterndetector.executor.AutomatonRunnerType;
 import fr.labri.patterndetector.executor.Event;
 import fr.labri.patterndetector.executor.IEvent;
+import fr.labri.patterndetector.executor.predicates.IntPredicateArity2;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -20,12 +21,12 @@ public class TestSequenceDetection extends AbstractTestDetection {
     public Stream<? extends IEvent> generate() {
         return Arrays.asList(
                 new Event("x", 1),
-                new Event("a", 2),
+                new Event("a", 2).setData("x", 1),
                 new Event("c", 3),
-                new Event("a", 4),
-                new Event("a", 5),
+                new Event("a", 4).setData("x", 2),
+                new Event("a", 5).setData("x", 3),
                 new Event("y", 6),
-                new Event("a", 7),
+                new Event("a", 7).setData("x", 4),
                 new Event("b", 8),
                 new Event("x", 9),
                 new Event("c", 10),
@@ -49,6 +50,7 @@ public class TestSequenceDetection extends AbstractTestDetection {
                                         new Event("b", 8)),
                                 AutomatonRunnerType.Deterministic
                         },
+
                         {
                                 " Detect Kleene(A) followed by B followed by C ",
                                 new FollowedBy(new Kleene("a"), new FollowedBy("b", "c")),
@@ -59,6 +61,21 @@ public class TestSequenceDetection extends AbstractTestDetection {
                                         new Event("a", 7),
                                         new Event("b", 8),
                                         new Event("c", 10)),
+                                AutomatonRunnerType.Deterministic
+                        },
+
+                        {
+                                " Detect Kleene(A) followed by B with predicates ",
+                                new FollowedBy(
+                                        new Kleene("a")
+                                                .addPredicate(new IntPredicateArity2("k0.x", "k0.x", (x, y) -> y.getValue() == x.getValue() + 1)), // TODO specify indices
+                                        "b"),
+                                Arrays.asList(
+                                        new Event("a", 2),
+                                        new Event("a", 4),
+                                        new Event("a", 5),
+                                        new Event("a", 7),
+                                        new Event("b", 8)),
                                 AutomatonRunnerType.Deterministic
                         },
                 });
