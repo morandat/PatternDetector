@@ -4,6 +4,8 @@ import xtc.util.Pair;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by morandat on 10/05/2016.
@@ -13,9 +15,11 @@ public class AST {
     public static Rule newRule(String name) {
         return new Rule(name);
     }
+
     public static Transition newTransition() {
         return null;
     }
+
     public static Transition newNak() {
         return null;
     }
@@ -68,10 +72,22 @@ public class AST {
         return new SimpleSelector(s);
     }
 
+    public static Selector newSequenceSelector(String s, Pair<Expression> exprs) {
+        if (exprs.tail().isEmpty())
+            return new IndexSelector(new SimpleSelector(s), exprs.head());
+        return new RangeSelector(new SimpleSelector(s), exprs.head(), exprs.get(1));
+    }
+
     public static Selector newSelector(Selector s, Pair<Selector> ss) {
         if (ss.isEmpty())
             return s;
-        return new CompositeSelector(s, ss.head());
+        Selector head = ss.head();
+        if (head instanceof  FieldSelector) {
+            return new FieldSelector(s, ((FieldSelector)head)._field);
+        } else if (head instanceof SimpleSelector) {
+            return new FieldSelector(s, ((SimpleSelector)head)._reference);
+        }
+        throw new NotYetImplementedException();
     }
 
     public static Pattern newReferencePattern(String name) {
@@ -127,7 +143,7 @@ public class AST {
         }
     }
 
-    public static class Pattern {
+    public static abstract class Pattern {
         List<Transition> _transitions = new ArrayList<>();
 
         public void addAlias(String name) {
@@ -136,6 +152,8 @@ public class AST {
         public void addTransitions(Pair<Transition> transitions) {
             transitions.addTo(_transitions);
         }
+
+        abstract public void accept(PatternVisitor visitor);
     }
 
     public static class SymbolPattern extends Pattern {
@@ -164,6 +182,11 @@ public class AST {
         @Override
         public String toString() {
             return _symbol;
+        }
+
+        @Override
+        public void accept(PatternVisitor visitor) {
+            visitor.visit(this);
         }
     }
 
@@ -194,6 +217,11 @@ public class AST {
         public String toString() {
             return "(" + _patterns + ")";
         }
+
+        @Override
+        public void accept(PatternVisitor visitor) {
+            visitor.visit(this);
+        }
     }
 
     public static class KleenePattern extends Pattern {
@@ -223,12 +251,18 @@ public class AST {
         public String toString() {
             return "(" + _pattern.toString() + ")*";
         }
+
+        @Override
+        public void accept(PatternVisitor visitor) {
+            visitor.visit(this);
+        }
     }
 
-    public static class Expression {
+    public static abstract class Expression {
+        public abstract void accept(ExpressionVisitor visitor);
     }
 
-    public static class Selector extends Expression {
+    public static abstract class Selector extends Expression {
     }
 
     public static class SimpleSelector extends Selector {
@@ -242,13 +276,18 @@ public class AST {
         public String toString() {
             return _reference;
         }
+
+        @Override
+        public void accept(ExpressionVisitor visitor) {
+            visitor.visit(this);
+        }
     }
 
-    public static class CompositeSelector extends Selector {
+    public static class FieldSelector extends Selector {
         public final Selector _reference;
-        public final Selector _field;
+        public final String _field;
 
-        CompositeSelector(Selector reference, Selector field) {
+        FieldSelector(Selector reference, String field) {
             _reference = reference;
             _field = field;
         }
@@ -257,9 +296,49 @@ public class AST {
         public String toString() {
             return _reference + "." + _field;
         }
+
+        @Override
+        public void accept(ExpressionVisitor visitor) {
+            visitor.visit(this);
+        }
     }
 
-    public class RangeSpec {}
+    static public abstract class SequenceSelector extends Selector {
+        final Selector _selector;
+
+        public SequenceSelector(Selector selector) {
+            _selector = selector;
+        }
+    }
+
+    static public class IndexSelector extends SequenceSelector {
+        final Expression _index;
+
+        public IndexSelector(Selector selector, Expression index) {
+            super(selector);
+            _index = index;
+        }
+
+        @Override
+        public void accept(ExpressionVisitor visitor) {
+            visitor.visit(this);
+        }
+    }
+
+    static public class RangeSelector extends SequenceSelector {
+        final Expression _left, _right;
+
+        public RangeSelector(Selector selector, Expression left, Expression right) {
+            super(selector);
+            _left = left;
+            _right = right;
+        }
+
+        @Override
+        public void accept(ExpressionVisitor visitor) {
+            visitor.visit(this);
+        }
+    }
 
     public static class FunctionCall extends Expression {
         public final String _name;
@@ -272,28 +351,18 @@ public class AST {
 
         @Override
         public String toString() {
-            return String.format("%s(%s)", _name, String.join(", ", new Iterable<CharSequence>() {
-                @Override
-                public Iterator<CharSequence> iterator() {
-                    final Iterator<Expression> it = _args.iterator();
-                    return new Iterator<CharSequence>() {
-                        @Override
-                        public boolean hasNext() {
-                            return it.hasNext();
-                        }
+            return String.format("%s(%s)",
+                    _name,
+                    String.join(", ", Stream.of(_args).map((x) -> x.toString()).collect(Collectors.toList())));
+        }
 
-                        @Override
-                        public CharSequence next() {
-                            Expression n = it.next();
-                            return n == null ? null : n.toString();
-                        }
-                    };
-                }
-            }));
+        @Override
+        public void accept(ExpressionVisitor visitor) {
+            visitor.visit(this);
         }
     }
 
-    public static class Literal<E> extends Expression {
+    public static abstract class Literal<E> extends Expression {
         public final E _value;
 
         Literal(E value) {
@@ -319,6 +388,11 @@ public class AST {
         public int hashCode() {
             return (int) (_value % Integer.MAX_VALUE);
         }
+
+        @Override
+        public void accept(ExpressionVisitor visitor) {
+            visitor.visit(this);
+        }
     }
 
     public static class StringLiteral extends Literal<String> {
@@ -329,6 +403,11 @@ public class AST {
         @Override
         public int hashCode() {
             return _value.hashCode();
+        }
+
+        @Override
+        public void accept(ExpressionVisitor visitor) {
+            visitor.visit(this);
         }
     }
 
@@ -349,9 +428,39 @@ public class AST {
         public String toString(){
             return _value + "s";
         }
+
+        @Override
+        public void accept(ExpressionVisitor visitor) {
+            visitor.visit(this);
+        }
     }
 
     public static class NotYetImplementedException extends RuntimeException {
+    }
 
+    class PatternVisitor {
+        void visit(Pattern pattern) {}
+
+        void visit(SymbolPattern symbol) { visit((Pattern) symbol); }
+        void visit(CompositePattern composite) { visit((Pattern) composite); }
+        void visit(KleenePattern kleene) { visit((Pattern) kleene); }
+    }
+
+    class ExpressionVisitor {
+        void visit(Expression expr) {}
+
+        void visit(Selector selector) { visit((Expression) selector); }
+        void visit(SimpleSelector selector) { visit((Selector) selector); }
+        void visit(FieldSelector selector) { visit((Selector) selector); }
+        void visit(SequenceSelector selector) { visit((Selector) selector); }
+        void visit(IndexSelector selector) { visit((SequenceSelector) selector); }
+        void visit(RangeSelector selector) { visit((SequenceSelector) selector); }
+
+        void visit(FunctionCall call) { visit((Expression) call); }
+
+        void visit(Literal literal) { visit((Expression) literal); }
+        void visit(NumberLiteral number) { visit((Literal) number); }
+        void visit(TimeValue time) { visit((Literal) time); }
+        void visit(StringLiteral string) { visit((Literal) string); }
     }
 }

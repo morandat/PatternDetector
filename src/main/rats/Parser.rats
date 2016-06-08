@@ -5,6 +5,7 @@ header {
 
     import fr.labri.patterndetector.lang.AST.*;
     import static fr.labri.patterndetector.lang.AST.*;
+    import static fr.labri.patterndetector.lang.Utils.*;
 }
 
 body {
@@ -73,18 +74,28 @@ Selector selector
     ;
 
 Selector range
-    = s:SYMBOL (void:'[' range_spec void:']')? { yyValue = newSelector(s); }
+    = s:SYMBOL r:(void:'[' range_spec void:']')? { yyValue = r != null ? newSequenceSelector(s, r) : newSelector(s); }
     ;
 
-RangeSpec range_spec
-    = simple_arith (RANGE simple_arith?)? { yyValue = null; }
-    / RANGE simple_arith { yyValue = null; }
+Pair<Expression> range_spec
+    = l:simple_arith y:(void:RANGE r:simple_arith? { yyValue = makeList(null, r); })? { if (y != null) ((Pair<Expression>)y).setHead(l);
+        yyValue = y == null ? new Pair(l) : (Pair<Expression>)y ; }
+    / RANGE r:simple_arith { yyValue = makeList(null, r); }
     ;
 
-void simple_arith
-    = (SYMBOL / number) (arith_symbol SYMBOL/number)?  // TODO Parentesis
+Expression simple_arith
+    = l:variable_or_number { yyValue = l; } y:(o:arith_symbol r:variable_or_number { yyValue = newFunctionCall(o, null, r); })? {
+        if (y != null){
+            ((FunctionCall)y)._args.set(0, l);
+            yyValue = ((FunctionCall)y);
+        }
+    } // TODO Parentesis
     ;
 
+Expression variable_or_number
+    = s:SYMBOL { yyValue = newSelector(s); }
+    / number
+    ;
 Expression literal
     = number
     / s:STRING { yyValue = newString(s); }
