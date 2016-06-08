@@ -3,9 +3,6 @@ package fr.labri.patterndetector.rule;
 import fr.labri.patterndetector.executor.AutomatonRunnerType;
 import fr.labri.patterndetector.executor.Event;
 import fr.labri.patterndetector.executor.IEvent;
-import fr.labri.patterndetector.executor.predicates.FieldAtom;
-import fr.labri.patterndetector.executor.predicates.FieldKleene;
-import fr.labri.patterndetector.executor.predicates.IntPredicateArity2;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
