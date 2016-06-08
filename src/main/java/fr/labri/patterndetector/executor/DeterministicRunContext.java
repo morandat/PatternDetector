@@ -2,8 +2,11 @@ package fr.labri.patterndetector.executor;
 
 import fr.labri.patterndetector.automaton.ClockGuard;
 import fr.labri.patterndetector.automaton.IState;
+import fr.labri.patterndetector.executor.predicates.IField;
 import fr.labri.patterndetector.executor.predicates.IPredicate;
+import fr.labri.patterndetector.rule.RuleType;
 import fr.labri.patterndetector.types.IValue;
+import fr.labri.patterndetector.types.IntegerValue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,15 +67,15 @@ public class DeterministicRunContext {
 
     public boolean testPredicates(ArrayList<IPredicate> predicates, String currentMatchBufferKey, IEvent currentEvent) {
         // No predicates to test
-        if (predicates == null) {
+        if (predicates == null || predicates.isEmpty()) {
             return true;
         }
 
         for (IPredicate p : predicates) {
-            ArrayList<String> fields = p.getFields();
+            ArrayList<IField> fields = p.getFields();
             ArrayList<IValue<?>> values = new ArrayList<>();
 
-            for (String field : fields) {
+            for (IField field : fields) {
                 IValue<?> value = resolveField(field, currentMatchBufferKey, currentEvent);
                 values.add(value);
             }
@@ -106,23 +109,28 @@ public class DeterministicRunContext {
         return true;
     }
 
-    private IValue<?> resolveField(String field, String currentMatchBufferKey, IEvent currentEvent) {
-        String[] splittedField = field.split("\\.");
-        String patternKey = splittedField[0];
-        String patternField = splittedField[1];
+    private IValue<?> resolveField(IField field, String currentMatchBufferKey, IEvent currentEvent) {
+        String patternKey = field.getPatternId();
+        String patternField = field.getFieldName();
+        RuleType patternType = field.getPatternType();
 
-        if (patternKey.equals(currentMatchBufferKey)) { // Fixme ONLY FOR ATOMS ! Kleene
-            return currentEvent.getPayload().get(patternField);
-        } else {
-            ArrayList<IEvent> matchBuffer = getMatchBuffer(patternKey);
-            if (matchBuffer != null) {
-                int currentIndex = matchBuffer.size() - 1;
-                IEvent firstEvent = matchBuffer.get(currentIndex); // TODO only works for atoms ! for kleene, need index as parameter (ex: k[i])
-
-                return firstEvent.getPayload().get(patternField);
+        if (patternType.equals(RuleType.ATOM)) {
+            if (patternKey.equals(currentMatchBufferKey)) {
+                return currentEvent.getPayload().get(patternField);
             } else {
-                throw new RuntimeException("Could not resolve field : " + field); // FIXME probably should not be a runtime exception
+                ArrayList<IEvent> matchBuffer = getMatchBuffer(patternKey);
+                if (matchBuffer != null) {
+                    IEvent event = matchBuffer.get(0); // atoms only have one event in the matchbuffer, so this works
+
+                    return event.getPayload().get(patternField);
+                } else {
+                    throw new RuntimeException("Could not resolve field : " + field + " (No matchbuffer found)"); // FIXME?(is this really a runtime exception?)
+                }
             }
+        } else if (patternType.equals(RuleType.KLEENE)) {
+            return new IntegerValue(2);
+        } else {
+            throw new RuntimeException("Could not resolve field : " + field + " (Unknown pattern type)"); // FIXME?(is this really a runtime exception?)
         }
     }
 

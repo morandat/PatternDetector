@@ -12,20 +12,21 @@ import java.util.function.BiPredicate;
  */
 public class IntPredicateArity2 implements IPredicate {
 
-    private String _field1;
-    private String _field2;
+    private IField _field1;
+    private IField _field2;
     private BiPredicate<IntegerValue, IntegerValue> _predicate;
 
-    public IntPredicateArity2(String field1, String field2, BiPredicate<IntegerValue, IntegerValue> predicate) {
+    public IntPredicateArity2(IField field1, IField field2, BiPredicate<IntegerValue, IntegerValue> predicate) {
         _field1 = field1;
         _field2 = field2;
         _predicate = predicate;
     }
 
-    public ArrayList<String> getFields() {
-        ArrayList<String> fields = new ArrayList<>();
+    public ArrayList<IField> getFields() {
+        ArrayList<IField> fields = new ArrayList<>();
         fields.add(_field1);
         fields.add(_field2);
+
         return fields;
     }
 
@@ -37,6 +38,7 @@ public class IntPredicateArity2 implements IPredicate {
         if (!(values[0] instanceof IntegerValue) || !(values[1] instanceof IntegerValue)) {
             throw new RuntimeException("Predicate : wrong value types for evaluation");
         }
+
         return _predicate.test((IntegerValue) values[0], (IntegerValue) values[1]);
     }
 }

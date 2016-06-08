@@ -1,6 +1,7 @@
 package fr.labri.patterndetector.executor;
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
+import fr.labri.patterndetector.executor.predicates.FieldKleene;
 import fr.labri.patterndetector.executor.predicates.IntPredicateArity1;
 import fr.labri.patterndetector.executor.predicates.IntPredicateArity2;
 import fr.labri.patterndetector.executor.predicates.StringPredicateArity1;
@@ -39,7 +40,10 @@ public class Main {
 
         IRule k = new FollowedBy(
                 new Kleene("a")
-                        .addPredicate(new IntPredicateArity2("k0.x", "k0.x", (x, y) -> x.getValue() + 1 == y.getValue())),
+                        .addPredicate(new IntPredicateArity2(
+                                new FieldKleene("0", "x", 1),
+                                new FieldKleene("0", "x", 2),
+                                (x, y) -> x.getValue() + 1 == y.getValue())),
                 "b");
         RuleNamer.nameRules(k);
         RulePrinter.printRule(System.out, k);

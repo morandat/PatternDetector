@@ -36,12 +36,12 @@ public final class RuleNamer {
 
         @Override
         public void visit(Atom atom) {
-            atom.setName("a" + _ruleCounter++);
+            atom.setName("" + _ruleCounter++);
         }
 
         @Override
         public void visit(Kleene kleene) {
-            kleene.setName("k" + _ruleCounter++);
+            kleene.setName("" + _ruleCounter++);
         }
     }
 }

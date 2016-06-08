@@ -3,6 +3,7 @@ package fr.labri.patterndetector.rule;
 import fr.labri.patterndetector.executor.AutomatonRunnerType;
 import fr.labri.patterndetector.executor.Event;
 import fr.labri.patterndetector.executor.IEvent;
+import fr.labri.patterndetector.executor.predicates.FieldAtom;
 import fr.labri.patterndetector.executor.predicates.StringPredicateArity2;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -54,11 +55,15 @@ public class TestSearchDetection extends AbstractTestDetection {
                                 new FollowedBy(new Atom("Search").setAction(() -> System.out.println("Found Search event")),
                                         new FollowedBy(
                                                 new Atom("ViewProduct")
-                                                        .addPredicate(new StringPredicateArity2("a0.url", "a1.referrer",
+                                                        .addPredicate(new StringPredicateArity2(
+                                                                new FieldAtom("0", "url"),
+                                                                new FieldAtom("1", "referrer"),
                                                                 (x, y) -> x.getValue().equals(y.getValue())))
                                                         .setAction(() -> System.out.println("Found View event")),
                                                 new Atom("AddBasket")
-                                                        .addPredicate(new StringPredicateArity2("a1.url", "a2.referrer",
+                                                        .addPredicate(new StringPredicateArity2(
+                                                                new FieldAtom("1", "url"),
+                                                                new FieldAtom("2", "referrer"),
                                                                 (x, y) -> x.getValue().equals(y.getValue())))
                                                         .setAction(() -> System.out.println("Found Basket event")))),
                                 Arrays.asList(

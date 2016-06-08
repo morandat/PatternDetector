@@ -11,16 +11,16 @@ import java.util.function.Predicate;
  */
 public class IntPredicateArity1 implements IPredicate {
 
-    private String _field;
+    private IField _field;
     private Predicate<IntegerValue> _predicate;
 
-    public IntPredicateArity1(String field, Predicate<IntegerValue> predicate) {
+    public IntPredicateArity1(IField field, Predicate<IntegerValue> predicate) {
         _field = field;
         _predicate = predicate;
     }
 
-    public ArrayList<String> getFields() {
-        ArrayList<String> fields = new ArrayList<>();
+    public ArrayList<IField> getFields() {
+        ArrayList<IField> fields = new ArrayList<>();
         fields.add(_field);
 
         return fields;
@@ -34,6 +34,7 @@ public class IntPredicateArity1 implements IPredicate {
         if (!(values[0] instanceof IntegerValue)) {
             throw new RuntimeException("Predicate : wrong value type for evaluation");
         }
+
         return _predicate.test((IntegerValue) values[0]);
     }
 }

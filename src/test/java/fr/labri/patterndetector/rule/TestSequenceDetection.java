@@ -3,6 +3,8 @@ package fr.labri.patterndetector.rule;
 import fr.labri.patterndetector.executor.AutomatonRunnerType;
 import fr.labri.patterndetector.executor.Event;
 import fr.labri.patterndetector.executor.IEvent;
+import fr.labri.patterndetector.executor.predicates.FieldAtom;
+import fr.labri.patterndetector.executor.predicates.FieldKleene;
 import fr.labri.patterndetector.executor.predicates.IntPredicateArity2;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -61,21 +63,6 @@ public class TestSequenceDetection extends AbstractTestDetection {
                                         new Event("a", 7),
                                         new Event("b", 8),
                                         new Event("c", 10)),
-                                AutomatonRunnerType.Deterministic
-                        },
-
-                        {
-                                " Detect Kleene(A) followed by B with predicates ",
-                                new FollowedBy(
-                                        new Kleene("a")
-                                                .addPredicate(new IntPredicateArity2("k0.x", "k0.x", (x, y) -> y.getValue() == x.getValue() + 1)), // TODO specify indices
-                                        "b"),
-                                Arrays.asList(
-                                        new Event("a", 2),
-                                        new Event("a", 4),
-                                        new Event("a", 5),
-                                        new Event("a", 7),
-                                        new Event("b", 8)),
                                 AutomatonRunnerType.Deterministic
                         },
                 });

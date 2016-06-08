@@ -3,6 +3,8 @@ package fr.labri.patterndetector.rule;
 import fr.labri.patterndetector.executor.AutomatonRunnerType;
 import fr.labri.patterndetector.executor.Event;
 import fr.labri.patterndetector.executor.IEvent;
+import fr.labri.patterndetector.executor.predicates.FieldAtom;
+import fr.labri.patterndetector.executor.predicates.FieldKleene;
 import fr.labri.patterndetector.executor.predicates.IntPredicateArity1;
 import fr.labri.patterndetector.executor.predicates.IntPredicateArity2;
 import org.junit.runner.RunWith;
@@ -32,7 +34,9 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                         {
                                 "Detect A, with simple predicate",
                                 new Atom("a")
-                                        .addPredicate(new IntPredicateArity1("a0.x", x -> x.getValue() > 5)),
+                                        .addPredicate(new IntPredicateArity1(
+                                        new FieldAtom("0", "x"),
+                                        x -> x.getValue() > 5)),
                                 Arrays.asList(
                                         new Event("a", 1)),
                                 AutomatonRunnerType.Deterministic
@@ -41,7 +45,9 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                         {
                                 "NOT Detect A, with simple predicate",
                                 new Atom("a")
-                                        .addPredicate(new IntPredicateArity1("a0.x", x -> x.getValue() > 12)),
+                                        .addPredicate(new IntPredicateArity1(
+                                        new FieldAtom("0", "x"),
+                                        x -> x.getValue() > 12)),
                                 new ArrayList<>(),
                                 AutomatonRunnerType.Deterministic
                         },
@@ -51,7 +57,10 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                 new FollowedBy(
                                         "a",
                                         new Atom("b")
-                                                .addPredicate(new IntPredicateArity2("a0.x", "a1.y", (x, y) -> x.getValue() == y.getValue()))),
+                                                .addPredicate(new IntPredicateArity2(
+                                                        new FieldAtom("0", "x"),
+                                                        new FieldAtom("1", "y"),
+                                                        (x, y) -> x.getValue() == y.getValue()))),
                                 Arrays.asList(
                                         new Event("a", 1),
                                         new Event("b", 3)),
@@ -63,10 +72,31 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                 new FollowedBy(
                                         "a",
                                         new Atom("b")
-                                                .addPredicate(new IntPredicateArity2("a0.x", "a1.y", (x, y) -> x.getValue() != y.getValue()))),
+                                                .addPredicate(new IntPredicateArity2(
+                                                        new FieldAtom("0", "x"),
+                                                        new FieldAtom("1", "y"),
+                                                        (x, y) -> x.getValue() != y.getValue()))),
                                 Arrays.asList(
                                         new Event("a", 1),
                                         new Event("b", 2)),
+                                AutomatonRunnerType.Deterministic
+                        },
+
+                        {
+                                " Detect Kleene(A) followed by B with predicates ",
+                                new FollowedBy(
+                                        new Kleene("a")
+                                                .addPredicate(new IntPredicateArity2(
+                                                        new FieldKleene("0", "x", 1),
+                                                        new FieldKleene("0", "x", 2),
+                                                        (x, y) -> y.getValue() == x.getValue() + 1)),
+                                        "b"),
+                                Arrays.asList(
+                                        new Event("a", 2),
+                                        new Event("a", 4),
+                                        new Event("a", 5),
+                                        new Event("a", 7),
+                                        new Event("b", 8)),
                                 AutomatonRunnerType.Deterministic
                         },
                 });

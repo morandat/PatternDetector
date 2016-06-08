@@ -9,7 +9,7 @@ import java.util.ArrayList;
  */
 public interface IPredicate {
 
-    ArrayList<String> getFields();
+    ArrayList<IField> getFields();
 
     boolean eval(IValue<?>... values);
 }

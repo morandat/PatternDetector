@@ -12,20 +12,21 @@ import java.util.function.BiPredicate;
  */
 public class StringPredicateArity2 implements IPredicate {
 
-    private String _field1;
-    private String _field2;
+    private IField _field1;
+    private IField _field2;
     private BiPredicate<StringValue, StringValue> _predicate;
 
-    public StringPredicateArity2(String field1, String field2, BiPredicate<StringValue, StringValue> predicate) {
+    public StringPredicateArity2(IField field1, IField field2, BiPredicate<StringValue, StringValue> predicate) {
         _field1 = field1;
         _field2 = field2;
         _predicate = predicate;
     }
 
-    public ArrayList<String> getFields() {
-        ArrayList<String> fields = new ArrayList<>();
+    public ArrayList<IField> getFields() {
+        ArrayList<IField> fields = new ArrayList<>();
         fields.add(_field1);
         fields.add(_field2);
+
         return fields;
     }
 
@@ -37,6 +38,7 @@ public class StringPredicateArity2 implements IPredicate {
         if (!(values[0] instanceof StringValue) || !(values[1] instanceof StringValue)) {
             throw new RuntimeException("Predicate : wrong value types for evaluation");
         }
+
         return _predicate.test((StringValue) values[0], (StringValue) values[1]);
     }
 }
