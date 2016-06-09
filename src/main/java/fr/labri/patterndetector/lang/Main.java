@@ -15,7 +15,10 @@ public class Main {
         xtc.parser.Result result = parser.pscript(0);
 
         Pair<Rule> rules = result.semanticValue();
-        for (Rule r: rules)
-            System.out.println(r);
+        for (Rule rule: rules) {
+            PrettyPrinter.print(System.out, rule);
+            new NameResolver(rule).resolve();
+            rule.hashCode();
+        }
     }
 }

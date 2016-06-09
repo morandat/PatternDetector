@@ -1,1 +1,1 @@
-rule: foo bar baz # foo.url.truc = bar.referer
+rule: foo bar baz # foo.url.truc = bar[i].referer

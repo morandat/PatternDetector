@@ -67,6 +67,7 @@ void args
 Expression arg
     = literal
     / selector
+    / simple_arith
     ;
 
 Selector selector

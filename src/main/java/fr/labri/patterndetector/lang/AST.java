@@ -85,7 +85,7 @@ public class AST {
         if (head instanceof  FieldSelector) {
             return new FieldSelector(s, ((FieldSelector)head)._field);
         } else if (head instanceof SimpleSelector) {
-            return new FieldSelector(s, ((SimpleSelector)head)._reference);
+            return new FieldSelector(s, ((SimpleSelector)head)._name);
         }
         throw new NotYetImplementedException();
     }
@@ -144,9 +144,11 @@ public class AST {
     }
 
     public static abstract class Pattern {
-        List<Transition> _transitions = new ArrayList<>();
+        final List<Transition> _transitions = new ArrayList<>();
+        final List<String> _names = new ArrayList<>();
 
         public void addAlias(String name) {
+            _names.add(name);
         }
 
         public void addTransitions(Pair<Transition> transitions) {
@@ -154,6 +156,10 @@ public class AST {
         }
 
         abstract public void accept(PatternVisitor visitor);
+
+        public boolean hasName(String name) {
+            return _names.contains(name);
+        }
     }
 
     public static class SymbolPattern extends Pattern {
@@ -266,15 +272,16 @@ public class AST {
     }
 
     public static class SimpleSelector extends Selector {
-        public final String _reference;
+        public final String _name;
+        public Pattern _reference;
 
         SimpleSelector(String reference) {
-            _reference = reference;
+            _name = reference;
         }
 
         @Override
         public String toString() {
-            return _reference;
+            return _name;
         }
 
         @Override
@@ -438,7 +445,12 @@ public class AST {
     public static class NotYetImplementedException extends RuntimeException {
     }
 
-    class PatternVisitor {
+    static class PatternVisitor {
+        void visit(Rule r) {
+            for (Pattern p: r._patterns) {
+                p.accept(this);
+            }
+        }
         void visit(Pattern pattern) {}
 
         void visit(SymbolPattern symbol) { visit((Pattern) symbol); }
@@ -446,7 +458,13 @@ public class AST {
         void visit(KleenePattern kleene) { visit((Pattern) kleene); }
     }
 
-    class ExpressionVisitor {
+    static class ExpressionVisitor {
+        public void visit(Rule rule) {
+            for (Expression expr: rule._constraints) {
+                expr.accept(this);
+            }
+        }
+
         void visit(Expression expr) {}
 
         void visit(Selector selector) { visit((Expression) selector); }
