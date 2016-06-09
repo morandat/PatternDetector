@@ -215,7 +215,7 @@ public class DeterministicRunContext {
                 || startIndex > endIndex)
             throw new RuntimeException("Can't resolve field in kleene : bad range spec");
 
-        return new IntegerValue(2); // TODO range selectors on kleene
+        throw new UnsupportedOperationException("Not implemented yet"); // TODO
     }
 
     public String toString() {
