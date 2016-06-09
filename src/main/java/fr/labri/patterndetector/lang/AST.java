@@ -72,22 +72,17 @@ public class AST {
         return new SimpleSelector(s);
     }
 
-    public static Selector newSequenceSelector(String s, Pair<Expression> exprs) {
+    public static Selector newSequenceSelector(String symbol, Pair<Expression> exprs) {
         if (exprs.tail().isEmpty())
-            return new IndexSelector(new SimpleSelector(s), exprs.head());
-        return new RangeSelector(new SimpleSelector(s), exprs.head(), exprs.get(1));
+            return new IndexSelector(symbol, exprs.head());
+        return new RangeSelector(symbol, exprs.head(), exprs.get(1));
     }
 
-    public static Selector newSelector(Selector s, Pair<Selector> ss) {
-        if (ss.isEmpty())
-            return s;
-        Selector head = ss.head();
-        if (head instanceof  FieldSelector) {
-            return new FieldSelector(s, ((FieldSelector)head)._field);
-        } else if (head instanceof SimpleSelector) {
-            return new FieldSelector(s, ((SimpleSelector)head)._name);
-        }
-        throw new NotYetImplementedException();
+    public static Selector newSelector(String symbol, Pair<Expression> range, Selector child) {
+        Selector left = range != null ? newSequenceSelector(symbol, range) : newSelector(symbol);
+        if (child == null)
+            return left;
+        return new CompositeSelector(left, child);
     }
 
     public static Pattern newReferencePattern(String name) {
@@ -290,18 +285,18 @@ public class AST {
         }
     }
 
-    public static class FieldSelector extends Selector {
-        public final Selector _reference;
-        public final String _field;
+    public static class CompositeSelector extends Selector {
+        public final Selector _left;
+        public final Selector _right;
 
-        FieldSelector(Selector reference, String field) {
-            _reference = reference;
-            _field = field;
+        CompositeSelector(Selector left, Selector right) {
+            _left = left;
+            _right = right;
         }
 
         @Override
         public String toString() {
-            return _reference + "." + _field;
+            return _left + "." + _right;
         }
 
         @Override
@@ -311,18 +306,17 @@ public class AST {
     }
 
     static public abstract class SequenceSelector extends Selector {
-        final Selector _selector;
-
-        public SequenceSelector(Selector selector) {
-            _selector = selector;
+        final String _symbol;
+        SequenceSelector(String symbol) {
+            _symbol = symbol;
         }
     }
 
     static public class IndexSelector extends SequenceSelector {
         final Expression _index;
 
-        public IndexSelector(Selector selector, Expression index) {
-            super(selector);
+        public IndexSelector(String symbol, Expression index) {
+            super(symbol);
             _index = index;
         }
 
@@ -330,13 +324,18 @@ public class AST {
         public void accept(ExpressionVisitor visitor) {
             visitor.visit(this);
         }
+
+        @Override
+        public String toString() {
+            return String.format("%s[%s]", _symbol, _index.toString());
+        }
     }
 
     static public class RangeSelector extends SequenceSelector {
         final Expression _left, _right;
 
-        public RangeSelector(Selector selector, Expression left, Expression right) {
-            super(selector);
+        public RangeSelector(String symbol, Expression left, Expression right) {
+            super(symbol);
             _left = left;
             _right = right;
         }
@@ -344,6 +343,13 @@ public class AST {
         @Override
         public void accept(ExpressionVisitor visitor) {
             visitor.visit(this);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s[%s..%s]", _symbol,
+                    _left == null ? "" : _left.toString(),
+                    _right == null ? "" : _right.toString());
         }
     }
 
@@ -469,7 +475,7 @@ public class AST {
 
         void visit(Selector selector) { visit((Expression) selector); }
         void visit(SimpleSelector selector) { visit((Selector) selector); }
-        void visit(FieldSelector selector) { visit((Selector) selector); }
+        void visit(CompositeSelector selector) { visit((Selector) selector); }
         void visit(SequenceSelector selector) { visit((Selector) selector); }
         void visit(IndexSelector selector) { visit((SequenceSelector) selector); }
         void visit(RangeSelector selector) { visit((SequenceSelector) selector); }

@@ -71,17 +71,20 @@ Expression arg
     ;
 
 Selector selector
-    = s:range ss:(void:'.' selector)* { yyValue = newSelector(s, ss); }
+    = s:SYMBOL r:range? right:(void:'.' selector)? { yyValue = newSelector(s, r, right); }
     ;
 
-Selector range
-    = s:SYMBOL r:(void:'[' range_spec void:']')? { yyValue = r != null ? newSequenceSelector(s, r) : newSelector(s); }
+Pair<Expression> range
+    = void:'[' n range_spec void:']'
     ;
 
 Pair<Expression> range_spec
-    = l:simple_arith y:(void:RANGE r:simple_arith? { yyValue = makeList(null, r); })? { if (y != null) ((Pair<Expression>)y).setHead(l);
-        yyValue = y == null ? new Pair(l) : (Pair<Expression>)y ; }
-    / RANGE r:simple_arith { yyValue = makeList(null, r); }
+    = l:simple_arith y:(void:RANGE n r:simple_arith? { yyValue = makeList(null, r); })?
+    {
+        if (y != null) ((Pair<Expression>)y).setHead(l);
+        yyValue = y == null ? new Pair(l) : (Pair<Expression>)y ;
+    }
+    / RANGE n r:simple_arith { yyValue = makeList(null, r); }
     ;
 
 Expression simple_arith
@@ -94,8 +97,8 @@ Expression simple_arith
     ;
 
 Expression variable_or_number
-    = s:SYMBOL { yyValue = newSelector(s); }
-    / number
+    = s:SYMBOL n { yyValue = newSelector(s); }
+    / number n
     ;
 Expression literal
     = number

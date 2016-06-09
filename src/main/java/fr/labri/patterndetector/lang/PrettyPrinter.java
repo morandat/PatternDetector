@@ -55,27 +55,27 @@ public class PrettyPrinter {
         }
 
         @Override
-        void visit(FieldSelector selector) {
-            selector._reference.accept(this);
-            _out.printf(".%s", selector._field);
+        void visit(CompositeSelector selector) {
+            selector._left.accept(this);
+            _out.printf(".");
+            selector._right.accept(this);
         }
 
         @Override
         void visit(IndexSelector selector) {
-            selector._selector.accept(this);
-            _out.printf("[");
+            _out.printf("%s[", selector._symbol);
             selector._index.accept(this);
-            _out.printf("] ");
+            _out.printf("]");
         }
 
         @Override
         void visit(RangeSelector selector) {
-            selector._selector.accept(this);
+            _out.printf("%s[", selector._symbol);
             _out.printf("[");
             selector._left.accept(this);
             _out.printf("..");
             selector._right.accept(this);
-            _out.printf("] ");
+            _out.printf("]");
         }
 
         @Override

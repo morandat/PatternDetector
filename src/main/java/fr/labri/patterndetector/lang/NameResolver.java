@@ -19,7 +19,8 @@ public class NameResolver {
         new NameFixer().visit(_rule);
     }
 
-    void collectName () {
+    void collectName () { // FIXME should be recusive
+        // TODO  move _names by level (i.e. pattern ?)
         new PatternVisitor(){ // Add aliases
             @Override
             void visit(Pattern pattern) {
@@ -84,7 +85,7 @@ public class NameResolver {
         }
 
         @Override
-        void visit(FieldSelector selector) {
+        void visit(CompositeSelector selector) {
             // FIXME
         }
 
