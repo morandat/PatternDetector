@@ -75,6 +75,16 @@ public abstract class AbstractRule implements IRule {
     }
 
     @Override
+    public IRule setPredicates(ArrayList<IPredicate> predicates) {
+        if (_predicates == null)
+            _predicates = new ArrayList<>();
+
+        _predicates.addAll(predicates);
+
+        return this;
+    }
+
+    @Override
     public String toString() {
         return RuleStringifier.stringify(this);
     }

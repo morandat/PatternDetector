@@ -1,0 +1,4 @@
+search: q v+ a
+# v[0].referrer = q.url
+# v[i].referrer = v[i-1].url
+# a[i].referrer = v[last].url

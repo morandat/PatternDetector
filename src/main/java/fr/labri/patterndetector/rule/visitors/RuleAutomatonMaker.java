@@ -2,11 +2,12 @@ package fr.labri.patterndetector.rule.visitors;
 
 import fr.labri.patterndetector.automaton.*;
 import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
+import fr.labri.patterndetector.executor.predicates.IPredicate;
 import fr.labri.patterndetector.rule.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Set;
+import java.util.ArrayList;
 
 /**
  * Created by wbraik on 20/11/15.
@@ -34,21 +35,7 @@ public final class RuleAutomatonMaker {
         @Override
         public void visit(Atom atom) {
             try {
-                IState i = new State(); // Initial state
-                IState f = new State(); // Final state
-                if (atom.getAction() != null)
-                    f.addAction(atom.getAction());
-
-                i.registerTransition(f, atom.getEventType(), TransitionType.TRANSITION_APPEND)
-                        .setPredicates(atom.getPredicates())
-                        .setMatchBufferKey(atom.getName());
-
-                IRuleAutomaton automaton = new RuleAutomaton();
-                automaton.setInitialState(i);
-                automaton.addFinalState(f);
-                automaton.addConnectionState(f);
-
-                _automaton = automaton;
+                _automaton = makeAtomAutomaton(atom.getName(), atom.getEventType(), atom.getPredicates(), atom.getAction());
             } catch (RuleAutomatonException e) {
                 logger.error("Compilation failed : " + e.getMessage() + "(" + atom + ")\n"
                         + e.getRuleAutomaton());
@@ -125,7 +112,7 @@ public final class RuleAutomatonMaker {
         @Override
         public void visit(Kleene kleene) {
             try {
-                IRuleAutomaton baseAutomaton = RuleAutomatonMaker.makeAutomaton(new Atom(kleene.getEventType()));
+                IRuleAutomaton baseAutomaton = makeAtomAutomaton(kleene.getName(), kleene.getEventType(), kleene.getPredicates(), kleene.getAction());
                 IRuleAutomaton automaton = new RuleAutomaton();
 
                 // The initial state of the base component becomes the initial state of the Kleene automaton.
@@ -217,6 +204,25 @@ public final class RuleAutomatonMaker {
 
         public IRuleAutomaton getAutomaton() {
             return _automaton;
+        }
+
+        private IRuleAutomaton makeAtomAutomaton(String patternId, String eventType, ArrayList<IPredicate> predicates, Runnable action) throws RuleAutomatonException {
+            IState i = new State(); // Initial state
+            IState f = new State(); // Final state
+
+            if (action != null)
+                f.addAction(action);
+
+            i.registerTransition(f, eventType, TransitionType.TRANSITION_APPEND)
+                    .setPredicates(predicates)
+                    .setMatchBufferKey(patternId);
+
+            IRuleAutomaton automaton = new RuleAutomaton();
+            automaton.setInitialState(i);
+            automaton.addFinalState(f);
+            automaton.addConnectionState(f);
+
+            return automaton;
         }
     }
 }

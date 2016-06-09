@@ -1,16 +1,13 @@
 package fr.labri.patterndetector.executor;
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
-import fr.labri.patterndetector.executor.predicates.FieldKleene;
-import fr.labri.patterndetector.executor.predicates.IntPredicateArity1;
+import fr.labri.patterndetector.executor.predicates.FieldAtom;
+import fr.labri.patterndetector.executor.predicates.FieldKleeneDynamicIndex;
 import fr.labri.patterndetector.executor.predicates.IntPredicateArity2;
-import fr.labri.patterndetector.executor.predicates.StringPredicateArity1;
 import fr.labri.patterndetector.rule.visitors.RuleAutomatonMaker;
 import fr.labri.patterndetector.rule.visitors.RuleNamer;
 import fr.labri.patterndetector.rule.visitors.RulePrinter;
 import fr.labri.patterndetector.rule.*;
-import fr.labri.patterndetector.types.IntegerValue;
-import fr.labri.patterndetector.types.StringValue;
 
 /**
  * Created by William Braik on 6/22/2015.
@@ -38,13 +35,15 @@ public class Main {
         IRuleAutomaton dfa = nfa.powerset();
         System.out.println(dfa);
 
-        IRule k = new FollowedBy(
-                new Kleene("a")
-                        .addPredicate(new IntPredicateArity2(
-                                new FieldKleene("0", "x", 1),
-                                new FieldKleene("0", "x", 2),
-                                (x, y) -> x.getValue() + 1 == y.getValue())),
-                "b");
+        IRule k = new FollowedBy("a",
+                new FollowedBy(
+                        new Kleene("b")
+                                .addPredicate(new IntPredicateArity2(
+                                        new FieldAtom("0", "x"),
+                                        new FieldKleeneDynamicIndex("1", "x", i -> i),
+                                        (x, y) -> x.getValue() == y.getValue())),
+                        "c"));
+
         RuleNamer.nameRules(k);
         RulePrinter.printRule(System.out, k);
     }
