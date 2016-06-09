@@ -8,32 +8,43 @@ import java.util.Map;
 public class NameResolver {
 
     final Rule _rule;
-    Map<String, Pattern> _names = new HashMap<>();
+    Map<Pattern, Map<String, Pattern>> _names = new HashMap<>();
 
     NameResolver(Rule rule) {
         _rule = rule;
     }
 
     void resolve() {
-        collectName();
-        new NameFixer().visit(_rule);
+        collectName(null);
+        for (Expression expr: _rule._constraints)
+            expr.accept(new NameFixer(null, expr));
     }
 
-    void collectName () { // FIXME should be recusive
+    Map<String, Pattern> getNames(Pattern p) {
+        Map<String, Pattern> names = _names.get(p);
+        if (names == null) {
+            names = new HashMap<>();
+            _names.put(p, names);
+        }
+        return names;
+    }
+
+    void collectName (Pattern context) { // FIXME should be recusive
         // TODO  move _names by level (i.e. pattern ?)
         new PatternVisitor(){ // Add aliases
             @Override
             void visit(Pattern pattern) {
                 for (String name: pattern._names) {
-                    if (_names.containsKey(name))
+                    Map<String, Pattern> names = getNames(context);
+                    if (names.containsKey(name))
                         throw new RuntimeException("Name conflict on: " + name);
-                    _names.put(name, pattern);
+                    names.put(name, pattern);
                 }
             }
         }.visit(_rule);
 
-        final Map<String, Pattern> unique = new HashMap<>();
         new PatternVisitor() { // add direct name if it's unique
+            final Map<String, Pattern> unique = new HashMap<>();
             void addName(String name, Pattern pattern) {
                 if (unique.containsKey(name))
                     unique.put(name, null); // discard name
@@ -51,22 +62,38 @@ public class NameResolver {
                 if (composite._patterns.size() == 1) {
                     composite._patterns.get(0).accept(this);
                 }
+                for (Pattern child: composite._patterns) {
+                    collectName(composite); // FIXME bad way to recurse, but it works
+                }
             }
 
             @Override
             void visit(KleenePattern kleene) {
                 kleene._pattern.accept(this);
             }
-        }.visit(_rule);
 
-        for (Map.Entry<String, Pattern> entry: unique.entrySet()) {
-            String name = entry.getKey();
-            if (!_names.containsKey(name) && entry.getValue() != null)
-                _names.put(name, entry.getValue());
-        }
+            @Override
+            void visit(Rule r) {
+                super.visit(r);
+                for (Map.Entry<String, Pattern> entry: unique.entrySet()) {
+                    String name = entry.getKey();
+                    Map<String, Pattern> names = getNames(context);
+                    if (!names.containsKey(name) && entry.getValue() != null)
+                        names.put(name, entry.getValue());
+                }
+            }
+        }.visit(_rule);
     }
 
     class NameFixer extends ExpressionVisitor {
+        final Pattern _context;
+        final Expression _expr;
+
+        NameFixer(Pattern context, Expression expr) {
+            _context = context;
+            _expr = expr;
+        }
+
         @Override
         void visit(FunctionCall call) {
             for (Expression arg: call._args)
@@ -75,8 +102,9 @@ public class NameResolver {
 
         @Override
         void visit(RangeSelector selector) {
-            selector._left.accept(this);
-            selector._right.accept(this);
+            selector._reference = findPattern(selector._symbol);
+            selector._left.accept(new NameFixer(selector._reference, _expr));
+            selector._right.accept(new NameFixer(selector._reference, _expr));
         }
 
         @Override
@@ -86,12 +114,20 @@ public class NameResolver {
 
         @Override
         void visit(CompositeSelector selector) {
-            // FIXME
+            selector._left.accept(this);
+            selector._right.accept(new NameFixer(selector._right._reference, _expr));
         }
 
         @Override
         void visit(SimpleSelector selector) {
-            selector._reference = _names.get(selector._name);
+            selector._reference = findPattern(selector._name);
+        }
+
+        Pattern findPattern(String name) {
+            Pattern reference = getNames(_context).get(name);
+            if (reference == null)
+                throw new RuntimeException(String.format("Unknown reference to %s in %s", name, _expr));
+            return reference;
         }
     }
 }

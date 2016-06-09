@@ -70,7 +70,7 @@ Expression arg
     / simple_arith
     ;
 
-Selector selector
+Selector selector // FIXME the last should be a field, this we must left recurse instead of right
     = s:SYMBOL r:range? right:(void:'.' selector)? { yyValue = newSelector(s, r, right); }
     ;
 

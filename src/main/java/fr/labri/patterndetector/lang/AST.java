@@ -264,11 +264,11 @@ public class AST {
     }
 
     public static abstract class Selector extends Expression {
+        public Pattern _reference;
     }
 
     public static class SimpleSelector extends Selector {
         public final String _name;
-        public Pattern _reference;
 
         SimpleSelector(String reference) {
             _name = reference;
