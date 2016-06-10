@@ -2,15 +2,14 @@ package fr.labri.patterndetector.executor;
 
 import fr.labri.patterndetector.automaton.ClockGuard;
 import fr.labri.patterndetector.automaton.IState;
-import fr.labri.patterndetector.executor.predicates.IField;
-import fr.labri.patterndetector.executor.predicates.IPredicate;
-import fr.labri.patterndetector.rule.RuleType;
+import fr.labri.patterndetector.executor.predicates.*;
 import fr.labri.patterndetector.types.IValue;
 import fr.labri.patterndetector.types.IntegerValue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.IntFunction;
 import java.util.stream.Stream;
 
 /**
@@ -76,8 +75,24 @@ public class DeterministicRunContext {
             ArrayList<IValue<?>> values = new ArrayList<>();
 
             for (IField field : fields) {
-                IValue<?> value = resolveField(field, currentMatchBufferKey, currentEvent);
-                values.add(value);
+                IValue<?> value;
+
+                // FIXME(bad code)
+                if (field instanceof FieldKleeneDynamicIndex)
+                    value = resolveFieldKleeneDynamicIndex((FieldKleeneDynamicIndex) field, currentMatchBufferKey, currentEvent);
+                else if (field instanceof FieldKleeneStaticIndex)
+                    value = resolveFieldKleeneStaticIndex((FieldKleeneStaticIndex) field, currentMatchBufferKey, currentEvent);
+                else if (field instanceof FieldKleeneRange)
+                    value = resolveFieldKleeneRange((FieldKleeneRange) field, currentMatchBufferKey, currentEvent);
+                else if (field instanceof FieldAtom)
+                    value = resolveFieldAtom((FieldAtom) field, currentMatchBufferKey, currentEvent);
+                else
+                    throw new RuntimeException("Field type not supported");
+
+                if (value != null)
+                    values.add(value);
+                else
+                    return false;
             }
 
             IValue<?>[] valuesArr = new IValue<?>[values.size()];
@@ -109,29 +124,98 @@ public class DeterministicRunContext {
         return true;
     }
 
-    private IValue<?> resolveField(IField field, String currentMatchBufferKey, IEvent currentEvent) {
+    private IValue<?> resolveFieldAtom(FieldAtom field, String currentMatchBufferKey, IEvent currentEvent) {
         String patternKey = field.getPatternId();
         String patternField = field.getFieldName();
-        RuleType patternType = field.getPatternType();
 
-        if (patternType.equals(RuleType.ATOM)) {
-            if (patternKey.equals(currentMatchBufferKey)) {
-                return currentEvent.getPayload().get(patternField);
-            } else {
-                ArrayList<IEvent> matchBuffer = getMatchBuffer(patternKey);
-                if (matchBuffer != null) {
-                    IEvent event = matchBuffer.get(0); // atoms only have one event in the matchbuffer, so this works
+        if (patternKey.equals(currentMatchBufferKey)) {
+            return currentEvent.getPayload().get(patternField);
+        } else {
+            ArrayList<IEvent> matchBuffer = getMatchBuffer(patternKey);
+            IEvent event = matchBuffer.get(0); // atoms only have one event in the matchbuffer, so this works
 
-                    return event.getPayload().get(patternField);
+            return event.getPayload().get(patternField);
+        }
+    }
+
+    private IValue<?> resolveFieldKleeneDynamicIndex(FieldKleeneDynamicIndex field, String currentMatchBufferKey, IEvent currentEvent) {
+        String patternKey = field.getPatternId();
+        String patternField = field.getFieldName();
+        IntFunction<Integer> indexFunc = field.getIndexFunc();
+
+        if (patternKey.equals(currentMatchBufferKey)) {
+            ArrayList<IEvent> matchBuffer = getMatchBuffer(patternKey);
+
+            if (matchBuffer == null) { // first event of the current kleene seq
+                int currentIndex = 0;
+                int fetchIndex = indexFunc.apply(currentIndex);
+
+                if (fetchIndex == currentIndex) {
+                    return currentEvent.getPayload().get(patternField);
                 } else {
-                    throw new RuntimeException("Could not resolve field : " + field + " (No matchbuffer found)"); // FIXME?(is this really a runtime exception?)
+                    return null; // TODO when can't resolve i-1 yet
+                }
+            } else { // at least one event already in current kleene seq
+                int currentIndex = matchBuffer.size(); // index of the currently processed event (not yet appended)
+                int fetchIndex = indexFunc.apply(currentIndex);
+
+                if (fetchIndex < 0) {
+                    return null; // TODO can't resolve this index yet
+                } else if (currentIndex == fetchIndex) {
+                    return currentEvent.getPayload().get(patternField);
+                } else {
+                    IEvent event = matchBuffer.get(fetchIndex);
+                    return event.getPayload().get(patternField);
                 }
             }
-        } else if (patternType.equals(RuleType.KLEENE)) {
-            return new IntegerValue(2);
         } else {
-            throw new RuntimeException("Could not resolve field : " + field + " (Unknown pattern type)"); // FIXME?(is this really a runtime exception?)
+            throw new RuntimeException("Dynamic index selectors on past kleene sequences not supported");
         }
+    }
+
+    private IValue<?> resolveFieldKleeneStaticIndex(FieldKleeneStaticIndex field, String currentMatchBufferKey, IEvent currentEvent) {
+        String patternKey = field.getPatternId();
+        String patternField = field.getFieldName();
+        int index = field.getIndex();
+
+        if (patternKey.equals(currentMatchBufferKey)) {
+            ArrayList<IEvent> matchBuffer = getMatchBuffer(patternKey);
+
+            if (matchBuffer == null) { // first event of the current kleene seq
+                int currentIndex = 0;
+
+                if (index == 0) {
+                    return currentEvent.getPayload().get(patternField);
+                } else {
+                    return null; // TODO can't resolve this index because there's only one event
+                }
+            } else { // at least one event already in current kleene seq
+                int currentIndex = matchBuffer.size(); // index of the currently processed event (not yet appended)
+
+                IEvent event = matchBuffer.get(index);
+                return event.getPayload().get(patternField);
+            }
+        } else { // past kleene sequence
+            ArrayList<IEvent> matchBuffer = getMatchBuffer(patternKey);
+
+            IEvent event = matchBuffer.get(index);
+            return event.getPayload().get(patternField);
+        }
+    }
+
+    private IValue<?> resolveFieldKleeneRange(FieldKleeneRange field, String currentMatchBufferKey, IEvent currentEvent) {
+        String patternKey = field.getPatternId();
+        String patternField = field.getFieldName();
+        int startIndex = field.getStartIndex();
+        int endIndex = field.getEndIndex();
+
+        ArrayList<IEvent> matchBuffer = getMatchBuffer(patternKey);
+
+        if (startIndex < 0 || startIndex > matchBuffer.size() - 1 || endIndex < 0 || endIndex > matchBuffer.size() - 1
+                || startIndex > endIndex)
+            throw new RuntimeException("Can't resolve field in kleene : bad range spec");
+
+        throw new UnsupportedOperationException("Not implemented yet"); // TODO
     }
 
     public String toString() {

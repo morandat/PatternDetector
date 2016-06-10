@@ -42,6 +42,8 @@ public interface IRule {
 
     IRule addPredicate(IPredicate predicate);
 
+    IRule setPredicates(ArrayList<IPredicate> predicates);
+
     void accept(IRuleVisitor visitor);
 
     default IAtom getLeftmostAtom() {
