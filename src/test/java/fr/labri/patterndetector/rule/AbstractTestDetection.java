@@ -1,7 +1,6 @@
 package fr.labri.patterndetector.rule;
 
-import fr.labri.patterndetector.executor.*;
-import fr.labri.patterndetector.rule.*;
+import fr.labri.patterndetector.runtime.*;
 import org.junit.*;
 import org.junit.runners.Parameterized;
 

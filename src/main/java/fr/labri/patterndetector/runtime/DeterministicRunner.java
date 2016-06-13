@@ -1,4 +1,4 @@
-package fr.labri.patterndetector.executor;
+package fr.labri.patterndetector.runtime;
 
 /**
  * Created by wbraik on 5/12/2016.
@@ -36,18 +36,12 @@ public final class DeterministicRunner extends AbstractAutomatonRunner {
             reset();
         } else {
             if (_context.testPredicates(t.getPredicates(), t.getMatchbufferKey(), e)) {
-                // TODO check clock constraints
-
                 logger.debug("Transitioning : " + t + " (" + e + ")");
 
                 // Save current event in match buffer or discard it depending on the transition's type
                 switch (t.getType()) {
                     case TRANSITION_APPEND:
-                        // update matchbuffer
                         _context.appendEvent(e, t.getMatchbufferKey());
-
-                        // update event clock
-                        // FIXME _clocks.put(e.getType(), e.getTimestamp());
                         break;
 
                     case TRANSITION_DROP:

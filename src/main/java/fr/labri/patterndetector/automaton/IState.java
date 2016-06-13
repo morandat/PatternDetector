@@ -1,12 +1,10 @@
 package fr.labri.patterndetector.automaton;
 
-import fr.labri.patterndetector.executor.IEvent;
+import fr.labri.patterndetector.runtime.IEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
 
 /**
  * Created by William Braik on 6/28/2015.

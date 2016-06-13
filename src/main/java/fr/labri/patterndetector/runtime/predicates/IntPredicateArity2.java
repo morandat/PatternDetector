@@ -1,8 +1,7 @@
-package fr.labri.patterndetector.executor.predicates;
+package fr.labri.patterndetector.runtime.predicates;
 
 import fr.labri.patterndetector.types.IValue;
 import fr.labri.patterndetector.types.IntegerValue;
-import fr.labri.patterndetector.types.StringValue;
 
 import java.util.ArrayList;
 import java.util.function.BiPredicate;
@@ -22,6 +21,7 @@ public class IntPredicateArity2 implements IPredicate {
         _predicate = predicate;
     }
 
+    @Override
     public ArrayList<IField> getFields() {
         ArrayList<IField> fields = new ArrayList<>();
         fields.add(_field1);

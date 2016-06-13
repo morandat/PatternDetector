@@ -1,8 +1,6 @@
 package fr.labri.patterndetector.automaton;
 
 import fr.labri.patterndetector.automaton.exception.*;
-import fr.labri.patterndetector.executor.IEvent;
-import fr.labri.patterndetector.executor.IPatternObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

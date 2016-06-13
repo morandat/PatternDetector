@@ -1,4 +1,4 @@
-package fr.labri.patterndetector.executor;
+package fr.labri.patterndetector.runtime;
 
 import fr.labri.patterndetector.automaton.IState;
 
@@ -10,7 +10,7 @@ import java.util.stream.Stream;
  * <p>
  * A non-deterministic context is essentially a collection of concurrent deterministic contexts
  */
-public class NonDeterministicRunContext {
+public class NonDeterministicRunContext implements IRunContext {
 
     private ArrayList<DeterministicRunContext> _subContexts;
 
@@ -39,6 +39,6 @@ public class NonDeterministicRunContext {
         }
 
         return matchBuffer.stream()
-                .sorted((e1, e2) -> new Long(e1.getTimestamp()).compareTo(e2.getTimestamp())); // make sure it's sorted chronologically
+                .sorted((e1, e2) -> new Long(e1.getTimestamp()).compareTo(e2.getTimestamp())); // make sure it's sorted by timestamp
     }
 }

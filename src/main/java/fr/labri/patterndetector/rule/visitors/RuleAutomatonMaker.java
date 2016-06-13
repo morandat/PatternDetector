@@ -2,7 +2,7 @@ package fr.labri.patterndetector.rule.visitors;
 
 import fr.labri.patterndetector.automaton.*;
 import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
-import fr.labri.patterndetector.executor.predicates.IPredicate;
+import fr.labri.patterndetector.runtime.predicates.IPredicate;
 import fr.labri.patterndetector.rule.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

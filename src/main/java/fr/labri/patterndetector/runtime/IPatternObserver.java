@@ -1,6 +1,4 @@
-package fr.labri.patterndetector.executor;
-
-import fr.labri.patterndetector.automaton.IState;
+package fr.labri.patterndetector.runtime;
 
 import java.util.Collection;
 

@@ -1,12 +1,5 @@
-package fr.labri.patterndetector.executor;
+package fr.labri.patterndetector.runtime;
 
-import fr.labri.patterndetector.automaton.ClockGuard;
-import fr.labri.patterndetector.automaton.IState;
-import fr.labri.patterndetector.executor.predicates.IPredicate;
-import fr.labri.patterndetector.types.IValue;
-import fr.labri.patterndetector.types.IntegerValue;
-
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**

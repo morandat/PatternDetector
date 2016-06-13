@@ -1,8 +1,6 @@
 package fr.labri.patterndetector.automaton;
 
-import fr.labri.patterndetector.executor.predicates.IPredicate;
-import fr.labri.patterndetector.types.IValue;
-import fr.labri.patterndetector.types.IntegerValue;
+import fr.labri.patterndetector.runtime.predicates.IPredicate;
 
 import java.util.ArrayList;
 

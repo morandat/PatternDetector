@@ -1,4 +1,4 @@
-package fr.labri.patterndetector.executor;
+package fr.labri.patterndetector.runtime;
 /**
  * Created by William Braik on 6/22/2015.
  * <p>
@@ -6,7 +6,6 @@ package fr.labri.patterndetector.executor;
  */
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
-import fr.labri.patterndetector.automaton.IState;
 import fr.labri.patterndetector.automaton.exception.*;
 import fr.labri.patterndetector.rule.visitors.RuleAutomatonMaker;
 import fr.labri.patterndetector.rule.IRule;

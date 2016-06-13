@@ -1,10 +1,10 @@
 package fr.labri.patterndetector.rule;
 
-import fr.labri.patterndetector.executor.AutomatonRunnerType;
-import fr.labri.patterndetector.executor.Event;
-import fr.labri.patterndetector.executor.IEvent;
-import fr.labri.patterndetector.executor.predicates.FieldAtom;
-import fr.labri.patterndetector.executor.predicates.StringPredicateArity2;
+import fr.labri.patterndetector.runtime.AutomatonRunnerType;
+import fr.labri.patterndetector.runtime.Event;
+import fr.labri.patterndetector.runtime.IEvent;
+import fr.labri.patterndetector.runtime.predicates.FieldAtom;
+import fr.labri.patterndetector.runtime.predicates.StringPredicateArity2;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 

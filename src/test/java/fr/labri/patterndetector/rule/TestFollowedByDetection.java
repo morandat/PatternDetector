@@ -1,8 +1,8 @@
 package fr.labri.patterndetector.rule;
 
-import fr.labri.patterndetector.executor.AutomatonRunnerType;
-import fr.labri.patterndetector.executor.Event;
-import fr.labri.patterndetector.executor.IEvent;
+import fr.labri.patterndetector.runtime.AutomatonRunnerType;
+import fr.labri.patterndetector.runtime.Event;
+import fr.labri.patterndetector.runtime.IEvent;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 

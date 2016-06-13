@@ -1,4 +1,4 @@
-package fr.labri.patterndetector.executor;
+package fr.labri.patterndetector.runtime;
 
 import fr.labri.patterndetector.types.IValue;
 

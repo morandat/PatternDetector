@@ -1,6 +1,6 @@
 package fr.labri.patterndetector.automaton;
 
-import fr.labri.patterndetector.executor.IEvent;
+import fr.labri.patterndetector.runtime.IEvent;
 
 import java.util.*;
 
