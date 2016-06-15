@@ -88,10 +88,22 @@ public class NameResolver {
     class NameFixer extends ExpressionVisitor {
         final Pattern _context;
         final Expression _expr;
+        final boolean _canBeField;
+        final boolean _canBeIndex;
 
         NameFixer(Pattern context, Expression expr) {
+            this(context, expr, false);
+        }
+
+        public NameFixer(Pattern context, Expression expr, boolean canBeField) {
+            this(context, expr, canBeField, false);
+        }
+
+        public NameFixer(Pattern context, Expression expr, boolean canBeField, boolean canBeIndex) {
             _context = context;
             _expr = expr;
+            _canBeField = canBeField;
+            _canBeIndex = canBeIndex;
         }
 
         @Override
@@ -103,31 +115,56 @@ public class NameResolver {
         @Override
         void visit(RangeSelector selector) {
             selector._reference = findPattern(selector._symbol);
-            selector._left.accept(new NameFixer(selector._reference, _expr));
-            selector._right.accept(new NameFixer(selector._reference, _expr));
+            selector._left.accept(new NameFixer(selector._reference, _expr, false, true));
+            selector._right.accept(new NameFixer(selector._reference, _expr, false, true));
         }
 
         @Override
         void visit(IndexSelector selector) {
-            selector._index.accept(this);
+            selector._reference = findPattern(selector._symbol);
+            selector._index.accept(new NameFixer(selector._reference, _expr, false, true));
         }
 
         @Override
         void visit(CompositeSelector selector) {
             selector._left.accept(this);
-            selector._right.accept(new NameFixer(selector._right._reference, _expr));
+            selector._right.accept(new NameFixer(selector._right._reference, _expr, selector._right instanceof SimpleSelector));
         }
 
         @Override
         void visit(SimpleSelector selector) {
-            selector._reference = findPattern(selector._name);
+            try {
+                selector._reference = findPattern(selector._name);
+            } catch (NameNotFoundException e) {
+                if (_canBeField)
+                    selector._field = true;
+                else if(_canBeIndex && selector._name.equals("i"))
+                    selector._isIndex = true;
+                else
+                    throw e;
+            }
         }
 
         Pattern findPattern(String name) {
             Pattern reference = getNames(_context).get(name);
             if (reference == null)
-                throw new RuntimeException(String.format("Unknown reference to %s in %s", name, _expr));
+                throw new NameNotFoundException(name, _expr);
             return reference;
+        }
+    }
+
+    static class NameNotFoundException extends RuntimeException {
+        private final String _name;
+        private final Expression _expr;
+
+        public NameNotFoundException(String name, Expression expr) {
+            _name = name;
+            _expr = expr;
+        }
+
+        @Override
+        public String getMessage() {
+            return String.format("Unknown reference to %s in %s", _name, _expr);
         }
     }
 }
