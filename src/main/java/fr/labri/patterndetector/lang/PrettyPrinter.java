@@ -57,9 +57,12 @@ public class PrettyPrinter {
 
         @Override
         void visit(SimpleSelector selector) {
-            _out.printf("%s", selector._name);
-            if (_debug && selector._field  || selector._index)
-                _out.printf("{%s}", selector._field ? "f" : selector._index ? "i" : "");
+            if (_debug && selector._field)
+                _out.printf("{%s}", selector._name);
+            else if (_debug && selector._index)
+                _out.printf("<%s>", selector._name);
+            else
+                _out.printf("%s", selector._name);
         }
 
         @Override
