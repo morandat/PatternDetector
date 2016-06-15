@@ -37,6 +37,6 @@ abstract public class AbstractTestDetection {
                 });
 
         detector.detect(generate());
-        //assertThat(found.get(), is(equalTo(1))); //FIXME
+        assertThat("Should find all events", found.get(), is(equalTo(_expectedPattern.isEmpty() ? 0 : 1)));
     }
 }
