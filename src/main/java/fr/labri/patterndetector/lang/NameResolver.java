@@ -139,7 +139,7 @@ public class NameResolver {
                 if (_canBeField)
                     selector._field = true;
                 else if(_canBeIndex && selector._name.equals("i"))
-                    selector._isIndex = true;
+                    selector._index = true;
                 else
                     throw e;
             }
