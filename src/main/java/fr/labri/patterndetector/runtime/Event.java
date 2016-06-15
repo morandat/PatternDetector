@@ -1,6 +1,5 @@
-package fr.labri.patterndetector.executor;
+package fr.labri.patterndetector.runtime;
 
-import fr.labri.patterndetector.types.AbstractValue;
 import fr.labri.patterndetector.types.IValue;
 import fr.labri.patterndetector.types.IntegerValue;
 import fr.labri.patterndetector.types.StringValue;

@@ -1,4 +1,4 @@
-import fr.labri.patterndetector.executor.*;
+import fr.labri.patterndetector.runtime.*;
 import fr.labri.patterndetector.rule.FollowedBy;
 import fr.labri.patterndetector.rule.IRule;
 import fr.labri.patterndetector.rule.Kleene;

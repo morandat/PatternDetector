@@ -1,4 +1,4 @@
-package fr.labri.patterndetector.executor;
+package fr.labri.patterndetector.runtime;
 
 /**
  * Created by wbraik on 5/18/2016.

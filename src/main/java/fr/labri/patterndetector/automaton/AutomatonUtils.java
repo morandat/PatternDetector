@@ -1,13 +1,11 @@
 package fr.labri.patterndetector.automaton;
 
 import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
-import fr.labri.patterndetector.executor.predicates.IPredicate;
-import fr.labri.patterndetector.types.IntegerValue;
+import fr.labri.patterndetector.runtime.predicates.IPredicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**

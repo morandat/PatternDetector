@@ -1,22 +1,16 @@
-package fr.labri.patterndetector.executor;
+package fr.labri.patterndetector.runtime;
 
 /**
  * Created by wbraik on 5/12/2016.
  */
 
-import fr.labri.patterndetector.automaton.ClockGuard;
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.automaton.IState;
 import fr.labri.patterndetector.automaton.ITransition;
-import fr.labri.patterndetector.executor.predicates.IPredicate;
-import fr.labri.patterndetector.types.IValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Fork and play, no reset
@@ -45,7 +39,6 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
                 logger.debug("Can't transition (" + e + ")");
             } else {
                 if (currentSubContext.testPredicates(t.getPredicates(), t.getMatchbufferKey(), e)) {
-                    // TODO check clock constraints
                     // TODO Any NACs to start ?
 
                     logger.debug("Transitioning : " + t + " (" + e + ")");
@@ -61,8 +54,6 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
 
                                 // Update match buffer
                                 newSubContext.appendEvent(e, t.getMatchbufferKey());
-
-                                // FIXME _clocks.put(e.getType(), e.getTimestamp()); // Update event clock
                             }
 
                             // function callbacks

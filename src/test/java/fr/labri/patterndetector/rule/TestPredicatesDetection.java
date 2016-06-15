@@ -1,9 +1,9 @@
 package fr.labri.patterndetector.rule;
 
-import fr.labri.patterndetector.executor.AutomatonRunnerType;
-import fr.labri.patterndetector.executor.Event;
-import fr.labri.patterndetector.executor.IEvent;
-import fr.labri.patterndetector.executor.predicates.*;
+import fr.labri.patterndetector.runtime.AutomatonRunnerType;
+import fr.labri.patterndetector.runtime.Event;
+import fr.labri.patterndetector.runtime.IEvent;
+import fr.labri.patterndetector.runtime.predicates.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -121,7 +121,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                         },
 
                         // TODO(fail)
-                        /*{
+                        {
                                 " Detect Kleene(B) followed by C with Kleene predicates ",
                                 new FollowedBy(
                                         new Kleene("b")
@@ -137,7 +137,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                         new Event("b", 5),
                                         new Event("c", 7)),
                                 AutomatonRunnerType.Deterministic
-                        },*/
+                        },
                 });
     }
 }

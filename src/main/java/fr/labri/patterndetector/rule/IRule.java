@@ -1,9 +1,7 @@
 package fr.labri.patterndetector.rule;
 
-import fr.labri.patterndetector.executor.predicates.IPredicate;
+import fr.labri.patterndetector.runtime.predicates.IPredicate;
 import fr.labri.patterndetector.rule.visitors.IRuleVisitor;
-import fr.labri.patterndetector.types.IValue;
-import fr.labri.patterndetector.types.IntegerValue;
 
 import java.util.ArrayList;
 
