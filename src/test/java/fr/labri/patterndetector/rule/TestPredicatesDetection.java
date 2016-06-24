@@ -34,7 +34,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                         {
                                 "Detect A, with simple predicate",
                                 new Atom("a")
-                                        .addPredicate(new IntPredicateArity1(
+                                        .addPredicate(new LongPredicateArity1(
                                         new FieldAtom("0", "x"),
                                         x -> x.getValue() > 5)),
                                 Arrays.asList(
@@ -45,7 +45,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                         {
                                 "NOT Detect A, with simple predicate",
                                 new Atom("a")
-                                        .addPredicate(new IntPredicateArity1(
+                                        .addPredicate(new LongPredicateArity1(
                                         new FieldAtom("0", "x"),
                                         x -> x.getValue() > 12)),
                                 new ArrayList<>(),
@@ -57,7 +57,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                 new FollowedBy(
                                         "a",
                                         new Atom("b")
-                                                .addPredicate(new IntPredicateArity2(
+                                                .addPredicate(new LongPredicateArity2(
                                                         new FieldAtom("0", "x"),
                                                         new FieldAtom("1", "y"),
                                                         (x, y) -> x.getValue() == y.getValue()))),
@@ -72,7 +72,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                 new FollowedBy(
                                         "a",
                                         new Atom("b")
-                                                .addPredicate(new IntPredicateArity2(
+                                                .addPredicate(new LongPredicateArity2(
                                                         new FieldAtom("0", "x"),
                                                         new FieldAtom("1", "y"),
                                                         (x, y) -> x.getValue() != y.getValue()))),
@@ -87,7 +87,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                 new FollowedBy("a",
                                         new FollowedBy(
                                                 new Kleene("b")
-                                                        .addPredicate(new IntPredicateArity2(
+                                                        .addPredicate(new LongPredicateArity2(
                                                                 new FieldAtom("0", "x"),
                                                                 new FieldKleeneDynamicIndex("1", "x", i -> i),
                                                                 (x, y) -> x.getValue() == y.getValue())),
@@ -106,7 +106,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                         new FollowedBy(
                                                 new Kleene("b"),
                                                 new Atom("c")
-                                                        .addPredicate(new IntPredicateArity2(
+                                                        .addPredicate(new LongPredicateArity2(
                                                                 new FieldAtom("2", "y"),
                                                                 new FieldKleeneStaticIndex("1", "y", 0),
                                                                 (x, y) -> x.getValue() + 1 == y.getValue())))),
@@ -125,7 +125,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                 " Detect Kleene(B) followed by C with Kleene predicates ",
                                 new FollowedBy(
                                         new Kleene("b")
-                                                .addPredicate(new IntPredicateArity2(
+                                                .addPredicate(new LongPredicateArity2(
                                                         new FieldKleeneDynamicIndex("0", "x", i -> i),
                                                         new FieldKleeneDynamicIndex("0", "x", i -> i - 1),
                                                         (x, y) -> x.getValue() == y.getValue())),

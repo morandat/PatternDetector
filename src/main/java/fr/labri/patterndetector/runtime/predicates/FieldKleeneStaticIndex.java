@@ -11,10 +11,10 @@ import java.util.Optional;
  */
 public class FieldKleeneStaticIndex extends AbstractField {
 
-    private int _index;
+    protected int _index;
 
     public FieldKleeneStaticIndex(String patternId, String fieldName, int index) {
-        super(FieldType.FIELD_KLEENE_STATIC_INDEX, patternId, fieldName);
+        super(patternId, fieldName);
         _index = index;
     }
 

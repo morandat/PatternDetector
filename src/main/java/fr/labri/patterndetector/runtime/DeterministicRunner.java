@@ -72,7 +72,6 @@ public final class DeterministicRunner extends AbstractAutomatonRunner {
     private void reset() {
         _context.updateCurrentState(_automaton.getInitialState());
         _context.clearMatchBuffers();
-        // TODO _clocks.clear();
 
         logger.debug("Automaton reset");
     }

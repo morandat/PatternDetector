@@ -1,7 +1,7 @@
 package fr.labri.patterndetector.runtime.predicates;
 
 import fr.labri.patterndetector.types.IValue;
-import fr.labri.patterndetector.types.IntegerValue;
+import fr.labri.patterndetector.types.LongValue;
 
 import java.util.ArrayList;
 import java.util.function.BiPredicate;
@@ -9,13 +9,13 @@ import java.util.function.BiPredicate;
 /**
  * Created by wbraik on 5/18/2016.
  */
-public class IntPredicateArity2 implements IPredicate {
+public class LongPredicateArity2 implements IPredicate {
 
     private IField _field1;
     private IField _field2;
-    private BiPredicate<IntegerValue, IntegerValue> _predicate;
+    private BiPredicate<LongValue, LongValue> _predicate;
 
-    public IntPredicateArity2(IField field1, IField field2, BiPredicate<IntegerValue, IntegerValue> predicate) {
+    public LongPredicateArity2(IField field1, IField field2, BiPredicate<LongValue, LongValue> predicate) {
         _field1 = field1;
         _field2 = field2;
         _predicate = predicate;
@@ -35,10 +35,10 @@ public class IntPredicateArity2 implements IPredicate {
         if (values.length > 2) {
             throw new RuntimeException("Predicate : too many values to evaluate (arity 2, " + values.length + "values");
         }
-        if (!(values[0] instanceof IntegerValue) || !(values[1] instanceof IntegerValue)) {
+        if (!(values[0] instanceof LongValue) || !(values[1] instanceof LongValue)) {
             throw new RuntimeException("Predicate : wrong value types for evaluation");
         }
 
-        return _predicate.test((IntegerValue) values[0], (IntegerValue) values[1]);
+        return _predicate.test((LongValue) values[0], (LongValue) values[1]);
     }
 }

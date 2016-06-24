@@ -1,7 +1,7 @@
 package fr.labri.patterndetector.runtime;
 
 import fr.labri.patterndetector.types.IValue;
-import fr.labri.patterndetector.types.IntegerValue;
+import fr.labri.patterndetector.types.LongValue;
 import fr.labri.patterndetector.types.StringValue;
 
 import java.util.HashMap;
@@ -49,7 +49,7 @@ public class Event implements IEvent {
             _payload = new HashMap<>();
         }
 
-        _payload.put(key, new IntegerValue(value));
+        _payload.put(key, new LongValue(value));
 
         return this;
     }

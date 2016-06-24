@@ -15,7 +15,7 @@ public final class RuleNamer {
     private RuleNamer() {
     }
 
-    public static void nameRules(IRule rule) {
+    public static void nameRule(IRule rule) {
         _ruleCounter = 0;
         RuleNamer.RuleNamerVisitor visitor = new RuleNamer.RuleNamerVisitor();
         rule.accept(visitor);

@@ -1,6 +1,5 @@
 package fr.labri.patterndetector.runtime.predicates;
 
-import com.sun.istack.internal.Nullable;
 import fr.labri.patterndetector.runtime.IEvent;
 import fr.labri.patterndetector.types.IValue;
 
@@ -13,10 +12,10 @@ import java.util.function.IntFunction;
  */
 public class FieldKleeneDynamicIndex extends AbstractField {
 
-    private IntFunction<Integer> _indexFunc;
+    protected IntFunction<Integer> _indexFunc;
 
     public FieldKleeneDynamicIndex(String patternId, String fieldName, IntFunction<Integer> indexFunc) {
-        super(FieldType.FIELD_KLEENE_DYNAMIC_INDEX, patternId, fieldName);
+        super(patternId, fieldName);
         _indexFunc = indexFunc;
     }
 
