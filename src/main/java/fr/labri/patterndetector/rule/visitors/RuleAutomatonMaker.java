@@ -4,6 +4,8 @@ import fr.labri.patterndetector.automaton.*;
 import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
 import fr.labri.patterndetector.runtime.predicates.IPredicate;
 import fr.labri.patterndetector.rule.*;
+import fr.labri.patterndetector.runtime.predicates.IStartNacMarker;
+import fr.labri.patterndetector.runtime.predicates.IStopNacMarker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +37,8 @@ public final class RuleAutomatonMaker {
         @Override
         public void visit(Atom atom) {
             try {
-                _automaton = makeAtomAutomaton(atom.getName(), atom.getEventType(), atom.getPredicates(), atom.getAction());
+                _automaton = makeAtomAutomaton(atom.getName(), atom.getEventType(), atom.getPredicates(),
+                        atom.getStartNacMarkers(), atom.getStopNacMarkers(), atom.getAction());
             } catch (RuleAutomatonException e) {
                 logger.error("Compilation failed : " + e.getMessage() + "(" + atom + ")\n"
                         + e.getRuleAutomaton());
@@ -112,7 +115,8 @@ public final class RuleAutomatonMaker {
         @Override
         public void visit(Kleene kleene) {
             try {
-                IRuleAutomaton baseAutomaton = makeAtomAutomaton(kleene.getName(), kleene.getEventType(), kleene.getPredicates(), kleene.getAction());
+                IRuleAutomaton baseAutomaton = makeAtomAutomaton(kleene.getName(), kleene.getEventType(), kleene.getPredicates(),
+                        kleene.getStartNacMarkers(), kleene.getStopNacMarkers(), kleene.getAction());
                 IRuleAutomaton automaton = new RuleAutomaton();
 
                 // The initial state of the base component becomes the initial state of the Kleene automaton.
@@ -206,7 +210,9 @@ public final class RuleAutomatonMaker {
             return _automaton;
         }
 
-        private IRuleAutomaton makeAtomAutomaton(String patternId, String eventType, ArrayList<IPredicate> predicates, Runnable action) throws RuleAutomatonException {
+        private IRuleAutomaton makeAtomAutomaton(String patternId, String eventType, ArrayList<IPredicate> predicates,
+                                                 ArrayList<IStartNacMarker> startNacMarkers, ArrayList<IStopNacMarker> stopNacMarkers,
+                                                 Runnable action) throws RuleAutomatonException {
             IState i = new State(); // Initial state
             IState f = new State(); // Final state
 
@@ -215,6 +221,8 @@ public final class RuleAutomatonMaker {
 
             i.registerTransition(f, eventType, TransitionType.TRANSITION_APPEND)
                     .setPredicates(predicates)
+                    .setStartNacMarkers(startNacMarkers)
+                    .setStopNacMarkers(stopNacMarkers)
                     .setMatchBufferKey(patternId);
 
             IRuleAutomaton automaton = new RuleAutomaton();

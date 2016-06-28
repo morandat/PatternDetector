@@ -1,6 +1,8 @@
 package fr.labri.patterndetector.automaton;
 
 import fr.labri.patterndetector.runtime.predicates.IPredicate;
+import fr.labri.patterndetector.runtime.predicates.IStartNacMarker;
+import fr.labri.patterndetector.runtime.predicates.IStopNacMarker;
 
 import java.util.ArrayList;
 
@@ -18,14 +20,14 @@ public class Transition implements ITransition {
     private TransitionType _type;
     private String _matchBufferKey;
     private ArrayList<IPredicate> _predicates;
+    private ArrayList<IStartNacMarker> _startNacMarkers;
+    private ArrayList<IStopNacMarker> _stopNacMarkers;
 
     public Transition(IState source, IState target, String label, TransitionType type) {
         _source = source;
         _target = target;
         _label = label;
         _type = type;
-        _matchBufferKey = null;
-        _predicates = null;
     }
 
     @Override
@@ -54,13 +56,30 @@ public class Transition implements ITransition {
     }
 
     @Override
+    public String getMatchbufferKey() {
+        return _matchBufferKey;
+    }
+
+    @Override
     public ArrayList<IPredicate> getPredicates() {
         return _predicates;
     }
 
     @Override
-    public String getMatchbufferKey() {
-        return _matchBufferKey;
+    public ArrayList<IStartNacMarker> getStartNacMarkers() {
+        return _startNacMarkers;
+    }
+
+    @Override
+    public ArrayList<IStopNacMarker> getStopNacMarkers() {
+        return _stopNacMarkers;
+    }
+
+    @Override
+    public ITransition setMatchBufferKey(String matchBufferKey) {
+        _matchBufferKey = matchBufferKey;
+
+        return this;
     }
 
     @Override
@@ -70,8 +89,16 @@ public class Transition implements ITransition {
         return this;
     }
 
-    public ITransition setMatchBufferKey(String matchBufferKey) {
-        _matchBufferKey = matchBufferKey;
+    @Override
+    public ITransition setStartNacMarkers(ArrayList<IStartNacMarker> startNacMarkers) {
+        _startNacMarkers = startNacMarkers;
+
+        return this;
+    }
+
+    @Override
+    public ITransition setStopNacMarkers(ArrayList<IStopNacMarker> stopNacMarkers) {
+        _stopNacMarkers = stopNacMarkers;
 
         return this;
     }

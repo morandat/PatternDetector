@@ -6,9 +6,14 @@ package fr.labri.patterndetector.runtime;
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.automaton.ITransition;
+import fr.labri.patterndetector.rule.IRule;
+import fr.labri.patterndetector.runtime.predicates.IStartNacMarker;
+import fr.labri.patterndetector.runtime.predicates.IStopNacMarker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -19,11 +24,13 @@ public final class DeterministicRunner extends AbstractAutomatonRunner {
     private final Logger logger = LoggerFactory.getLogger(DeterministicRunner.class);
 
     private DeterministicRunContext _context;
+    private Map<String, IRuleAutomaton> _nacAutomata; // maps NAC IDs to corresponding automata
 
     public DeterministicRunner(IRuleAutomaton automaton) {
         super(automaton);
 
         _context = new DeterministicRunContext(automaton.getInitialState());
+        _nacAutomata = new HashMap<>();
     }
 
     @Override
@@ -47,12 +54,24 @@ public final class DeterministicRunner extends AbstractAutomatonRunner {
                     case TRANSITION_DROP:
                 }
 
-                // TODO Any NACs to start ?
+                // Start NACs if there are any NAC START markers on the current transition
+                if (!t.getStartNacMarkers().isEmpty()) {
+                    for (IStartNacMarker startNacMarker : t.getStartNacMarkers()) {
+                        startNac(startNacMarker.getNacId(), startNacMarker.getNacRule());
+                    }
+                }
 
-                // update current state
+                // Stop NACs if there are any NAC STOP markers on the current transition
+                if (!t.getStopNacMarkers().isEmpty()) {
+                    for (IStopNacMarker stopNacMarker : t.getStopNacMarkers()) {
+                        stopNac(stopNacMarker.getNacId());
+                    }
+                }
+
+                // Update the current state
                 _context.updateCurrentState(t.getTarget());
 
-                // function callbacks
+                // Run function callbacks attached to the current state
                 _context.getCurrentState().performActions();
 
                 if (_context.isCurrentStateFinal()) {
@@ -74,5 +93,17 @@ public final class DeterministicRunner extends AbstractAutomatonRunner {
         _context.clearMatchBuffers();
 
         logger.debug("Automaton reset");
+    }
+
+    public void startNac(String nacId, IRule nacRule) {
+        logger.debug("NAC started : " + nacId + " | " + nacRule);
+
+        // TODO generate automaton and add it with key nacId
+    }
+
+    public void stopNac(String nacId) {
+        logger.debug("NAC stopped : " + nacId);
+
+        // TODO remove the automaton at key nacId
     }
 }

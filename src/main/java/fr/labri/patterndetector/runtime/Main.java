@@ -1,8 +1,7 @@
 package fr.labri.patterndetector.runtime;
 
 import fr.labri.patterndetector.rule.*;
-import fr.labri.patterndetector.runtime.predicates.FieldTimeAtom;
-import fr.labri.patterndetector.runtime.predicates.LongPredicateArity2;
+import fr.labri.patterndetector.runtime.predicates.*;
 
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -13,28 +12,36 @@ import java.util.stream.Stream;
 public class Main {
 
     public static void main(String[] args) {
-        IRule r = new FollowedBy(
-                new Atom("Search"),
-                new Atom("Purchase")
-                        .addPredicate(new LongPredicateArity2(
-                                new FieldTimeAtom("0"),
-                                new FieldTimeAtom("1"),
-                                (x, y) -> (y.getValue() - x.getValue()) <= 5)));
+
+        IRule nacRule = new Atom("AddBasket")
+                .addPredicate(new StringPredicateArity2(
+                        new FieldAtom("0", "productId"),
+                        new FieldKleeneStaticIndex("1", "productId", 0),
+                        (x, y) -> x.getValue().equals(y.getValue())));
+
+        // .addStartNacMarker(...); FIXME should not be allowed on a NAC rule, to prevent infinite nesting of NAC rules...
+
+        IRule mainRule = new FollowedBy(
+                new Kleene("View")
+                        .addPredicate(new StringPredicateArity2(
+                                new FieldKleeneDynamicIndex("1", "productId", i -> i),
+                                new FieldKleeneDynamicIndex("1", "productId", i -> i - 1),
+                                (x, y) -> x.getValue().equals(y.getValue())))
+                        .addStartNacMarker(new StartNacMarker(nacRule, "nac")),
+                new Atom("Exit")
+                        .addStopNacMarker(new StopNacMarker("nac")));
 
         RuleManager ruleManager = new RuleManager();
         Detector detector = new Detector(ruleManager);
-        ruleManager.addRule(r, AutomatonRunnerType.Deterministic);
+        ruleManager.addRule(mainRule, AutomatonRunnerType.Deterministic);
         detector.detect(Main.generate());
     }
 
     private static Stream<? extends IEvent> generate() {
         return Arrays.asList(
-                new Event("Search", 1)
-                        .setData("url", "s")
-                        .setData("referrer", "x"),
-                new Event("Purchase", 6)
-                        .setData("url", "p")
-                        .setData("referrer", "s")
+                new Event("View", 1)
+                        .setData("productId", "sku"),
+                new Event("Exit", 6)
         ).stream();
     }
 }

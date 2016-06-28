@@ -8,13 +8,12 @@ import fr.labri.patterndetector.runtime.predicates.LongPredicateArity2;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Stream;
 
 @RunWith(Parameterized.class)
-public class TestTimeConstraintAtom extends AbstractTestDetection {
+public class TestScenario4Detection extends AbstractTestDetection {
 
     public Stream<? extends IEvent> generate() {
         return scenario();
@@ -48,21 +47,7 @@ public class TestTimeConstraintAtom extends AbstractTestDetection {
                                         new Event("Search", 1),
                                         new Event("Purchase", 6)),
                                 AutomatonRunnerType.Deterministic
-                        },
-
-                        // FIXME for the scenario below, the automaton should RESET after 2 seconds (timeout)
-                        {
-                                " Detect scenario : Search -> Purchase ",
-                                new FollowedBy(
-                                        new Atom("Search"),
-                                        new Atom("Purchase")
-                                                .addPredicate(new LongPredicateArity2(
-                                                        new FieldTimeAtom("0"),
-                                                        new FieldTimeAtom("1"),
-                                                        (x, y) -> (y.getValue() - x.getValue()) <= 2))),
-                                new ArrayList<>(),
-                                AutomatonRunnerType.Deterministic
-                        },
+                        }
                 });
     }
 }

@@ -9,7 +9,7 @@ import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.automaton.exception.*;
 import fr.labri.patterndetector.rule.visitors.RuleAutomatonMaker;
 import fr.labri.patterndetector.rule.IRule;
-import fr.labri.patterndetector.rule.visitors.RuleNamer;
+import fr.labri.patterndetector.rule.visitors.RulesNamer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ public final class RuleManager implements IPatternObserver {
      * @return The rule's name.
      */
     public IAutomatonRunner addRule(IRule rule, AutomatonRunnerType runnerType) {
-        RuleNamer.nameRule(rule);
+        RulesNamer.nameRules(rule);
         IRuleAutomaton automaton = RuleAutomatonMaker.makeAutomaton(rule); // Try to build the rule automaton.
 
         IRuleAutomaton powerset = automaton.powerset();
@@ -44,13 +44,11 @@ public final class RuleManager implements IPatternObserver {
         } catch (NoFinalStateException e) {
             logger.error("Non-terminating rule : " + rule + " (" + e.getMessage() + ")\n" + e.getRuleAutomaton());
 
-            throw new RuntimeException("Non-terminating rule : " + rule + " (" + e.getMessage() + ")\n"
-                    + e.getRuleAutomaton());
+            throw new RuntimeException("Non-terminating rule : " + rule + " (" + e.getMessage() + ")\n" + e.getRuleAutomaton());
         } catch (UnreachableStatesException e) {
             logger.error("Ambiguous rule : " + rule + " (" + e.getMessage() + ")\n" + e.getRuleAutomaton());
 
-            throw new RuntimeException("Ambiguous rule : " + rule + " (" + e.getMessage() + ")\n"
-                    + e.getRuleAutomaton());
+            throw new RuntimeException("Ambiguous rule : " + rule + " (" + e.getMessage() + ")\n" + e.getRuleAutomaton());
         } catch (RuleAutomatonException e) {
             logger.error("Invalid rule : " + rule + " (" + e.getMessage() + ")\n" + e.getRuleAutomaton());
 

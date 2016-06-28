@@ -1,8 +1,12 @@
 package fr.labri.patterndetector.runtime;
 
+import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.automaton.IState;
+import fr.labri.patterndetector.rule.IRule;
 import fr.labri.patterndetector.runtime.predicates.*;
 import fr.labri.patterndetector.types.IValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +19,8 @@ import java.util.stream.Stream;
  * Created by william.braik on 25/05/2016.
  */
 public class DeterministicRunContext implements IRunContext {
+
+    private final Logger logger = LoggerFactory.getLogger(DeterministicRunContext.class);
 
     private IState _currentState;
     private Map<String, ArrayList<IEvent>> _matchBuffers; // maps pattern ids to corresponding pattern events
@@ -40,6 +46,7 @@ public class DeterministicRunContext implements IRunContext {
         return _matchBuffers.get(patternId);
     }
 
+    @Override
     public Stream<IEvent> getMatchBuffers() {
         ArrayList<IEvent> matchBuffer = new ArrayList<>();
         _matchBuffers.values().forEach(matchBuffer::addAll);
@@ -73,7 +80,7 @@ public class DeterministicRunContext implements IRunContext {
             boolean skipPredicateCheck = false; // if true, means that current predicate cannot be checked and must be skipped
 
             for (IField field : fields) {
-                Optional<IValue<?>> value = Optional.empty();
+                Optional<IValue<?>> value;
                 String patternId = field.getPatternId();
                 ArrayList<IEvent> matchBuffer = _matchBuffers.get(patternId);
 
