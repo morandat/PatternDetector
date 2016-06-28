@@ -22,8 +22,9 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                 new Event("b", 3).setData("x", 10),
                 new Event("b", 4).setData("x", 10),
                 new Event("b", 5).setData("y", 10),
-                new Event("c", 6).setData("y", 15),
-                new Event("c", 7).setData("y", 14)
+                new Event("b", 6).setData("y", 15),
+                new Event("c", 7).setData("y", 15),
+                new Event("c", 8).setData("y", 14)
         ).stream();
     }
 
@@ -96,7 +97,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                         new Event("a", 1),
                                         new Event("b", 3),
                                         new Event("b", 4),
-                                        new Event("c", 6)),
+                                        new Event("c", 7)),
                                 AutomatonRunnerType.Deterministic
                         },
 
@@ -116,11 +117,11 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                         new Event("b", 3),
                                         new Event("b", 4),
                                         new Event("b", 5),
-                                        new Event("c", 7)),
+                                        new Event("b", 6),
+                                        new Event("c", 8)),
                                 AutomatonRunnerType.Deterministic
                         },
 
-                        // TODO(fail)
                         {
                                 " Detect Kleene(B) followed by C with Kleene predicates ",
                                 new FollowedBy(
@@ -131,10 +132,24 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                                         (x, y) -> x.getValue() == y.getValue())),
                                         "c"),
                                 Arrays.asList(
-                                        new Event("b", 2),
                                         new Event("b", 3),
                                         new Event("b", 4),
-                                        new Event("b", 5),
+                                        new Event("c", 7)),
+                                AutomatonRunnerType.Deterministic
+                        },
+
+                        {
+                                " Detect Kleene(B) followed by C with Kleene predicates ",
+                                new FollowedBy(
+                                        new Kleene("b")
+                                                .addPredicate(new LongPredicateArity2(
+                                                        new FieldKleeneDynamicIndex("0", "y", i -> i),
+                                                        new FieldKleeneDynamicIndex("0", "y", i -> i - 1),
+                                                        (x, y) -> x.getValue() == y.getValue())),
+                                        "c"),
+                                Arrays.asList(
+                                        new Event("b", 2),
+                                        new Event("b", 6),
                                         new Event("c", 7)),
                                 AutomatonRunnerType.Deterministic
                         },

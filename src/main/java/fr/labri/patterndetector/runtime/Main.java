@@ -1,10 +1,8 @@
 package fr.labri.patterndetector.runtime;
 
-import fr.labri.patterndetector.runtime.predicates.FieldAtom;
 import fr.labri.patterndetector.rule.*;
-import fr.labri.patterndetector.runtime.predicates.FieldAtomTime;
+import fr.labri.patterndetector.runtime.predicates.FieldTimeAtom;
 import fr.labri.patterndetector.runtime.predicates.LongPredicateArity2;
-import fr.labri.patterndetector.runtime.predicates.StringPredicateArity2;
 
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -19,8 +17,8 @@ public class Main {
                 new Atom("Search"),
                 new Atom("Purchase")
                         .addPredicate(new LongPredicateArity2(
-                                new FieldAtomTime("0"),
-                                new FieldAtomTime("1"),
+                                new FieldTimeAtom("0"),
+                                new FieldTimeAtom("1"),
                                 (x, y) -> (y.getValue() - x.getValue()) <= 5)));
 
         RuleManager ruleManager = new RuleManager();

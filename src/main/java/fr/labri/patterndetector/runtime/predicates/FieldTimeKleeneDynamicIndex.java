@@ -11,9 +11,9 @@ import java.util.function.IntFunction;
 /**
  * Created by wbraik on 08/06/16.
  */
-public class FieldKleeneDynamicIndexTime extends FieldKleeneDynamicIndex {
+public class FieldTimeKleeneDynamicIndex extends FieldKleeneDynamicIndex {
 
-    public FieldKleeneDynamicIndexTime(String patternId, IntFunction<Integer> indexFunc) {
+    public FieldTimeKleeneDynamicIndex(String patternId, IntFunction<Integer> indexFunc) {
         super(patternId, null, indexFunc);
     }
 

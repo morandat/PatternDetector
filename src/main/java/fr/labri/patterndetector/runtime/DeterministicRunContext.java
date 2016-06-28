@@ -79,13 +79,14 @@ public class DeterministicRunContext implements IRunContext {
 
                 skipPredicateCheck = !field.isResolvable(matchBuffer, currentMatchBufferKey, currentEvent);
 
-                if (!skipPredicateCheck)
+                if (!skipPredicateCheck) {
                     value = field.resolve(_matchBuffers.get(field.getPatternId()), currentMatchBufferKey, currentEvent);
 
-                if (value.isPresent()) // value was retrieved successfully
-                    values.add(value.get());
-                else
-                    return false;
+                    if (value.isPresent()) // value was retrieved successfully
+                        values.add(value.get());
+                    else
+                        return false;
+                }
             }
 
             if (!skipPredicateCheck) { // current predicate must be skipped
