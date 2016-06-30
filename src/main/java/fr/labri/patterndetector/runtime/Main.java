@@ -19,27 +19,31 @@ public class Main {
                         new FieldKleeneStaticIndex("1", "productId", 0),
                         (x, y) -> x.getValue().equals(y.getValue())));
 
-        // .addStartNacMarker(...); FIXME should not be allowed on a NAC rule, to prevent infinite nesting of NAC rules...
-
         IRule mainRule = new FollowedBy(
                 new Kleene("View")
                         .addPredicate(new StringPredicateArity2(
                                 new FieldKleeneDynamicIndex("1", "productId", i -> i),
                                 new FieldKleeneDynamicIndex("1", "productId", i -> i - 1),
                                 (x, y) -> x.getValue().equals(y.getValue())))
-                        .addStartNacMarker(new StartNacMarker(nacRule, "nac")),
+                        .addNacBeginMarker(new NacBeginMarker(nacRule, "nac")),
                 new Atom("Exit")
-                        .addStopNacMarker(new StopNacMarker("nac")));
+                        .addNacEndMarker(new NacEndMarker("nac")));
 
         RuleManager ruleManager = new RuleManager();
         Detector detector = new Detector(ruleManager);
-        ruleManager.addRule(mainRule, AutomatonRunnerType.Deterministic);
+        ruleManager.addRule(mainRule, AutomatonRunnerType.NonDeterministic);
         detector.detect(Main.generate());
     }
 
     private static Stream<? extends IEvent> generate() {
         return Arrays.asList(
                 new Event("View", 1)
+                        .setData("productId", "sku"),
+                new Event("View", 2)
+                        .setData("productId", "sku2"),
+                new Event("AddBasket", 4)
+                        .setData("productId", "sku"),
+                new Event("View", 5)
                         .setData("productId", "sku"),
                 new Event("Exit", 6)
         ).stream();

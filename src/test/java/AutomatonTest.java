@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AutomatonTest {
 
-    private final Logger logger = LoggerFactory.getLogger(AutomatonTest.class);
+    private final Logger Logger = LoggerFactory.getLogger(AutomatonTest.class);
 
     @Rule
     public TestName _name = new TestName();
@@ -25,7 +25,7 @@ public class AutomatonTest {
 
     @Before
     public void initializeTest() {
-        logger.info("## Executing test : " + _name.getMethodName());
+        Logger.info("## Executing test : " + _name.getMethodName());
     }
 
     @Ignore

@@ -2,8 +2,8 @@ package fr.labri.patterndetector.rule;
 
 import fr.labri.patterndetector.runtime.predicates.IPredicate;
 import fr.labri.patterndetector.rule.visitors.RuleStringifier;
-import fr.labri.patterndetector.runtime.predicates.IStartNacMarker;
-import fr.labri.patterndetector.runtime.predicates.IStopNacMarker;
+import fr.labri.patterndetector.runtime.predicates.INacBeginMarker;
+import fr.labri.patterndetector.runtime.predicates.INacEndMarker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,13 +17,13 @@ import java.util.ArrayList;
 public abstract class AbstractRule implements IRule {
 
     // Concrete subclasses should log with their own class names
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final Logger Logger = LoggerFactory.getLogger(getClass());
 
     protected String _name;
     protected String _symbol;
     protected ArrayList<IPredicate> _predicates;
-    protected ArrayList<IStartNacMarker> _startNacMarkers;
-    protected ArrayList<IStopNacMarker> _stopNacMarkers;
+    protected ArrayList<INacBeginMarker> _startNacMarkers;
+    protected ArrayList<INacEndMarker> _stopNacMarkers;
     protected Runnable _action;
 
     public AbstractRule(String symbol) {
@@ -64,12 +64,12 @@ public abstract class AbstractRule implements IRule {
     }
 
     @Override
-    public ArrayList<IStartNacMarker> getStartNacMarkers() {
+    public ArrayList<INacBeginMarker> getNacBeginMarkers() {
         return _startNacMarkers;
     }
 
     @Override
-    public ArrayList<IStopNacMarker> getStopNacMarkers() {
+    public ArrayList<INacEndMarker> getNacEndMarkers() {
         return _stopNacMarkers;
     }
 
@@ -93,28 +93,28 @@ public abstract class AbstractRule implements IRule {
     }
 
     @Override
-    public IRule addStartNacMarker(IStartNacMarker startNacMarker) {
+    public IRule addNacBeginMarker(INacBeginMarker startNacMarker) {
         _startNacMarkers.add(startNacMarker);
 
         return this;
     }
 
     @Override
-    public IRule setStartNacMarkers(ArrayList<IStartNacMarker> startNacMarkers) {
+    public IRule setNacBeginMarkers(ArrayList<INacBeginMarker> startNacMarkers) {
         _startNacMarkers.addAll(startNacMarkers);
 
         return this;
     }
 
     @Override
-    public IRule addStopNacMarker(IStopNacMarker stopNacMarker) {
+    public IRule addNacEndMarker(INacEndMarker stopNacMarker) {
         _stopNacMarkers.add(stopNacMarker);
 
         return this;
     }
 
     @Override
-    public IRule setStopNacMarkers(ArrayList<IStopNacMarker> stopNacMarkers) {
+    public IRule setNacEndMarkers(ArrayList<INacEndMarker> stopNacMarkers) {
         _stopNacMarkers.addAll(stopNacMarkers);
 
         return this;

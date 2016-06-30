@@ -19,7 +19,7 @@ public class Event implements IEvent {
     public Event(String type, long timestamp) {
         _type = type;
         _timestamp = timestamp;
-        _payload = null;
+        _payload = new HashMap<>();
     }
 
     public Event(String type, long timestamp, Map<String, IValue<?>> payload) {
@@ -45,10 +45,6 @@ public class Event implements IEvent {
 
     @Override
     public IEvent setData(String key, Integer value) {
-        if (_payload == null) {
-            _payload = new HashMap<>();
-        }
-
         _payload.put(key, new LongValue(value));
 
         return this;
@@ -56,10 +52,6 @@ public class Event implements IEvent {
 
     @Override
     public IEvent setData(String key, String value) {
-        if (_payload == null) {
-            _payload = new HashMap<>();
-        }
-
         _payload.put(key, new StringValue(value));
 
         return this;

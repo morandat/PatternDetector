@@ -7,8 +7,6 @@ package fr.labri.patterndetector.runtime;
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.automaton.IState;
 import fr.labri.patterndetector.automaton.ITransition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
@@ -16,8 +14,6 @@ import java.util.ArrayList;
  * Fork and play, no reset
  */
 public final class NonDeterministicRunner extends AbstractAutomatonRunner {
-
-    private final Logger logger = LoggerFactory.getLogger(NonDeterministicRunner.class);
 
     private NonDeterministicRunContext _context;
 
@@ -31,17 +27,16 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
     public void fire(IEvent e) {
         ArrayList<DeterministicRunContext> subContextsCopy = new ArrayList<>();
         subContextsCopy.addAll(_context.getSubContexts());
+
         for (DeterministicRunContext currentSubContext : subContextsCopy) {
             IState s = currentSubContext.getCurrentState();
             ITransition t = s.pickTransition(e);
 
             if (t == null) {
-                logger.debug("Can't transition (" + e + ")");
+                Logger.debug("Can't transition (" + e + ")");
             } else {
                 if (currentSubContext.testPredicates(t.getPredicates(), t.getMatchbufferKey(), e)) {
-                    // TODO Any NACs to start ?
-
-                    logger.debug("Transitioning : " + t + " (" + e + ")");
+                    Logger.debug("Transitioning : " + t + " (" + e + ")");
 
                     // Save current event in match buffer or discard it depending on the transition's type
                     switch (t.getType()) {
@@ -53,7 +48,12 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
                                 DeterministicRunContext newSubContext = _context.addSubContext(nextState);
 
                                 // Update match buffer
-                                newSubContext.appendEvent(e, t.getMatchbufferKey());
+                                newSubContext.appendEvent(e, t.getMatchbufferKey()); // FIXME non-deterministic matchbuffers are buggy. All subcontexts should share the parent matchbuffer
+                            } else {
+                                Logger.debug("Final state reached");
+
+                                // If the final state has been reached, post the found pattern and resetContext the automaton
+                                //postPattern(_context.getMatchBuffers().collect(Collectors.toList())); FIXME buggy
                             }
 
                             // function callbacks
@@ -66,6 +66,6 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
             }
         }
 
-        logger.debug("Current states : " + _context.getSubContexts());
+        Logger.debug("Current states : " + _context.getSubContexts());
     }
 }

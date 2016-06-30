@@ -2,8 +2,8 @@ package fr.labri.patterndetector.automaton;
 
 import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
 import fr.labri.patterndetector.runtime.predicates.IPredicate;
-import fr.labri.patterndetector.runtime.predicates.IStartNacMarker;
-import fr.labri.patterndetector.runtime.predicates.IStopNacMarker;
+import fr.labri.patterndetector.runtime.predicates.INacBeginMarker;
+import fr.labri.patterndetector.runtime.predicates.INacEndMarker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * Automaton utility methods.
  */
 public final class AutomatonUtils {
-    private final static Logger logger = LoggerFactory.getLogger(AutomatonUtils.class);
+    private final static Logger Logger = LoggerFactory.getLogger(AutomatonUtils.class);
 
     private AutomatonUtils() {
     }
@@ -66,7 +66,7 @@ public final class AutomatonUtils {
                 }
             });
         } catch (RuleAutomatonException e) {
-            logger.error("Automaton copy failed : " + e.getMessage() + "\n"
+            Logger.error("Automaton copy failed : " + e.getMessage() + "\n"
                     + e.getRuleAutomaton());
 
             throw new RuntimeException("Automaton copy failed : " + e.getMessage() + "\n"
@@ -95,7 +95,7 @@ public final class AutomatonUtils {
             powersetAutomaton.setInitialState(initialState);
             doPowerset(initialStateSet, allStateSets, powersetAutomaton);
         } catch (RuleAutomatonException e) {
-            logger.error("Powerset failed : " + e.getMessage() + "\n" + e.getRuleAutomaton());
+            Logger.error("Powerset failed : " + e.getMessage() + "\n" + e.getRuleAutomaton());
 
             throw new RuntimeException("Powerset failed : " + e.getMessage() + "\n"
                     + e.getRuleAutomaton());
@@ -116,8 +116,8 @@ public final class AutomatonUtils {
         Map<String, Set<IState>> targetStateSets = new HashMap<>();
         Map<String, TransitionType> transitionTypes = new HashMap<>();
         Map<String, ArrayList<IPredicate>> predicates = new HashMap<>();
-        Map<String, ArrayList<IStartNacMarker>> startNacMarkers = new HashMap<>();
-        Map<String, ArrayList<IStopNacMarker>> stopNacMarkers = new HashMap<>();
+        Map<String, ArrayList<INacBeginMarker>> startNacMarkers = new HashMap<>();
+        Map<String, ArrayList<INacEndMarker>> stopNacMarkers = new HashMap<>();
         Map<String, String> matchBufferKeys = new HashMap<>();
 
         for (IState state : currentStateSet) {
@@ -134,8 +134,8 @@ public final class AutomatonUtils {
                     targetStateSets.put(t.getLabel(), stateSet);
                     transitionTypes.put(t.getLabel(), t.getType());
                     predicates.put(t.getLabel(), t.getPredicates());
-                    startNacMarkers.put(t.getLabel(), t.getStartNacMarkers());
-                    stopNacMarkers.put(t.getLabel(), t.getStopNacMarkers());
+                    startNacMarkers.put(t.getLabel(), t.getNacBeginMarkers());
+                    stopNacMarkers.put(t.getLabel(), t.getNacEndMarkers());
                     matchBufferKeys.put(t.getLabel(), t.getMatchbufferKey());
                 }
             }
@@ -174,8 +174,8 @@ public final class AutomatonUtils {
                     Collectors.toSet()));
             currentState.registerTransition(targetState, label, transitionTypes.get(label))
                     .setPredicates(predicates.get(label))
-                    .setStartNacMarkers(startNacMarkers.get(label))
-                    .setStopNacMarkers(stopNacMarkers.get(label))
+                    .setNacBeginMarkers(startNacMarkers.get(label))
+                    .setNacEndMarkers(stopNacMarkers.get(label))
                     .setMatchBufferKey(matchBufferKeys.get(label));
         });
     }

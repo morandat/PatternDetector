@@ -5,7 +5,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,14 +14,14 @@ import org.slf4j.LoggerFactory;
  */
 public class RuleTest {
 
-    private final Logger logger = LoggerFactory.getLogger(RuleTest.class);
+    private final Logger Logger = LoggerFactory.getLogger(RuleTest.class);
 
     @Rule
     public TestName _name = new TestName();
 
     @Before
     public void initializeTest() {
-        logger.info("## Executing test : " + _name.getMethodName());
+        Logger.info("## Executing test : " + _name.getMethodName());
     }
 
     @Test

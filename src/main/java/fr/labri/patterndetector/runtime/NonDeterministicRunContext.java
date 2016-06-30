@@ -10,7 +10,7 @@ import java.util.stream.Stream;
  * <p>
  * A non-deterministic context is essentially a collection of concurrent deterministic contexts
  */
-public class NonDeterministicRunContext implements IRunContext {
+public class NonDeterministicRunContext {
 
     private ArrayList<DeterministicRunContext> _subContexts;
 

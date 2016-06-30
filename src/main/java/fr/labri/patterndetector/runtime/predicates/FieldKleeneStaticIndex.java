@@ -33,7 +33,7 @@ public class FieldKleeneStaticIndex extends AbstractField {
                 if (_index > currentIndex)
                     return false;
             }
-        } else if (_index >= matchBuffer.size()) { // already processed kleene
+        } else if (_index >= matchBuffer.size()) { // previously processed kleene
             return false;
         }
 

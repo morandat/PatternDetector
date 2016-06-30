@@ -3,31 +3,37 @@ package fr.labri.patterndetector.runtime;
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.automaton.IState;
 import fr.labri.patterndetector.rule.IRule;
+import fr.labri.patterndetector.rule.visitors.RuleAutomatonMaker;
 import fr.labri.patterndetector.runtime.predicates.*;
 import fr.labri.patterndetector.types.IValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.IntFunction;
 import java.util.stream.Stream;
 
 /**
  * Created by william.braik on 25/05/2016.
  */
-public class DeterministicRunContext implements IRunContext {
+public class DeterministicRunContext {
 
-    private final Logger logger = LoggerFactory.getLogger(DeterministicRunContext.class);
+    private final Logger Logger = LoggerFactory.getLogger(DeterministicRunContext.class);
 
     private IState _currentState;
     private Map<String, ArrayList<IEvent>> _matchBuffers; // maps pattern ids to corresponding pattern events
+    private Map<String, DeterministicRunner> _nacRunners; // maps NAC IDs to corresponding automata
 
     public DeterministicRunContext(IState initialState) {
         _currentState = initialState;
         _matchBuffers = new HashMap<>();
+        _nacRunners = new HashMap<>();
+    }
+
+    public DeterministicRunContext(IState initialState, Map<String, ArrayList<IEvent>> matchBuffers) {
+        _currentState = initialState;
+        _matchBuffers = matchBuffers;
+        _nacRunners = new HashMap<>();
     }
 
     public boolean isCurrentStateFinal() {
@@ -46,13 +52,16 @@ public class DeterministicRunContext implements IRunContext {
         return _matchBuffers.get(patternId);
     }
 
-    @Override
     public Stream<IEvent> getMatchBuffers() {
         ArrayList<IEvent> matchBuffer = new ArrayList<>();
         _matchBuffers.values().forEach(matchBuffer::addAll);
 
         return matchBuffer.stream()
                 .sorted((e1, e2) -> new Long(e1.getTimestamp()).compareTo(e2.getTimestamp())); // make sure it's sorted by timestamp
+    }
+
+    public Collection<DeterministicRunner> getNacRunners() {
+        return _nacRunners.values();
     }
 
     public void appendEvent(IEvent event, String patternId) {
@@ -68,9 +77,13 @@ public class DeterministicRunContext implements IRunContext {
         _matchBuffers.clear();
     }
 
+    public void clearNacRunners() {
+        _nacRunners.clear();
+    }
+
     public boolean testPredicates(ArrayList<IPredicate> predicates, String currentMatchBufferKey, IEvent currentEvent) {
         // No predicates to test
-        if (predicates == null || predicates.isEmpty()) {
+        if (predicates.isEmpty()) {
             return true;
         }
 
@@ -105,6 +118,27 @@ public class DeterministicRunContext implements IRunContext {
         }
 
         return true;
+    }
+
+    public Optional<DeterministicRunner> startNac(String nacId, IRule nacRule) {
+        if (!_nacRunners.containsKey(nacId)) {
+            Logger.debug("NAC started : " + nacId + " | " + nacRule);
+
+            IRuleAutomaton nacPowerset = RuleAutomatonMaker.makeAutomaton(nacRule).powerset();
+            nacPowerset.validate();
+
+            DeterministicRunner nacRunner = new DeterministicRunner(nacPowerset, _matchBuffers);
+            _nacRunners.put(nacId, nacRunner);
+
+            return Optional.of(nacRunner);
+        } else
+            return Optional.empty();
+    }
+
+    public void stopNac(String nacId) {
+        Logger.debug("NAC stopped : " + nacId);
+
+        _nacRunners.remove(nacId);
     }
 
     public String toString() {

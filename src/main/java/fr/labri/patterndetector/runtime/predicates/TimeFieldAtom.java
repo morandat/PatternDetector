@@ -10,9 +10,9 @@ import java.util.Optional;
 /**
  * Created by wbraik on 08/06/16.
  */
-public class FieldTimeAtom extends FieldAtom {
+public class TimeFieldAtom extends FieldAtom {
 
-    public FieldTimeAtom(String patternId) {
+    public TimeFieldAtom(String patternId) {
         super(patternId, null);
     }
 

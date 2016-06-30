@@ -1,8 +1,8 @@
 package fr.labri.patterndetector.automaton;
 
 import fr.labri.patterndetector.runtime.predicates.IPredicate;
-import fr.labri.patterndetector.runtime.predicates.IStartNacMarker;
-import fr.labri.patterndetector.runtime.predicates.IStopNacMarker;
+import fr.labri.patterndetector.runtime.predicates.INacBeginMarker;
+import fr.labri.patterndetector.runtime.predicates.INacEndMarker;
 
 import java.util.ArrayList;
 
@@ -20,14 +20,18 @@ public class Transition implements ITransition {
     private TransitionType _type;
     private String _matchBufferKey;
     private ArrayList<IPredicate> _predicates;
-    private ArrayList<IStartNacMarker> _startNacMarkers;
-    private ArrayList<IStopNacMarker> _stopNacMarkers;
+    private ArrayList<INacBeginMarker> _startNacMarkers;
+    private ArrayList<INacEndMarker> _stopNacMarkers;
 
     public Transition(IState source, IState target, String label, TransitionType type) {
         _source = source;
         _target = target;
         _label = label;
         _type = type;
+
+        _predicates = new ArrayList<>();
+        _startNacMarkers = new ArrayList<>();
+        _stopNacMarkers = new ArrayList<>();
     }
 
     @Override
@@ -66,12 +70,12 @@ public class Transition implements ITransition {
     }
 
     @Override
-    public ArrayList<IStartNacMarker> getStartNacMarkers() {
+    public ArrayList<INacBeginMarker> getNacBeginMarkers() {
         return _startNacMarkers;
     }
 
     @Override
-    public ArrayList<IStopNacMarker> getStopNacMarkers() {
+    public ArrayList<INacEndMarker> getNacEndMarkers() {
         return _stopNacMarkers;
     }
 
@@ -90,15 +94,15 @@ public class Transition implements ITransition {
     }
 
     @Override
-    public ITransition setStartNacMarkers(ArrayList<IStartNacMarker> startNacMarkers) {
-        _startNacMarkers = startNacMarkers;
+    public ITransition setNacBeginMarkers(ArrayList<INacBeginMarker> nacBeginMarkers) {
+        _startNacMarkers = nacBeginMarkers;
 
         return this;
     }
 
     @Override
-    public ITransition setStopNacMarkers(ArrayList<IStopNacMarker> stopNacMarkers) {
-        _stopNacMarkers = stopNacMarkers;
+    public ITransition setNacEndMarkers(ArrayList<INacEndMarker> nacEndMarkers) {
+        _stopNacMarkers = nacEndMarkers;
 
         return this;
     }

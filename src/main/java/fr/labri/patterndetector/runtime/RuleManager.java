@@ -6,7 +6,6 @@ package fr.labri.patterndetector.runtime;
  */
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
-import fr.labri.patterndetector.automaton.exception.*;
 import fr.labri.patterndetector.rule.visitors.RuleAutomatonMaker;
 import fr.labri.patterndetector.rule.IRule;
 import fr.labri.patterndetector.rule.visitors.RulesNamer;
@@ -17,7 +16,7 @@ import java.util.*;
 
 public final class RuleManager implements IPatternObserver {
 
-    private final Logger logger = LoggerFactory.getLogger(RuleManager.class);
+    private final Logger Logger = LoggerFactory.getLogger(RuleManager.class);
 
     private ArrayList<IAutomatonRunner> _runners; // Maps rule names to rule automaton runners
     private AutomatonRunnerFactory _runnerFactory;
@@ -39,21 +38,7 @@ public final class RuleManager implements IPatternObserver {
 
         IRuleAutomaton powerset = automaton.powerset();
 
-        try {
-            powerset.validate();
-        } catch (NoFinalStateException e) {
-            logger.error("Non-terminating rule : " + rule + " (" + e.getMessage() + ")\n" + e.getRuleAutomaton());
-
-            throw new RuntimeException("Non-terminating rule : " + rule + " (" + e.getMessage() + ")\n" + e.getRuleAutomaton());
-        } catch (UnreachableStatesException e) {
-            logger.error("Ambiguous rule : " + rule + " (" + e.getMessage() + ")\n" + e.getRuleAutomaton());
-
-            throw new RuntimeException("Ambiguous rule : " + rule + " (" + e.getMessage() + ")\n" + e.getRuleAutomaton());
-        } catch (RuleAutomatonException e) {
-            logger.error("Invalid rule : " + rule + " (" + e.getMessage() + ")\n" + e.getRuleAutomaton());
-
-            throw new RuntimeException("Invalid rule : " + rule + " (" + e.getMessage() + ")\n" + e.getRuleAutomaton());
-        }
+        powerset.validate();
 
         // Instantiate runner
         try {
@@ -61,8 +46,8 @@ public final class RuleManager implements IPatternObserver {
             runner.registerPatternObserver(this);
             _runners.add(runner);
 
-            logger.info("Rule added : " + rule);
-            logger.debug("Powerset : " + powerset);
+            Logger.info("Rule added : " + rule);
+            Logger.debug("Powerset : " + powerset);
 
             return runner;
         } catch (Exception e) {
@@ -76,6 +61,6 @@ public final class RuleManager implements IPatternObserver {
 
     @Override
     public void notifyPattern(Collection<IEvent> pattern) {
-        logger.info("Pattern found : " + pattern);
+        Logger.info("Pattern found : " + pattern);
     }
 }

@@ -10,9 +10,9 @@ import java.util.Optional;
 /**
  * Created by wbraik on 08/06/16.
  */
-public class FieldTimeKleeneStaticIndex extends FieldKleeneStaticIndex {
+public class TimeFieldKleeneStaticIndex extends FieldKleeneStaticIndex {
 
-    public FieldTimeKleeneStaticIndex(String patternId, int index) {
+    public TimeFieldKleeneStaticIndex(String patternId, int index) {
         super(patternId, null, index);
     }
 

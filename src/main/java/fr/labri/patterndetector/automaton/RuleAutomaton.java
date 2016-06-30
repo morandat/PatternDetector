@@ -14,9 +14,7 @@ import java.util.*;
  */
 
 public class RuleAutomaton implements IRuleAutomaton {
-
-    private final Logger logger = LoggerFactory.getLogger(RuleAutomaton.class);
-
+    
     private IState _initialState;
     private Map<String, IState> _finalStates;
     private Map<String, IState> _connectionStates;

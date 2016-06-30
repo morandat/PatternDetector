@@ -1,8 +1,8 @@
 package fr.labri.patterndetector.automaton;
 
 import fr.labri.patterndetector.runtime.predicates.IPredicate;
-import fr.labri.patterndetector.runtime.predicates.IStartNacMarker;
-import fr.labri.patterndetector.runtime.predicates.IStopNacMarker;
+import fr.labri.patterndetector.runtime.predicates.INacBeginMarker;
+import fr.labri.patterndetector.runtime.predicates.INacEndMarker;
 
 import java.util.ArrayList;
 
@@ -25,15 +25,15 @@ public interface ITransition {
 
     ArrayList<IPredicate> getPredicates();
 
-    ArrayList<IStartNacMarker> getStartNacMarkers();
+    ArrayList<INacBeginMarker> getNacBeginMarkers();
 
-    ArrayList<IStopNacMarker> getStopNacMarkers();
+    ArrayList<INacEndMarker> getNacEndMarkers();
 
     ITransition setMatchBufferKey(String matchBufferKey);
 
     ITransition setPredicates(ArrayList<IPredicate> predicates);
 
-    ITransition setStartNacMarkers(ArrayList<IStartNacMarker> startNacMarkers);
+    ITransition setNacBeginMarkers(ArrayList<INacBeginMarker> nacBeginMarkers);
 
-    ITransition setStopNacMarkers(ArrayList<IStopNacMarker> stopNacMarkers);
+    ITransition setNacEndMarkers(ArrayList<INacEndMarker> nacEndMarkers);
 }

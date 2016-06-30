@@ -1,7 +1,7 @@
 package fr.labri.patterndetector.rule.visitors;
 
 import fr.labri.patterndetector.rule.*;
-import fr.labri.patterndetector.runtime.predicates.IStartNacMarker;
+import fr.labri.patterndetector.runtime.predicates.INacBeginMarker;
 
 /**
  * Created by wbraik on 19/11/15.
@@ -37,7 +37,7 @@ public final class RulesNamer {
 
         @Override
         public void visit(AbstractTerminalRule terminalRule) {
-            for (IStartNacMarker startNacMarker : terminalRule.getStartNacMarkers()) {
+            for (INacBeginMarker startNacMarker : terminalRule.getNacBeginMarkers()) {
                 startNacMarker.getNacRule().accept(new RulesNamerVisitor());
             }
 

@@ -6,44 +6,53 @@ package fr.labri.patterndetector.runtime;
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.automaton.ITransition;
-import fr.labri.patterndetector.rule.IRule;
-import fr.labri.patterndetector.runtime.predicates.IStartNacMarker;
-import fr.labri.patterndetector.runtime.predicates.IStopNacMarker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import fr.labri.patterndetector.runtime.predicates.INacBeginMarker;
+import fr.labri.patterndetector.runtime.predicates.INacEndMarker;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Deterministic, reset when no transition found
+ * Deterministic, resetContext when no transition found
  */
-public final class DeterministicRunner extends AbstractAutomatonRunner {
+public class DeterministicRunner extends AbstractAutomatonRunner {
 
-    private final Logger logger = LoggerFactory.getLogger(DeterministicRunner.class);
-
-    private DeterministicRunContext _context;
-    private Map<String, IRuleAutomaton> _nacAutomata; // maps NAC IDs to corresponding automata
+    protected DeterministicRunContext _context;
 
     public DeterministicRunner(IRuleAutomaton automaton) {
         super(automaton);
 
         _context = new DeterministicRunContext(automaton.getInitialState());
-        _nacAutomata = new HashMap<>();
     }
+
+    /**
+     * Constructor for NAC runners
+     *
+     * @param automaton
+     * @param matchBuffers
+     */
+    public DeterministicRunner(IRuleAutomaton automaton, Map<String, ArrayList<IEvent>> matchBuffers) {
+        super(automaton, true);
+
+        _context = new DeterministicRunContext(automaton.getInitialState(), matchBuffers);
+    }
+
 
     @Override
     public void fire(IEvent e) {
+        ArrayList<DeterministicRunner> nacRunnersCopy = new ArrayList<>();
+        nacRunnersCopy.addAll(_context.getNacRunners());
+        nacRunnersCopy.forEach(nacRunner -> nacRunner.fire(e));
+
         ITransition t = _context.getCurrentState().pickTransition(e);
 
         if (t == null) {
-            logger.debug("Can't transition (" + e + ")");
+            Logger.debug("Can't transition (" + e + ")");
 
-            reset();
+            resetContext();
         } else {
             if (_context.testPredicates(t.getPredicates(), t.getMatchbufferKey(), e)) {
-                logger.debug("Transitioning : " + t + " (" + e + ")");
+                Logger.debug("Transitioning : " + t + " (" + e + ")");
 
                 // Save current event in match buffer or discard it depending on the transition's type
                 switch (t.getType()) {
@@ -54,17 +63,27 @@ public final class DeterministicRunner extends AbstractAutomatonRunner {
                     case TRANSITION_DROP:
                 }
 
-                // Start NACs if there are any NAC START markers on the current transition
-                if (!t.getStartNacMarkers().isEmpty()) {
-                    for (IStartNacMarker startNacMarker : t.getStartNacMarkers()) {
-                        startNac(startNacMarker.getNacId(), startNacMarker.getNacRule());
-                    }
-                }
+                // NAC markers are ignored for NAC runners
+                if (!_isNac) {
+                    // Start NACs if there are any NAC START markers on the current transition
+                    if (!t.getNacBeginMarkers().isEmpty()) {
+                        for (INacBeginMarker startNacMarker : t.getNacBeginMarkers()) {
+                            Optional<DeterministicRunner> nacRunner = _context.startNac(startNacMarker.getNacId(), startNacMarker.getNacRule());
 
-                // Stop NACs if there are any NAC STOP markers on the current transition
-                if (!t.getStopNacMarkers().isEmpty()) {
-                    for (IStopNacMarker stopNacMarker : t.getStopNacMarkers()) {
-                        stopNac(stopNacMarker.getNacId());
+                            if (nacRunner.isPresent()) {
+                                nacRunner.get().registerPatternObserver((Collection<IEvent> pattern) -> {
+                                    Logger.debug("NAC matched, resetting run context");
+                                    resetContext();
+                                });
+                            }
+                        }
+                    }
+
+                    // Stop NACs if there are any NAC STOP markers on the current transition
+                    if (!t.getNacEndMarkers().isEmpty()) {
+                        for (INacEndMarker stopNacMarker : t.getNacEndMarkers()) {
+                            _context.stopNac(stopNacMarker.getNacId());
+                        }
                     }
                 }
 
@@ -75,35 +94,23 @@ public final class DeterministicRunner extends AbstractAutomatonRunner {
                 _context.getCurrentState().performActions();
 
                 if (_context.isCurrentStateFinal()) {
-                    logger.debug("Final state reached");
+                    Logger.debug("Final state reached");
 
-                    // If the final state has been reached, post the found pattern and reset the automaton
+                    // If the final state has been reached, post the found pattern and resetContext the automaton
                     postPattern(_context.getMatchBuffers().collect(Collectors.toList()));
-                    reset();
+                    resetContext();
                 }
             }
         }
     }
 
-    /**
-     * Get back to initial state, clear match buffer
-     */
-    private void reset() {
+    private void resetContext() {
         _context.updateCurrentState(_automaton.getInitialState());
-        _context.clearMatchBuffers();
+        if (!_isNac) {
+            _context.clearNacRunners();
+            _context.clearMatchBuffers();
+        }
 
-        logger.debug("Automaton reset");
-    }
-
-    public void startNac(String nacId, IRule nacRule) {
-        logger.debug("NAC started : " + nacId + " | " + nacRule);
-
-        // TODO generate automaton and add it with key nacId
-    }
-
-    public void stopNac(String nacId) {
-        logger.debug("NAC stopped : " + nacId);
-
-        // TODO remove the automaton at key nacId
+        Logger.debug("Run context reset");
     }
 }
