@@ -34,6 +34,11 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
         subContextsCopy.addAll(_context.getSubContexts());
 
         for (DeterministicRunContext currentSubContext : subContextsCopy) {
+            // Fire NACs
+            ArrayList<DeterministicRunner> nacRunnersCopy = new ArrayList<>();
+            nacRunnersCopy.addAll(currentSubContext.getNacRunners());
+            nacRunnersCopy.forEach(nacRunner -> nacRunner.fire(e));
+
             ITransition t = currentSubContext.getCurrentState().pickTransition(e);
 
             if (t == null) {
@@ -49,10 +54,35 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
                             IState nextState = t.getTarget();
 
                             if (!nextState.isFinal()) {
-                                DeterministicRunContext newSubContext = _context.addSubContext(nextState, currentSubContext.getMatchBuffersMap());
+                                DeterministicRunContext newSubContext = _context.addSubContext(nextState,
+                                        currentSubContext.getMatchBuffersMap(), currentSubContext.getNacRunnersMap());
 
                                 // Update match buffer
                                 newSubContext.appendEvent(e, t.getMatchbufferKey());
+
+                                // NAC markers are ignored for NAC runners
+                                if (!_isNac) {
+                                    // Start NACs if there are any NAC START markers on the current transition
+                                    if (!t.getNacBeginMarkers().isEmpty()) {
+                                        for (INacBeginMarker startNacMarker : t.getNacBeginMarkers()) {
+                                            Optional<DeterministicRunner> nacRunner = newSubContext.startNac(startNacMarker.getNacId(), startNacMarker.getNacRule());
+
+                                            if (nacRunner.isPresent()) {
+                                                nacRunner.get().registerPatternObserver((Collection<Event> pattern) -> {
+                                                    Logger.debug("NAC matched, removing subcontext " + newSubContext.getContextId());
+                                                    _context.getSubContexts().remove(newSubContext);
+                                                });
+                                            }
+                                        }
+                                    }
+
+                                    // Stop NACs if there are any NAC STOP markers on the current transition
+                                    if (!t.getNacEndMarkers().isEmpty()) {
+                                        for (INacEndMarker stopNacMarker : t.getNacEndMarkers()) {
+                                            newSubContext.stopNac(stopNacMarker.getNacId());
+                                        }
+                                    }
+                                }
                             } else {
                                 Logger.debug("Final state reached");
 

@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 /**
  * Created by william.braik on 25/05/2016.
  */
-public class DeterministicRunContext {
+public class DeterministicRunContext extends AbstractRunContext {
 
     private final Logger Logger = LoggerFactory.getLogger(DeterministicRunContext.class);
 
@@ -25,17 +25,27 @@ public class DeterministicRunContext {
     private Map<String, DeterministicRunner> _nacRunners; // maps NAC IDs to corresponding automata
 
     public DeterministicRunContext(IState initialState) {
+        super();
         _currentState = initialState;
         _matchBuffers = new HashMap<>();
         _nacRunners = new HashMap<>();
     }
 
     public DeterministicRunContext(IState initialState, Map<String, ArrayList<Event>> matchBuffers) {
+        super();
         _currentState = initialState;
         _matchBuffers = new HashMap<>(); // FIXME inefficient : matchbuffers don't need to be copied to each NAC / subcontext!
         _matchBuffers.putAll(matchBuffers);
-        //_matchBuffers = matchBuffers;
         _nacRunners = new HashMap<>();
+    }
+
+    public DeterministicRunContext(IState initialState, Map<String, ArrayList<Event>> matchBuffers, Map<String, DeterministicRunner> nacRunners) {
+        super();
+        _currentState = initialState;
+        _matchBuffers = new HashMap<>();
+        _matchBuffers.putAll(matchBuffers);
+        _nacRunners = new HashMap<>(); // FIXME inefficient : NACS might not need to be copied
+        _nacRunners.putAll(nacRunners);
     }
 
     public boolean isCurrentStateFinal() {
@@ -152,6 +162,6 @@ public class DeterministicRunContext {
     }
 
     public String toString() {
-        return "(" + _currentState + ", " + _matchBuffers + ")";
+        return _contextId + ":(" + _currentState + ", " + _matchBuffers + ")";
     }
 }
