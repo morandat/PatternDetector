@@ -25,14 +25,15 @@ public class DeterministicRunner extends AbstractAutomatonRunner {
         _context = new DeterministicRunContext(automaton.getInitialState());
     }
 
-    public DeterministicRunner(IRuleAutomaton automaton, Map<String, ArrayList<IEvent>> matchBuffers) {
+    public DeterministicRunner(IRuleAutomaton automaton, Map<String, ArrayList<Event>> matchBuffers) {
         super(automaton, true);
 
         _context = new DeterministicRunContext(automaton.getInitialState(), matchBuffers);
     }
 
     @Override
-    public void fire(IEvent e) {
+    public void fire(Event e) {
+        // Fire NACs
         ArrayList<DeterministicRunner> nacRunnersCopy = new ArrayList<>();
         nacRunnersCopy.addAll(_context.getNacRunners());
         nacRunnersCopy.forEach(nacRunner -> nacRunner.fire(e));
@@ -64,14 +65,13 @@ public class DeterministicRunner extends AbstractAutomatonRunner {
                             Optional<DeterministicRunner> nacRunner = _context.startNac(startNacMarker.getNacId(), startNacMarker.getNacRule());
 
                             if (nacRunner.isPresent()) {
-                                nacRunner.get().registerPatternObserver((Collection<IEvent> pattern) -> {
+                                nacRunner.get().registerPatternObserver((Collection<Event> pattern) -> {
                                     Logger.debug("NAC matched, resetting run context");
                                     resetContext();
                                 });
                             }
                         }
                     }
-
                     // Stop NACs if there are any NAC STOP markers on the current transition
                     if (!t.getNacEndMarkers().isEmpty()) {
                         for (INacEndMarker stopNacMarker : t.getNacEndMarkers()) {
@@ -90,14 +90,14 @@ public class DeterministicRunner extends AbstractAutomatonRunner {
                     Logger.debug("Final state reached");
 
                     // If the final state has been reached, post the found pattern and resetContext the automaton
-                    postPattern(_context.getMatchBuffersAsStream().collect(Collectors.toList()));
+                    postPattern(_context.getMatchBuffersStream().collect(Collectors.toList()));
                     resetContext();
                 }
             }
         }
     }
 
-    private void resetContext() {
+    public void resetContext() {
         _context.updateCurrentState(_automaton.getInitialState());
         if (!_isNac) {
             _context.clearNacRunners();

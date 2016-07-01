@@ -1,6 +1,6 @@
 package fr.labri.patterndetector.runtime.predicates;
 
-import fr.labri.patterndetector.runtime.IEvent;
+import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.types.IValue;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class FieldKleeneStaticIndex extends AbstractField {
     }
 
     @Override
-    public boolean isResolvable(ArrayList<IEvent> matchBuffer, String currentMatchBufferKey, IEvent currentEvent) {
+    public boolean isResolvable(ArrayList<Event> matchBuffer, String currentMatchBufferKey, Event currentEvent) {
         if (_patternId.equals(currentMatchBufferKey)) { // currently processed kleene
             if (matchBuffer == null) { // current event is first event of the kleene
                 if (_index != 0)
@@ -41,7 +41,7 @@ public class FieldKleeneStaticIndex extends AbstractField {
     }
 
     @Override
-    public Optional<IValue<?>> resolve(ArrayList<IEvent> matchBuffer, String currentMatchBufferKey, IEvent currentEvent) {
+    public Optional<IValue<?>> resolve(ArrayList<Event> matchBuffer, String currentMatchBufferKey, Event currentEvent) {
         if (_patternId.equals(currentMatchBufferKey)) {
             if (matchBuffer == null) { // first event of the current kleene seq
                 return Optional.ofNullable(currentEvent.getPayload().get(_fieldName));
@@ -51,7 +51,7 @@ public class FieldKleeneStaticIndex extends AbstractField {
                 if (_index == currentIndex) {
                     return Optional.ofNullable(currentEvent.getPayload().get(_fieldName));
                 } else {
-                    IEvent event = matchBuffer.get(_index);
+                    Event event = matchBuffer.get(_index);
                     return Optional.ofNullable(event.getPayload().get(_fieldName));
                 }
             }
@@ -59,7 +59,7 @@ public class FieldKleeneStaticIndex extends AbstractField {
             if (_index >= matchBuffer.size()) {
                 return Optional.empty();
             } else {
-                IEvent event = matchBuffer.get(_index);
+                Event event = matchBuffer.get(_index);
                 return Optional.ofNullable(event.getPayload().get(_fieldName));
             }
         }

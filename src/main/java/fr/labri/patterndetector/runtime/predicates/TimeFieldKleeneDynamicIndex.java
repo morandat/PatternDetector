@@ -1,6 +1,6 @@
 package fr.labri.patterndetector.runtime.predicates;
 
-import fr.labri.patterndetector.runtime.IEvent;
+import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.types.IValue;
 import fr.labri.patterndetector.types.LongValue;
 
@@ -18,7 +18,7 @@ public class TimeFieldKleeneDynamicIndex extends FieldKleeneDynamicIndex {
     }
 
     @Override
-    public Optional<IValue<?>> resolve(ArrayList<IEvent> matchBuffer, String currentMatchBufferKey, IEvent currentEvent) {
+    public Optional<IValue<?>> resolve(ArrayList<Event> matchBuffer, String currentMatchBufferKey, Event currentEvent) {
         if (matchBuffer == null) { // first event of the current kleene seq
             return Optional.of(new LongValue(currentEvent.getTimestamp()));
         } else { // at least one event already in current kleene seq
@@ -28,7 +28,7 @@ public class TimeFieldKleeneDynamicIndex extends FieldKleeneDynamicIndex {
             if (fetchIndex == currentIndex) {
                 return Optional.of(new LongValue(currentEvent.getTimestamp()));
             } else {
-                IEvent event = matchBuffer.get(fetchIndex);
+                Event event = matchBuffer.get(fetchIndex);
                 return Optional.of(new LongValue(event.getTimestamp()));
             }
         }

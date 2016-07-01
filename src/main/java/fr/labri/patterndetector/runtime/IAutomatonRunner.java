@@ -11,7 +11,7 @@ public interface IAutomatonRunner {
      *
      * @param e the event to read
      */
-    void fire(IEvent e);
+    void fire(Event e);
 
     /**
      * Register a pattern observer.
@@ -25,5 +25,10 @@ public interface IAutomatonRunner {
      *
      * @param pattern The detected pattern.
      */
-    void postPattern(Collection<IEvent> pattern);
+    void postPattern(Collection<Event> pattern);
+
+    /**
+     * Reset context
+     */
+    void resetContext();
 }

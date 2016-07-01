@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * Created by William Braik on 6/22/2015.
  */
-public class Event implements IEvent {
+public class Event {
 
     private String _type; // Type of event (ex: View, Add...)
     private long _timestamp; // Time of occurence of the event
@@ -28,30 +28,25 @@ public class Event implements IEvent {
         _payload = payload;
     }
 
-    @Override
     public String getType() {
         return _type;
     }
 
-    @Override
     public long getTimestamp() {
         return _timestamp;
     }
 
-    @Override
     public Map<String, IValue<?>> getPayload() {
         return _payload;
     }
 
-    @Override
-    public IEvent setData(String key, Integer value) {
+    public Event setData(String key, Integer value) {
         _payload.put(key, new LongValue(value));
 
         return this;
     }
 
-    @Override
-    public IEvent setData(String key, String value) {
+    public Event setData(String key, String value) {
         _payload.put(key, new StringValue(value));
 
         return this;

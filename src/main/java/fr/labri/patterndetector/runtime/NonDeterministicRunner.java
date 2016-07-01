@@ -7,8 +7,12 @@ package fr.labri.patterndetector.runtime;
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.automaton.IState;
 import fr.labri.patterndetector.automaton.ITransition;
+import fr.labri.patterndetector.runtime.predicates.INacBeginMarker;
+import fr.labri.patterndetector.runtime.predicates.INacEndMarker;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -25,13 +29,12 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
     }
 
     @Override
-    public void fire(IEvent e) {
+    public void fire(Event e) {
         ArrayList<DeterministicRunContext> subContextsCopy = new ArrayList<>();
         subContextsCopy.addAll(_context.getSubContexts());
 
         for (DeterministicRunContext currentSubContext : subContextsCopy) {
-            IState s = currentSubContext.getCurrentState();
-            ITransition t = s.pickTransition(e);
+            ITransition t = currentSubContext.getCurrentState().pickTransition(e);
 
             if (t == null) {
                 Logger.debug("Can't transition (" + e + ")");
@@ -46,15 +49,14 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
                             IState nextState = t.getTarget();
 
                             if (!nextState.isFinal()) {
-                                DeterministicRunContext newSubContext = _context.addSubContext(nextState, currentSubContext.getMatchBuffers());
+                                DeterministicRunContext newSubContext = _context.addSubContext(nextState, currentSubContext.getMatchBuffersMap());
 
                                 // Update match buffer
                                 newSubContext.appendEvent(e, t.getMatchbufferKey());
                             } else {
                                 Logger.debug("Final state reached");
 
-                                // If the final state has been reached, post the found pattern and resetContext the automaton
-                                ArrayList<IEvent> pattern = new ArrayList<>(currentSubContext.getMatchBuffersAsStream().collect(Collectors.toList()));
+                                ArrayList<Event> pattern = new ArrayList<>(currentSubContext.getMatchBuffersStream().collect(Collectors.toList()));
                                 pattern.add(e);
                                 postPattern(pattern);
                             }
@@ -70,5 +72,12 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
         }
 
         Logger.debug("Current states : " + _context.getSubContexts());
+    }
+
+    @Override
+    public void resetContext() {
+        _context.clearSubContexts();
+
+        Logger.debug("Run context reset");
     }
 }

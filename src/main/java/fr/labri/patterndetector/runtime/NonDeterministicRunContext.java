@@ -25,17 +25,14 @@ public class NonDeterministicRunContext {
         return _subContexts;
     }
 
-    public DeterministicRunContext addSubContext(IState initialState) {
-        DeterministicRunContext subContext = new DeterministicRunContext(initialState);
+    public DeterministicRunContext addSubContext(IState initialState, Map<String, ArrayList<Event>> matchBuffers) {
+        DeterministicRunContext subContext = new DeterministicRunContext(initialState, matchBuffers);
         _subContexts.add(subContext);
 
         return subContext;
     }
 
-    public DeterministicRunContext addSubContext(IState initialState, Map<String, ArrayList<IEvent>> matchBuffers) {
-        DeterministicRunContext subContext = new DeterministicRunContext(initialState, matchBuffers);
-        _subContexts.add(subContext);
-
-        return subContext;
+    public void clearSubContexts() {
+        _subContexts.clear();
     }
 }

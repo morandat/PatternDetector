@@ -2,7 +2,7 @@ package fr.labri.patterndetector.rule;
 
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
-import fr.labri.patterndetector.runtime.IEvent;
+import fr.labri.patterndetector.runtime.Event;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 @RunWith(Parameterized.class)
 public class TestSequenceDetection extends AbstractTestDetection {
 
-    public Stream<? extends IEvent> generate() {
+    public Stream<? extends Event> generate() {
         return Arrays.asList(
                 new Event("x", 1),
                 new Event("a", 2).setData("x", 1),

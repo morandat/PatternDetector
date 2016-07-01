@@ -21,7 +21,7 @@ public class DeterministicRunContext {
     private final Logger Logger = LoggerFactory.getLogger(DeterministicRunContext.class);
 
     private IState _currentState;
-    private Map<String, ArrayList<IEvent>> _matchBuffers; // maps pattern ids to corresponding pattern events
+    private Map<String, ArrayList<Event>> _matchBuffers; // maps pattern ids to corresponding pattern events
     private Map<String, DeterministicRunner> _nacRunners; // maps NAC IDs to corresponding automata
 
     public DeterministicRunContext(IState initialState) {
@@ -30,7 +30,7 @@ public class DeterministicRunContext {
         _nacRunners = new HashMap<>();
     }
 
-    public DeterministicRunContext(IState initialState, Map<String, ArrayList<IEvent>> matchBuffers) {
+    public DeterministicRunContext(IState initialState, Map<String, ArrayList<Event>> matchBuffers) {
         _currentState = initialState;
         _matchBuffers = new HashMap<>(); // FIXME inefficient : matchbuffers don't need to be copied to each NAC / subcontext!
         _matchBuffers.putAll(matchBuffers);
@@ -50,28 +50,32 @@ public class DeterministicRunContext {
         _currentState = newState;
     }
 
-    public Map<String, ArrayList<IEvent>> getMatchBuffers() {
+    public Map<String, ArrayList<Event>> getMatchBuffersMap() {
         return _matchBuffers;
     }
 
-    public ArrayList<IEvent> getMatchBuffer(String patternId) {
+    public ArrayList<Event> getMatchBuffer(String patternId) {
         return _matchBuffers.get(patternId);
     }
 
-    public Stream<IEvent> getMatchBuffersAsStream() {
-        ArrayList<IEvent> matchBuffer = new ArrayList<>();
+    public Stream<Event> getMatchBuffersStream() {
+        ArrayList<Event> matchBuffer = new ArrayList<>();
         _matchBuffers.values().forEach(matchBuffer::addAll);
 
         return matchBuffer.stream()
                 .sorted((e1, e2) -> new Long(e1.getTimestamp()).compareTo(e2.getTimestamp())); // make sure it's sorted by timestamp
     }
 
+    public Map<String, DeterministicRunner> getNacRunnersMap() {
+        return _nacRunners;
+    }
+
     public Collection<DeterministicRunner> getNacRunners() {
         return _nacRunners.values();
     }
 
-    public void appendEvent(IEvent event, String patternId) {
-        ArrayList<IEvent> matchBuffer = getMatchBuffer(patternId);
+    public void appendEvent(Event event, String patternId) {
+        ArrayList<Event> matchBuffer = getMatchBuffer(patternId);
         if (matchBuffer == null) {
             matchBuffer = new ArrayList<>();
         }
@@ -87,7 +91,7 @@ public class DeterministicRunContext {
         _nacRunners.clear();
     }
 
-    public boolean testPredicates(ArrayList<IPredicate> predicates, String currentMatchBufferKey, IEvent currentEvent) {
+    public boolean testPredicates(ArrayList<IPredicate> predicates, String currentMatchBufferKey, Event currentEvent) {
         // No predicates to test
         if (predicates.isEmpty()) {
             return true;
@@ -101,7 +105,7 @@ public class DeterministicRunContext {
             for (IField field : fields) {
                 Optional<IValue<?>> value;
                 String patternId = field.getPatternId();
-                ArrayList<IEvent> matchBuffer = _matchBuffers.get(patternId);
+                ArrayList<Event> matchBuffer = _matchBuffers.get(patternId);
 
                 skipPredicateCheck = !field.isResolvable(matchBuffer, currentMatchBufferKey, currentEvent);
 

@@ -1,6 +1,6 @@
 package fr.labri.patterndetector.runtime.predicates;
 
-import fr.labri.patterndetector.runtime.IEvent;
+import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.types.IValue;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public interface IField {
      * @param currentEvent
      * @return
      */
-    boolean isResolvable(ArrayList<IEvent> matchBuffer, String currentMatchBufferKey, IEvent currentEvent);
+    boolean isResolvable(ArrayList<Event> matchBuffer, String currentMatchBufferKey, Event currentEvent);
 
-    Optional<IValue<?>> resolve(ArrayList<IEvent> matchBuffer, String currentMatchBufferKey, IEvent currentEvent);
+    Optional<IValue<?>> resolve(ArrayList<Event> matchBuffer, String currentMatchBufferKey, Event currentEvent);
 }

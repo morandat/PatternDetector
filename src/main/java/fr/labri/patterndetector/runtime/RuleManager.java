@@ -55,12 +55,12 @@ public final class RuleManager implements IPatternObserver {
         }
     }
 
-    public void dispatchEvent(IEvent event) {
+    public void dispatchEvent(Event event) {
         _runners.forEach(runner -> runner.fire(event));
     }
 
     @Override
-    public void notifyPattern(Collection<IEvent> pattern) {
+    public void notifyPattern(Collection<Event> pattern) {
         Logger.info("Pattern found : " + pattern);
     }
 }

@@ -35,7 +35,7 @@ public class Main {
         detector.detect(Main.generate());
     }
 
-    private static Stream<? extends IEvent> generate() {
+    private static Stream<? extends Event> generate() {
         return Arrays.asList(
                 new Event("View", 1)
                         .setData("productId", "sku"),

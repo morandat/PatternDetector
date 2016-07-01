@@ -1,6 +1,6 @@
 package fr.labri.patterndetector.automaton;
 
-import fr.labri.patterndetector.runtime.IEvent;
+import fr.labri.patterndetector.runtime.Event;
 
 import java.util.*;
 
@@ -144,7 +144,7 @@ public class State implements IState {
     }
 
     @Override
-    public ITransition pickTransition(IEvent event) {
+    public ITransition pickTransition(Event event) {
         List<ITransition> transitions = _transitions.get(event.getType());
         if (transitions == null) {
             transitions = _transitions.get(Transition.LABEL_STAR);

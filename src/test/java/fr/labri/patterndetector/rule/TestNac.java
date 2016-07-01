@@ -2,7 +2,7 @@ package fr.labri.patterndetector.rule;
 
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
-import fr.labri.patterndetector.runtime.IEvent;
+import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.runtime.predicates.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -14,11 +14,11 @@ import java.util.stream.Stream;
 @RunWith(Parameterized.class)
 public class TestNac extends AbstractTestDetection {
 
-    public Stream<? extends IEvent> generate() {
+    public Stream<? extends Event> generate() {
         return scenario();
     }
 
-    public static Stream<? extends IEvent> scenario() {
+    public static Stream<? extends Event> scenario() {
         return Arrays.asList(
                 new Event("View", 1)
                         .setData("productId", "sku"),

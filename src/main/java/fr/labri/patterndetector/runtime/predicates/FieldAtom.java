@@ -1,6 +1,6 @@
 package fr.labri.patterndetector.runtime.predicates;
 
-import fr.labri.patterndetector.runtime.IEvent;
+import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.types.IValue;
 
 import java.util.ArrayList;
@@ -16,16 +16,16 @@ public class FieldAtom extends AbstractField {
     }
 
     @Override
-    public boolean isResolvable(ArrayList<IEvent> matchBuffer, String currentMatchBufferKey, IEvent currentEvent) {
+    public boolean isResolvable(ArrayList<Event> matchBuffer, String currentMatchBufferKey, Event currentEvent) {
         return true;
     }
 
     @Override
-    public Optional<IValue<?>> resolve(ArrayList<IEvent> matchBuffer, String currentMatchBufferKey, IEvent currentEvent) {
+    public Optional<IValue<?>> resolve(ArrayList<Event> matchBuffer, String currentMatchBufferKey, Event currentEvent) {
         if (_patternId.equals(currentMatchBufferKey)) {
             return Optional.ofNullable(currentEvent.getPayload().get(_fieldName));
         } else {
-            IEvent event = matchBuffer.get(0); // atoms only have one event in the matchbuffer, so this works
+            Event event = matchBuffer.get(0); // atoms only have one event in the matchbuffer, so this works
             return Optional.ofNullable(event.getPayload().get(_fieldName));
         }
     }

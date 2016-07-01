@@ -2,7 +2,7 @@ package fr.labri.patterndetector.rule;
 
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
-import fr.labri.patterndetector.runtime.IEvent;
+import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.runtime.predicates.FieldAtom;
 import fr.labri.patterndetector.runtime.predicates.StringPredicateArity2;
 import org.junit.runner.RunWith;
@@ -15,11 +15,11 @@ import java.util.stream.Stream;
 @RunWith(Parameterized.class)
 public class TestScenario3Detection extends AbstractTestDetection {
 
-    public Stream<? extends IEvent> generate() {
+    public Stream<? extends Event> generate() {
         return scenario();
     }
 
-    public static Stream<? extends IEvent> scenario() {
+    public static Stream<? extends Event> scenario() {
         return Arrays.asList(
                 new Event("PayOpts", 1)
                         .setData("url", "p")

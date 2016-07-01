@@ -2,7 +2,7 @@ package fr.labri.patterndetector.rule;
 
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
-import fr.labri.patterndetector.runtime.IEvent;
+import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.runtime.predicates.LongPredicateArity2;
 import fr.labri.patterndetector.runtime.predicates.TimeFieldAtom;
 import fr.labri.patterndetector.runtime.predicates.TimeFieldKleeneDynamicIndex;
@@ -17,11 +17,11 @@ import java.util.stream.Stream;
 @RunWith(Parameterized.class)
 public class TestTimeConstraintKleeneStatic extends AbstractTestDetection {
 
-    public Stream<? extends IEvent> generate() {
+    public Stream<? extends Event> generate() {
         return scenario();
     }
 
-    public static Stream<? extends IEvent> scenario() {
+    public static Stream<? extends Event> scenario() {
         return Arrays.asList(
                 new Event("k", 1),
                 new Event("k", 2),

@@ -1,6 +1,6 @@
 package fr.labri.patterndetector.runtime.predicates;
 
-import fr.labri.patterndetector.runtime.IEvent;
+import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.types.IValue;
 import fr.labri.patterndetector.types.LongValue;
 
@@ -17,7 +17,7 @@ public class TimeFieldKleeneStaticIndex extends FieldKleeneStaticIndex {
     }
 
     @Override
-    public Optional<IValue<?>> resolve(ArrayList<IEvent> matchBuffer, String currentMatchBufferKey, IEvent currentEvent) {
+    public Optional<IValue<?>> resolve(ArrayList<Event> matchBuffer, String currentMatchBufferKey, Event currentEvent) {
         if (_patternId.equals(currentMatchBufferKey)) {
             if (matchBuffer == null) { // first event of the current kleene seq
                 return Optional.of(new LongValue(currentEvent.getTimestamp()));
@@ -27,7 +27,7 @@ public class TimeFieldKleeneStaticIndex extends FieldKleeneStaticIndex {
                 if (_index == currentIndex) {
                     return Optional.of(new LongValue(currentEvent.getTimestamp()));
                 } else {
-                    IEvent event = matchBuffer.get(_index);
+                    Event event = matchBuffer.get(_index);
                     return Optional.of(new LongValue(event.getTimestamp()));
                 }
             }
@@ -35,7 +35,7 @@ public class TimeFieldKleeneStaticIndex extends FieldKleeneStaticIndex {
             if (_index >= matchBuffer.size()) {
                 return Optional.empty();
             } else {
-                IEvent event = matchBuffer.get(_index);
+                Event event = matchBuffer.get(_index);
                 return Optional.of(new LongValue(event.getTimestamp()));
             }
         }
