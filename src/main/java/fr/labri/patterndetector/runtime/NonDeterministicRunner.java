@@ -9,6 +9,7 @@ import fr.labri.patterndetector.automaton.IState;
 import fr.labri.patterndetector.automaton.ITransition;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Fork and play, no reset
@@ -45,15 +46,17 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
                             IState nextState = t.getTarget();
 
                             if (!nextState.isFinal()) {
-                                DeterministicRunContext newSubContext = _context.addSubContext(nextState);
+                                DeterministicRunContext newSubContext = _context.addSubContext(nextState, currentSubContext.getMatchBuffers());
 
                                 // Update match buffer
-                                newSubContext.appendEvent(e, t.getMatchbufferKey()); // FIXME non-deterministic matchbuffers are buggy. All subcontexts should share the parent matchbuffer
+                                newSubContext.appendEvent(e, t.getMatchbufferKey());
                             } else {
                                 Logger.debug("Final state reached");
 
                                 // If the final state has been reached, post the found pattern and resetContext the automaton
-                                //postPattern(_context.getMatchBuffers().collect(Collectors.toList())); FIXME buggy
+                                ArrayList<IEvent> pattern = new ArrayList<>(currentSubContext.getMatchBuffersAsStream().collect(Collectors.toList()));
+                                pattern.add(e);
+                                postPattern(pattern);
                             }
 
                             // function callbacks

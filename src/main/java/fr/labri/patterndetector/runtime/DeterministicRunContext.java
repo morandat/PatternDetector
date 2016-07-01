@@ -32,7 +32,9 @@ public class DeterministicRunContext {
 
     public DeterministicRunContext(IState initialState, Map<String, ArrayList<IEvent>> matchBuffers) {
         _currentState = initialState;
-        _matchBuffers = matchBuffers;
+        _matchBuffers = new HashMap<>(); // FIXME inefficient : matchbuffers don't need to be copied to each NAC / subcontext!
+        _matchBuffers.putAll(matchBuffers);
+        //_matchBuffers = matchBuffers;
         _nacRunners = new HashMap<>();
     }
 
@@ -48,11 +50,15 @@ public class DeterministicRunContext {
         _currentState = newState;
     }
 
+    public Map<String, ArrayList<IEvent>> getMatchBuffers() {
+        return _matchBuffers;
+    }
+
     public ArrayList<IEvent> getMatchBuffer(String patternId) {
         return _matchBuffers.get(patternId);
     }
 
-    public Stream<IEvent> getMatchBuffers() {
+    public Stream<IEvent> getMatchBuffersAsStream() {
         ArrayList<IEvent> matchBuffer = new ArrayList<>();
         _matchBuffers.values().forEach(matchBuffer::addAll);
 

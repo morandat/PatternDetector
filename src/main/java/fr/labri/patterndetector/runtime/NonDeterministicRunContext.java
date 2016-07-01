@@ -3,6 +3,7 @@ package fr.labri.patterndetector.runtime;
 import fr.labri.patterndetector.automaton.IState;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -31,14 +32,10 @@ public class NonDeterministicRunContext {
         return subContext;
     }
 
-    public Stream<IEvent> getMatchBuffers() {
-        ArrayList<IEvent> matchBuffer = new ArrayList<>();
+    public DeterministicRunContext addSubContext(IState initialState, Map<String, ArrayList<IEvent>> matchBuffers) {
+        DeterministicRunContext subContext = new DeterministicRunContext(initialState, matchBuffers);
+        _subContexts.add(subContext);
 
-        for (DeterministicRunContext subContext : _subContexts) {
-            subContext.getMatchBuffers().forEach(matchBuffer::add);
-        }
-
-        return matchBuffer.stream()
-                .sorted((e1, e2) -> new Long(e1.getTimestamp()).compareTo(e2.getTimestamp())); // make sure it's sorted by timestamp
+        return subContext;
     }
 }

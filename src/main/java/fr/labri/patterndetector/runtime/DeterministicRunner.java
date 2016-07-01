@@ -25,18 +25,11 @@ public class DeterministicRunner extends AbstractAutomatonRunner {
         _context = new DeterministicRunContext(automaton.getInitialState());
     }
 
-    /**
-     * Constructor for NAC runners
-     *
-     * @param automaton
-     * @param matchBuffers
-     */
     public DeterministicRunner(IRuleAutomaton automaton, Map<String, ArrayList<IEvent>> matchBuffers) {
         super(automaton, true);
 
         _context = new DeterministicRunContext(automaton.getInitialState(), matchBuffers);
     }
-
 
     @Override
     public void fire(IEvent e) {
@@ -97,7 +90,7 @@ public class DeterministicRunner extends AbstractAutomatonRunner {
                     Logger.debug("Final state reached");
 
                     // If the final state has been reached, post the found pattern and resetContext the automaton
-                    postPattern(_context.getMatchBuffers().collect(Collectors.toList()));
+                    postPattern(_context.getMatchBuffersAsStream().collect(Collectors.toList()));
                     resetContext();
                 }
             }
