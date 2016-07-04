@@ -3,7 +3,10 @@ package fr.labri.patterndetector.runtime;
 import fr.labri.patterndetector.rule.*;
 import fr.labri.patterndetector.runtime.predicates.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -12,7 +15,6 @@ import java.util.stream.Stream;
 public class Main {
 
     public static void main(String[] args) {
-
         IRule nacRule = new Atom("AddBasket")
                 .addPredicate(new StringPredicateArity2(
                         new FieldAtom("0", "productId"),
@@ -37,15 +39,12 @@ public class Main {
 
     private static Stream<? extends Event> generate() {
         return Arrays.asList(
-                new Event("View", 1)
-                        .setData("productId", "sku"),
-                new Event("View", 2)
-                        .setData("productId", "sku2"),
-                new Event("AddBasket", 4)
-                        .setData("productId", "sku"),
-                new Event("View", 5)
-                        .setData("productId", "sku"),
-                new Event("Exit", 6)
+                //new Event("View", 1).setData("productId", "sku"),
+                new Event("View", 4).setData("productId", "sku2"),
+                //new Event("AddBasket", 5).setData("productId", "sku"),
+                //new Event("View", 6).setData("productId", "sku"),
+                new Event("View", 7).setData("productId", "sku2"),
+                new Event("Exit", 10)
         ).stream();
     }
 }

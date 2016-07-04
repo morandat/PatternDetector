@@ -42,10 +42,10 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
             ITransition t = currentSubContext.getCurrentState().pickTransition(e);
 
             if (t == null) {
-                Logger.debug("Can't transition (" + e + ")");
+                Logger.debug(currentSubContext.getContextId() + " : can't transition (" + e + ")");
             } else {
                 if (currentSubContext.testPredicates(t.getPredicates(), t.getMatchbufferKey(), e)) {
-                    Logger.debug("Transitioning : " + t + " (" + e + ")");
+                    Logger.debug(currentSubContext.getContextId() + " : transitioning : " + t + " (" + e + ")");
 
                     // Save current event in match buffer or discard it depending on the transition's type
                     switch (t.getType()) {
@@ -56,6 +56,7 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
                             if (!nextState.isFinal()) {
                                 DeterministicRunContext newSubContext = _context.addSubContext(nextState,
                                         currentSubContext.getMatchBuffersMap(), currentSubContext.getNacRunnersMap());
+                                Logger.debug(currentSubContext.getContextId() + " : new subcontext created (" + newSubContext.getContextId() + ")");
 
                                 // Update match buffer
                                 newSubContext.appendEvent(e, t.getMatchbufferKey());
@@ -69,7 +70,7 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
 
                                             if (nacRunner.isPresent()) {
                                                 nacRunner.get().registerPatternObserver((Collection<Event> pattern) -> {
-                                                    Logger.debug("NAC matched, removing subcontext " + newSubContext.getContextId());
+                                                    Logger.debug(newSubContext.getContextId() + " : NAC matched, removing subcontext " + newSubContext.getContextId());
                                                     _context.getSubContexts().remove(newSubContext);
                                                 });
                                             }
@@ -84,7 +85,7 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
                                     }
                                 }
                             } else {
-                                Logger.debug("Final state reached");
+                                Logger.debug(currentSubContext.getContextId() + " : final state reached");
 
                                 ArrayList<Event> pattern = new ArrayList<>(currentSubContext.getMatchBuffersStream().collect(Collectors.toList()));
                                 pattern.add(e);
@@ -101,13 +102,18 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
             }
         }
 
-        Logger.debug("Current states : " + _context.getSubContexts());
+        Logger.debug(_context.getContextId() + " : current contexts : " + _context.getSubContexts());
     }
 
     @Override
-    public void resetContext() {
+    public void resetContext() { // FIXME currently unused
         _context.clearSubContexts();
 
-        Logger.debug("Run context reset");
+        Logger.debug(_context.getContextId() + " run context reset");
+    }
+
+    @Override
+    public long getContextId() {
+        return _context.getContextId();
     }
 }

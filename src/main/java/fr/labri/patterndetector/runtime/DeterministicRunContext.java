@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.function.IntFunction;
 import java.util.stream.Stream;
 
 /**
@@ -34,16 +33,14 @@ public class DeterministicRunContext extends AbstractRunContext {
     public DeterministicRunContext(IState initialState, Map<String, ArrayList<Event>> matchBuffers) {
         super();
         _currentState = initialState;
-        _matchBuffers = new HashMap<>(); // FIXME inefficient : matchbuffers don't need to be copied to each NAC / subcontext!
-        _matchBuffers.putAll(matchBuffers);
+        _matchBuffers = copyMatchBuffers(matchBuffers); // FIXME inefficient : matchbuffers might not need to be copied to each NAC / subcontext
         _nacRunners = new HashMap<>();
     }
 
     public DeterministicRunContext(IState initialState, Map<String, ArrayList<Event>> matchBuffers, Map<String, DeterministicRunner> nacRunners) {
         super();
         _currentState = initialState;
-        _matchBuffers = new HashMap<>();
-        _matchBuffers.putAll(matchBuffers);
+        _matchBuffers = copyMatchBuffers(matchBuffers);
         _nacRunners = new HashMap<>(); // FIXME inefficient : NACS might not need to be copied
         _nacRunners.putAll(nacRunners);
     }
@@ -141,14 +138,14 @@ public class DeterministicRunContext extends AbstractRunContext {
     }
 
     public Optional<DeterministicRunner> startNac(String nacId, IRule nacRule) {
-        if (!_nacRunners.containsKey(nacId)) {
-            Logger.debug("NAC started : " + nacId + " | " + nacRule);
-
+        if (!_nacRunners.containsKey(nacId)) { // check if this NAC was already started
             IRuleAutomaton nacPowerset = RuleAutomatonMaker.makeAutomaton(nacRule).powerset();
             nacPowerset.validate();
 
             DeterministicRunner nacRunner = new DeterministicRunner(nacPowerset, _matchBuffers);
             _nacRunners.put(nacId, nacRunner);
+
+            Logger.debug(_contextId + " : NAC \"" + nacId + "\" started with context " + nacRunner.getContextId() + " : " + nacRule);
 
             return Optional.of(nacRunner);
         } else
@@ -156,12 +153,21 @@ public class DeterministicRunContext extends AbstractRunContext {
     }
 
     public void stopNac(String nacId) {
-        Logger.debug("NAC stopped : " + nacId);
+        Logger.debug(_contextId + " : NAC stopped : " + nacId);
 
         _nacRunners.remove(nacId);
     }
 
     public String toString() {
         return _contextId + ":(" + _currentState + ", " + _matchBuffers + ")";
+    }
+
+    private Map<String, ArrayList<Event>> copyMatchBuffers(Map<String, ArrayList<Event>> matchBuffers) {
+        Map<String, ArrayList<Event>> copy = new HashMap<>();
+        for (Map.Entry<String, ArrayList<Event>> entry : matchBuffers.entrySet()) {
+            copy.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+        }
+
+        return copy;
     }
 }

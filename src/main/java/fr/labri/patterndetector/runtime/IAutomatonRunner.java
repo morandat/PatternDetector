@@ -31,4 +31,11 @@ public interface IAutomatonRunner {
      * Reset context
      */
     void resetContext();
+
+    /**
+     * Get context ID
+     *
+     * @return
+     */
+    public long getContextId();
 }

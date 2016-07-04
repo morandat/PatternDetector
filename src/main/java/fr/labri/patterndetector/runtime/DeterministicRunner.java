@@ -41,12 +41,12 @@ public class DeterministicRunner extends AbstractAutomatonRunner {
         ITransition t = _context.getCurrentState().pickTransition(e);
 
         if (t == null) {
-            Logger.debug("Can't transition (" + e + ")");
+            Logger.debug(getContextId() + " : can't transition (" + e + ")");
 
             resetContext();
         } else {
             if (_context.testPredicates(t.getPredicates(), t.getMatchbufferKey(), e)) {
-                Logger.debug("Transitioning : " + t + " (" + e + ")");
+                Logger.debug(getContextId() + " : transitioning : " + t + " (" + e + ")");
 
                 // Save current event in match buffer or discard it depending on the transition's type
                 switch (t.getType()) {
@@ -66,7 +66,7 @@ public class DeterministicRunner extends AbstractAutomatonRunner {
 
                             if (nacRunner.isPresent()) {
                                 nacRunner.get().registerPatternObserver((Collection<Event> pattern) -> {
-                                    Logger.debug("NAC matched, resetting run context");
+                                    Logger.debug(getContextId() + " : NAC matched, resetting run context");
                                     resetContext();
                                 });
                             }
@@ -87,7 +87,7 @@ public class DeterministicRunner extends AbstractAutomatonRunner {
                 _context.getCurrentState().performActions();
 
                 if (_context.isCurrentStateFinal()) {
-                    Logger.debug("Final state reached");
+                    Logger.debug(getContextId() + " : final state reached");
 
                     // If the final state has been reached, post the found pattern and resetContext the automaton
                     postPattern(_context.getMatchBuffersStream().collect(Collectors.toList()));
@@ -104,6 +104,11 @@ public class DeterministicRunner extends AbstractAutomatonRunner {
             _context.clearMatchBuffers();
         }
 
-        Logger.debug("Run context reset");
+        Logger.debug(getContextId() + " : run context reset");
+    }
+
+    @Override
+    public long getContextId() {
+        return _context.getContextId();
     }
 }
