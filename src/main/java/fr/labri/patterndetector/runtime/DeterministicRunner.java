@@ -6,19 +6,18 @@ package fr.labri.patterndetector.runtime;
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.automaton.ITransition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import fr.labri.patterndetector.runtime.predicates.INacBeginMarker;
+import fr.labri.patterndetector.runtime.predicates.INacEndMarker;
 
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Deterministic, reset when no transition found
+ * Deterministic, resetContext when no transition found
  */
-public final class DeterministicRunner extends AbstractAutomatonRunner {
+public class DeterministicRunner extends AbstractAutomatonRunner {
 
-    private final Logger logger = LoggerFactory.getLogger(DeterministicRunner.class);
-
-    private DeterministicRunContext _context;
+    protected DeterministicRunContext _context;
 
     public DeterministicRunner(IRuleAutomaton automaton) {
         super(automaton);
@@ -26,17 +25,28 @@ public final class DeterministicRunner extends AbstractAutomatonRunner {
         _context = new DeterministicRunContext(automaton.getInitialState());
     }
 
+    public DeterministicRunner(IRuleAutomaton automaton, Map<String, ArrayList<Event>> matchBuffers) {
+        super(automaton, true);
+
+        _context = new DeterministicRunContext(automaton.getInitialState(), matchBuffers);
+    }
+
     @Override
-    public void fire(IEvent e) {
+    public void fire(Event e) {
+        // Fire NACs
+        ArrayList<DeterministicRunner> nacRunnersCopy = new ArrayList<>();
+        nacRunnersCopy.addAll(_context.getNacRunners());
+        nacRunnersCopy.forEach(nacRunner -> nacRunner.fire(e));
+
         ITransition t = _context.getCurrentState().pickTransition(e);
 
         if (t == null) {
-            logger.debug("Can't transition (" + e + ")");
+            Logger.debug(getContextId() + " : can't transition (" + e + ")");
 
-            reset();
+            resetContext();
         } else {
             if (_context.testPredicates(t.getPredicates(), t.getMatchbufferKey(), e)) {
-                logger.debug("Transitioning : " + t + " (" + e + ")");
+                Logger.debug(getContextId() + " : transitioning : " + t + " (" + e + ")");
 
                 // Save current event in match buffer or discard it depending on the transition's type
                 switch (t.getType()) {
@@ -47,33 +57,58 @@ public final class DeterministicRunner extends AbstractAutomatonRunner {
                     case TRANSITION_DROP:
                 }
 
-                // TODO Any NACs to start ?
+                // NAC markers are ignored for NAC runners
+                if (!_isNac) {
+                    // Start NACs if there are any NAC START markers on the current transition
+                    if (!t.getNacBeginMarkers().isEmpty()) {
+                        for (INacBeginMarker startNacMarker : t.getNacBeginMarkers()) {
+                            Optional<DeterministicRunner> nacRunner = _context.startNac(startNacMarker.getNacId(), startNacMarker.getNacRule());
 
-                // update current state
+                            if (nacRunner.isPresent()) {
+                                nacRunner.get().registerPatternObserver((Collection<Event> pattern) -> {
+                                    Logger.debug(getContextId() + " : NAC matched, resetting run context");
+                                    resetContext();
+                                });
+                            }
+                        }
+                    }
+                    // Stop NACs if there are any NAC STOP markers on the current transition
+                    if (!t.getNacEndMarkers().isEmpty()) {
+                        for (INacEndMarker stopNacMarker : t.getNacEndMarkers()) {
+                            _context.stopNac(stopNacMarker.getNacId());
+                        }
+                    }
+                }
+
+                // Update the current state
                 _context.updateCurrentState(t.getTarget());
 
-                // function callbacks
+                // Run function callbacks attached to the current state
                 _context.getCurrentState().performActions();
 
                 if (_context.isCurrentStateFinal()) {
-                    logger.debug("Final state reached");
+                    Logger.debug(getContextId() + " : final state reached");
 
-                    // If the final state has been reached, post the found pattern and reset the automaton
-                    postPattern(_context.getMatchBuffers().collect(Collectors.toList()));
-                    reset();
+                    // If the final state has been reached, post the found pattern and resetContext the automaton
+                    postPattern(_context.getMatchBuffersStream().collect(Collectors.toList()));
+                    resetContext();
                 }
             }
         }
     }
 
-    /**
-     * Get back to initial state, clear match buffer
-     */
-    private void reset() {
+    public void resetContext() {
         _context.updateCurrentState(_automaton.getInitialState());
-        _context.clearMatchBuffers();
-        // TODO _clocks.clear();
+        if (!_isNac) {
+            _context.clearNacRunners();
+            _context.clearMatchBuffers();
+        }
 
-        logger.debug("Automaton reset");
+        Logger.debug(getContextId() + " : run context reset");
+    }
+
+    @Override
+    public long getContextId() {
+        return _context.getContextId();
     }
 }

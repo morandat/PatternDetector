@@ -14,5 +14,5 @@ public interface IPatternObserver {
      *
      * @param pattern       The detected pattern.
      */
-    void notifyPattern(Collection<IEvent> pattern);
+    void notifyPattern(Collection<Event> pattern);
 }

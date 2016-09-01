@@ -1,6 +1,6 @@
 package fr.labri.patterndetector.automaton;
 
-import fr.labri.patterndetector.runtime.IEvent;
+import fr.labri.patterndetector.runtime.Event;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +55,7 @@ public interface IState {
      * @return A transition that matches all the event properties, or null if no transitions match.
      * In a non-deterministic rule automaton, if several transitions match, one is picked randomly.
      */
-    ITransition pickTransition(IEvent event);
+    ITransition pickTransition(Event event);
 
     void performActions();
 }

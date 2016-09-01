@@ -1,27 +1,48 @@
 package fr.labri.patterndetector.runtime;
 
+import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.automaton.IState;
+import fr.labri.patterndetector.rule.IRule;
+import fr.labri.patterndetector.rule.visitors.RuleAutomatonMaker;
 import fr.labri.patterndetector.runtime.predicates.*;
 import fr.labri.patterndetector.types.IValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.IntFunction;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
  * Created by william.braik on 25/05/2016.
  */
-public class DeterministicRunContext implements IRunContext {
+public class DeterministicRunContext extends AbstractRunContext {
+
+    private final Logger Logger = LoggerFactory.getLogger(DeterministicRunContext.class);
 
     private IState _currentState;
-    private Map<String, ArrayList<IEvent>> _matchBuffers; // maps pattern ids to corresponding pattern events
+    private Map<String, ArrayList<Event>> _matchBuffers; // maps pattern ids to corresponding pattern events
+    private Map<String, DeterministicRunner> _nacRunners; // maps NAC IDs to corresponding automata
 
     public DeterministicRunContext(IState initialState) {
+        super();
         _currentState = initialState;
         _matchBuffers = new HashMap<>();
+        _nacRunners = new HashMap<>();
+    }
+
+    public DeterministicRunContext(IState initialState, Map<String, ArrayList<Event>> matchBuffers) {
+        super();
+        _currentState = initialState;
+        _matchBuffers = copyMatchBuffers(matchBuffers); // FIXME inefficient : matchbuffers might not need to be copied to each NAC / subcontext
+        _nacRunners = new HashMap<>();
+    }
+
+    public DeterministicRunContext(IState initialState, Map<String, ArrayList<Event>> matchBuffers, Map<String, DeterministicRunner> nacRunners) {
+        super();
+        _currentState = initialState;
+        _matchBuffers = copyMatchBuffers(matchBuffers);
+        _nacRunners = new HashMap<>(); // FIXME inefficient : NACS might not need to be copied
+        _nacRunners.putAll(nacRunners);
     }
 
     public boolean isCurrentStateFinal() {
@@ -36,20 +57,32 @@ public class DeterministicRunContext implements IRunContext {
         _currentState = newState;
     }
 
-    public ArrayList<IEvent> getMatchBuffer(String patternId) {
+    public Map<String, ArrayList<Event>> getMatchBuffersMap() {
+        return _matchBuffers;
+    }
+
+    public ArrayList<Event> getMatchBuffer(String patternId) {
         return _matchBuffers.get(patternId);
     }
 
-    public Stream<IEvent> getMatchBuffers() {
-        ArrayList<IEvent> matchBuffer = new ArrayList<>();
+    public Stream<Event> getMatchBuffersStream() {
+        ArrayList<Event> matchBuffer = new ArrayList<>();
         _matchBuffers.values().forEach(matchBuffer::addAll);
 
         return matchBuffer.stream()
                 .sorted((e1, e2) -> new Long(e1.getTimestamp()).compareTo(e2.getTimestamp())); // make sure it's sorted by timestamp
     }
 
-    public void appendEvent(IEvent event, String patternId) {
-        ArrayList<IEvent> matchBuffer = getMatchBuffer(patternId);
+    public Map<String, DeterministicRunner> getNacRunnersMap() {
+        return _nacRunners;
+    }
+
+    public Collection<DeterministicRunner> getNacRunners() {
+        return _nacRunners.values();
+    }
+
+    public void appendEvent(Event event, String patternId) {
+        ArrayList<Event> matchBuffer = getMatchBuffer(patternId);
         if (matchBuffer == null) {
             matchBuffer = new ArrayList<>();
         }
@@ -61,9 +94,13 @@ public class DeterministicRunContext implements IRunContext {
         _matchBuffers.clear();
     }
 
-    public boolean testPredicates(ArrayList<IPredicate> predicates, String currentMatchBufferKey, IEvent currentEvent) {
+    public void clearNacRunners() {
+        _nacRunners.clear();
+    }
+
+    public boolean testPredicates(ArrayList<IPredicate> predicates, String currentMatchBufferKey, Event currentEvent) {
         // No predicates to test
-        if (predicates == null || predicates.isEmpty()) {
+        if (predicates.isEmpty()) {
             return true;
         }
 
@@ -73,19 +110,20 @@ public class DeterministicRunContext implements IRunContext {
             boolean skipPredicateCheck = false; // if true, means that current predicate cannot be checked and must be skipped
 
             for (IField field : fields) {
-                Optional<IValue<?>> value = Optional.empty();
+                Optional<IValue<?>> value;
                 String patternId = field.getPatternId();
-                ArrayList<IEvent> matchBuffer = _matchBuffers.get(patternId);
+                ArrayList<Event> matchBuffer = _matchBuffers.get(patternId);
 
                 skipPredicateCheck = !field.isResolvable(matchBuffer, currentMatchBufferKey, currentEvent);
 
-                if (!skipPredicateCheck)
+                if (!skipPredicateCheck) {
                     value = field.resolve(_matchBuffers.get(field.getPatternId()), currentMatchBufferKey, currentEvent);
 
-                if (value.isPresent()) // value was retrieved successfully
-                    values.add(value.get());
-                else
-                    return false;
+                    if (value.isPresent()) // value was retrieved successfully
+                        values.add(value.get());
+                    else
+                        return false;
+                }
             }
 
             if (!skipPredicateCheck) { // current predicate must be skipped
@@ -99,7 +137,37 @@ public class DeterministicRunContext implements IRunContext {
         return true;
     }
 
+    public Optional<DeterministicRunner> startNac(String nacId, IRule nacRule) {
+        if (!_nacRunners.containsKey(nacId)) { // check if this NAC was already started
+            IRuleAutomaton nacPowerset = RuleAutomatonMaker.makeAutomaton(nacRule).powerset();
+            nacPowerset.validate();
+
+            DeterministicRunner nacRunner = new DeterministicRunner(nacPowerset, _matchBuffers);
+            _nacRunners.put(nacId, nacRunner);
+
+            Logger.debug(_contextId + " : NAC \"" + nacId + "\" started with context " + nacRunner.getContextId() + " : " + nacRule);
+
+            return Optional.of(nacRunner);
+        } else
+            return Optional.empty();
+    }
+
+    public void stopNac(String nacId) {
+        Logger.debug(_contextId + " : NAC stopped : " + nacId);
+
+        _nacRunners.remove(nacId);
+    }
+
     public String toString() {
-        return "(" + _currentState + ", " + _matchBuffers + ")";
+        return _contextId + ":(" + _currentState + ", " + _matchBuffers + ")";
+    }
+
+    private Map<String, ArrayList<Event>> copyMatchBuffers(Map<String, ArrayList<Event>> matchBuffers) {
+        Map<String, ArrayList<Event>> copy = new HashMap<>();
+        for (Map.Entry<String, ArrayList<Event>> entry : matchBuffers.entrySet()) {
+            copy.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+        }
+
+        return copy;
     }
 }

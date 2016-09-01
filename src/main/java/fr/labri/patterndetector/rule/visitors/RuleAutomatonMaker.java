@@ -4,6 +4,8 @@ import fr.labri.patterndetector.automaton.*;
 import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
 import fr.labri.patterndetector.runtime.predicates.IPredicate;
 import fr.labri.patterndetector.rule.*;
+import fr.labri.patterndetector.runtime.predicates.INacBeginMarker;
+import fr.labri.patterndetector.runtime.predicates.INacEndMarker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,16 +30,17 @@ public final class RuleAutomatonMaker {
 
     private static class RuleAutomatonMakerVisitor extends AbstractRuleVisitor {
 
-        private final Logger logger = LoggerFactory.getLogger(RuleAutomatonMakerVisitor.class);
+        private final Logger Logger = LoggerFactory.getLogger(RuleAutomatonMakerVisitor.class);
 
         private IRuleAutomaton _automaton;
 
         @Override
         public void visit(Atom atom) {
             try {
-                _automaton = makeAtomAutomaton(atom.getName(), atom.getEventType(), atom.getPredicates(), atom.getAction());
+                _automaton = makeAtomAutomaton(atom.getName(), atom.getEventType(), atom.getPredicates(),
+                        atom.getNacBeginMarkers(), atom.getNacEndMarkers(), atom.getAction());
             } catch (RuleAutomatonException e) {
-                logger.error("Compilation failed : " + e.getMessage() + "(" + atom + ")\n"
+                Logger.error("Compilation failed : " + e.getMessage() + "(" + atom + ")\n"
                         + e.getRuleAutomaton());
 
                 throw new RuntimeException("Compilation failed : " + e.getMessage() + "(" + atom + ")");
@@ -102,7 +105,7 @@ public final class RuleAutomatonMaker {
 
                 _automaton = automaton;
             } catch (RuleAutomatonException e) {
-                logger.error("Compilation failed : " + e.getMessage() + "(" + followedBy + ")\n"
+                Logger.error("Compilation failed : " + e.getMessage() + "(" + followedBy + ")\n"
                         + e.getRuleAutomaton());
 
                 throw new RuntimeException("Compilation failed : " + e.getMessage() + "(" + followedBy + ")");
@@ -112,7 +115,8 @@ public final class RuleAutomatonMaker {
         @Override
         public void visit(Kleene kleene) {
             try {
-                IRuleAutomaton baseAutomaton = makeAtomAutomaton(kleene.getName(), kleene.getEventType(), kleene.getPredicates(), kleene.getAction());
+                IRuleAutomaton baseAutomaton = makeAtomAutomaton(kleene.getName(), kleene.getEventType(), kleene.getPredicates(),
+                        kleene.getNacBeginMarkers(), kleene.getNacEndMarkers(), kleene.getAction());
                 IRuleAutomaton automaton = new RuleAutomaton();
 
                 // The initial state of the base component becomes the initial state of the Kleene automaton.
@@ -139,7 +143,7 @@ public final class RuleAutomatonMaker {
 
                 _automaton = automaton;
             } catch (RuleAutomatonException e) {
-                logger.error("Compilation failed : " + e.getMessage() + "(" + kleene + ")\n"
+                Logger.error("Compilation failed : " + e.getMessage() + "(" + kleene + ")\n"
                         + e.getRuleAutomaton());
 
                 throw new RuntimeException("Compilation failed : " + e.getMessage() + "(" + kleene + ")");
@@ -195,7 +199,7 @@ public final class RuleAutomatonMaker {
 
                 _automaton = automaton;
             } catch (RuleAutomatonException e) {
-                logger.error("Compilation failed : " + e.getMessage() + "(" + or + ")\n"
+                Logger.error("Compilation failed : " + e.getMessage() + "(" + or + ")\n"
                         + e.getRuleAutomaton());
 
                 throw new RuntimeException("Compilation failed : " + e.getMessage() + "(" + or + ")");
@@ -206,7 +210,9 @@ public final class RuleAutomatonMaker {
             return _automaton;
         }
 
-        private IRuleAutomaton makeAtomAutomaton(String patternId, String eventType, ArrayList<IPredicate> predicates, Runnable action) throws RuleAutomatonException {
+        private IRuleAutomaton makeAtomAutomaton(String patternId, String eventType, ArrayList<IPredicate> predicates,
+                                                 ArrayList<INacBeginMarker> startNacMarkers, ArrayList<INacEndMarker> stopNacMarkers,
+                                                 Runnable action) throws RuleAutomatonException {
             IState i = new State(); // Initial state
             IState f = new State(); // Final state
 
@@ -215,6 +221,8 @@ public final class RuleAutomatonMaker {
 
             i.registerTransition(f, eventType, TransitionType.TRANSITION_APPEND)
                     .setPredicates(predicates)
+                    .setNacBeginMarkers(startNacMarkers)
+                    .setNacEndMarkers(stopNacMarkers)
                     .setMatchBufferKey(patternId);
 
             IRuleAutomaton automaton = new RuleAutomaton();

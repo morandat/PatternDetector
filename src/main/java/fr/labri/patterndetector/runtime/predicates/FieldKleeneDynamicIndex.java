@@ -1,7 +1,6 @@
 package fr.labri.patterndetector.runtime.predicates;
 
-import com.sun.istack.internal.Nullable;
-import fr.labri.patterndetector.runtime.IEvent;
+import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.types.IValue;
 
 import java.util.ArrayList;
@@ -13,10 +12,10 @@ import java.util.function.IntFunction;
  */
 public class FieldKleeneDynamicIndex extends AbstractField {
 
-    private IntFunction<Integer> _indexFunc;
+    protected IntFunction<Integer> _indexFunc;
 
     public FieldKleeneDynamicIndex(String patternId, String fieldName, IntFunction<Integer> indexFunc) {
-        super(FieldType.FIELD_KLEENE_DYNAMIC_INDEX, patternId, fieldName);
+        super(patternId, fieldName);
         _indexFunc = indexFunc;
     }
 
@@ -25,7 +24,7 @@ public class FieldKleeneDynamicIndex extends AbstractField {
     }
 
     @Override
-    public boolean isResolvable(ArrayList<IEvent> matchBuffer, String currentMatchBufferKey, IEvent currentEvent) {
+    public boolean isResolvable(ArrayList<Event> matchBuffer, String currentMatchBufferKey, Event currentEvent) {
         if (_patternId.equals(currentMatchBufferKey)) { // currently processed kleene
             int currentIndex; // index of the currently processed event (not yet appended)
             if (matchBuffer == null)
@@ -44,7 +43,7 @@ public class FieldKleeneDynamicIndex extends AbstractField {
     }
 
     @Override
-    public Optional<IValue<?>> resolve(ArrayList<IEvent> matchBuffer, String currentMatchBufferKey, IEvent currentEvent) {
+    public Optional<IValue<?>> resolve(ArrayList<Event> matchBuffer, String currentMatchBufferKey, Event currentEvent) {
         if (matchBuffer == null) { // first event of the current kleene seq
             return Optional.ofNullable(currentEvent.getPayload().get(_fieldName));
         } else { // at least one event already in current kleene seq
@@ -54,7 +53,7 @@ public class FieldKleeneDynamicIndex extends AbstractField {
             if (fetchIndex == currentIndex) {
                 return Optional.ofNullable(currentEvent.getPayload().get(_fieldName));
             } else {
-                IEvent event = matchBuffer.get(fetchIndex);
+                Event event = matchBuffer.get(fetchIndex);
                 return Optional.ofNullable(event.getPayload().get(_fieldName));
             }
         }

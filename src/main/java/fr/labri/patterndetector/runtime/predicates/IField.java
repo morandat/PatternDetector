@@ -1,7 +1,6 @@
 package fr.labri.patterndetector.runtime.predicates;
 
-import com.sun.istack.internal.Nullable;
-import fr.labri.patterndetector.runtime.IEvent;
+import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.types.IValue;
 
 import java.util.ArrayList;
@@ -12,11 +11,7 @@ import java.util.Optional;
  */
 public interface IField {
 
-    FieldType getFieldType();
-
     String getPatternId();
-
-    String getFieldName();
 
     /**
      * Returns whether the field can be resolved within a given matchbuffer
@@ -25,7 +20,7 @@ public interface IField {
      * @param currentEvent
      * @return
      */
-    boolean isResolvable(@Nullable ArrayList<IEvent> matchBuffer, String currentMatchBufferKey, IEvent currentEvent);
+    boolean isResolvable(ArrayList<Event> matchBuffer, String currentMatchBufferKey, Event currentEvent);
 
-    Optional<IValue<?>> resolve(@Nullable ArrayList<IEvent> matchBuffer, String currentMatchBufferKey, IEvent currentEvent);
+    Optional<IValue<?>> resolve(ArrayList<Event> matchBuffer, String currentMatchBufferKey, Event currentEvent);
 }

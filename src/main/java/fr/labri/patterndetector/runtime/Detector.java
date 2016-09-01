@@ -12,7 +12,7 @@ import java.util.stream.Stream;
  */
 public class Detector {
 
-    private final Logger logger = LoggerFactory.getLogger(Detector.class);
+    private final Logger Logger = LoggerFactory.getLogger(Detector.class);
     private RuleManager _ruleManager;
 
     public Detector(RuleManager ruleManager) {
@@ -24,8 +24,8 @@ public class Detector {
      *
      * @param events The stream of events.
      */
-    public void detect(Stream<? extends IEvent> events) {
-        //logger.info("Searching patterns in stream : " + events);
+    public void detect(Stream<? extends Event> events) {
+        //Logger.info("Searching patterns in stream : " + events);
 
         // Each event is forwarded to the rule manager(s) and then dispatched to the rules
         events.forEach(_ruleManager::dispatchEvent);

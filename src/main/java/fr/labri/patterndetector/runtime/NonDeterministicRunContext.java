@@ -3,6 +3,7 @@ package fr.labri.patterndetector.runtime;
 import fr.labri.patterndetector.automaton.IState;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -10,11 +11,12 @@ import java.util.stream.Stream;
  * <p>
  * A non-deterministic context is essentially a collection of concurrent deterministic contexts
  */
-public class NonDeterministicRunContext implements IRunContext {
+public class NonDeterministicRunContext extends AbstractRunContext {
 
     private ArrayList<DeterministicRunContext> _subContexts;
 
     public NonDeterministicRunContext(IState initialState) {
+        super();
         _subContexts = new ArrayList<>();
         DeterministicRunContext initialContext = new DeterministicRunContext(initialState);
         _subContexts.add(initialContext);
@@ -24,21 +26,22 @@ public class NonDeterministicRunContext implements IRunContext {
         return _subContexts;
     }
 
-    public DeterministicRunContext addSubContext(IState initialState) {
-        DeterministicRunContext subContext = new DeterministicRunContext(initialState);
+    public DeterministicRunContext addSubContext(IState initialState, Map<String, ArrayList<Event>> matchBuffers) {
+        DeterministicRunContext subContext = new DeterministicRunContext(initialState, matchBuffers);
         _subContexts.add(subContext);
 
         return subContext;
     }
 
-    public Stream<IEvent> getMatchBuffers() {
-        ArrayList<IEvent> matchBuffer = new ArrayList<>();
+    public DeterministicRunContext addSubContext(IState initialState, Map<String, ArrayList<Event>> matchBuffers,
+                                                 Map<String, DeterministicRunner> nacRunners) {
+        DeterministicRunContext subContext = new DeterministicRunContext(initialState, matchBuffers, nacRunners);
+        _subContexts.add(subContext);
 
-        for (DeterministicRunContext subContext : _subContexts) {
-            subContext.getMatchBuffers().forEach(matchBuffer::add);
-        }
+        return subContext;
+    }
 
-        return matchBuffer.stream()
-                .sorted((e1, e2) -> new Long(e1.getTimestamp()).compareTo(e2.getTimestamp())); // make sure it's sorted by timestamp
+    public void clearSubContexts() {
+        _subContexts.clear();
     }
 }

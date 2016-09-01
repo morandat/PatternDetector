@@ -13,13 +13,13 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 @RunWith(Parameterized.class)
-public class TestSearchDetection extends AbstractTestDetection {
+public class TestScenario1Detection extends AbstractTestDetection {
 
     public Stream<? extends Event> generate() {
-        return searchScenario();
+        return scenario();
     }
 
-    public static Stream<? extends Event> searchScenario() {
+    public static Stream<? extends Event> scenario() {
         return Arrays.asList(
                 new Event("Search", 1)
                         .setData("url", "http://www.cdiscount.com/search/10/table+de+jardin.html")
@@ -28,14 +28,14 @@ public class TestSearchDetection extends AbstractTestDetection {
                 new Event("whatever", 2)
                         .setData("irrelevant", "data"),
 
-                new Event("ViewProduct", 3)
+                new Event("View", 3)
                         .setData("url", "http://www.cdiscount.com/maison/jardin-plein-air/salon-de-jardin-10-personnes/f-117850208-auc3606504335784.html")
                         .setData("referrer", "http://www.cdiscount.com/search/10/table+de+jardin.html"),
 
                 new Event("whatever", 4)
                         .setData("irrelevant", "data"),
 
-                new Event("ViewProduct", 5)
+                new Event("View", 5)
                         .setData("url", "http://www.cdiscount.com/maison/jardin-plein-air/salon-de-jardin-1-table-4-fauteuils-et-2-repose-p/f-117850208-cbdhs1701kd.html")
                         .setData("referrer", "http://www.cdiscount.com/search/10/table+de+jardin.html"),
 
@@ -51,27 +51,24 @@ public class TestSearchDetection extends AbstractTestDetection {
         return Arrays.asList(
                 new Object[][]{
                         {
-                                " Detect search scenario : Search -> View -> addBasket ",
-                                new FollowedBy(new Atom("Search").setAction(() -> System.out.println("Found Search event")),
+                                " Detect scenario : Search -> View -> AddBasket ",
+                                new FollowedBy("Search",
                                         new FollowedBy(
                                                 new Atom("View")
                                                         .addPredicate(new StringPredicateArity2(
                                                                 new FieldAtom("0", "url"),
                                                                 new FieldAtom("1", "referrer"),
-                                                                (x, y) -> x.getValue().equals(y.getValue())))
-                                                        .setAction(() -> System.out.println("Found View event")),
+                                                                (x, y) -> x.getValue().equals(y.getValue()))),
                                                 new Atom("AddBasket")
                                                         .addPredicate(new StringPredicateArity2(
                                                                 new FieldAtom("1", "url"),
                                                                 new FieldAtom("2", "referrer"),
-                                                                (x, y) -> x.getValue().equals(y.getValue())))
-                                                        .setAction(() -> System.out.println("Found Basket event")))),
+                                                                (x, y) -> x.getValue().equals(y.getValue()))))),
                                 Arrays.asList(
                                         new Event("Search", 1),
                                         new Event("View", 3),
-                                        new Event("View", 5),
                                         new Event("AddBasket", 6)),
-                                AutomatonRunnerType.NonDeterministic
+                                AutomatonRunnerType.Deterministic
                         }
                 });
     }

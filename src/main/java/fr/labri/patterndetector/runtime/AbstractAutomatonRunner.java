@@ -13,14 +13,22 @@ import java.util.Collection;
 public abstract class AbstractAutomatonRunner implements IAutomatonRunner {
 
     // Concrete subclasses should log with their own class names
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final Logger Logger = LoggerFactory.getLogger(getClass());
 
     protected Collection<IPatternObserver> _observers; // Pattern observers to be notified when a pattern is detected.
     protected IRuleAutomaton _automaton;
+    protected boolean _isNac;
 
     public AbstractAutomatonRunner(IRuleAutomaton automaton) {
         _automaton = automaton;
         _observers = new ArrayList<>();
+        _isNac = false;
+    }
+
+    public AbstractAutomatonRunner(IRuleAutomaton automaton, boolean isNac) {
+        _automaton = automaton;
+        _observers = new ArrayList<>();
+        _isNac = isNac;
     }
 
     @Override
@@ -29,7 +37,7 @@ public abstract class AbstractAutomatonRunner implements IAutomatonRunner {
     }
 
     @Override
-    public void postPattern(Collection<IEvent> pattern) {
+    public void postPattern(Collection<Event> pattern) {
         _observers.forEach(observer -> observer.notifyPattern(pattern));
     }
 }

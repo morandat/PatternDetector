@@ -2,7 +2,7 @@ package fr.labri.patterndetector.rule;
 
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
-import fr.labri.patterndetector.runtime.IEvent;
+import fr.labri.patterndetector.runtime.Event;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 @RunWith(Parameterized.class)
 public class TestFollowedByDetection extends AbstractTestDetection {
 
-    public Stream<? extends IEvent> generate() {
+    public Stream<? extends Event> generate() {
         return Arrays.asList(
                 new Event("b", 1),
                 new Event("a", 2),
@@ -58,7 +58,7 @@ public class TestFollowedByDetection extends AbstractTestDetection {
                         {
                                 " NOT detect A followed by B, with time constraint ",
                                 new FollowedBy("a", "b"), //TODO .setTimeConstraint(3);
-                                new ArrayList<IEvent>(),
+                                new ArrayList<Event>(),
                                 AutomatonRunnerType.Deterministic
                         },*/
                 });

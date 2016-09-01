@@ -1,6 +1,8 @@
 package fr.labri.patterndetector.automaton;
 
 import fr.labri.patterndetector.runtime.predicates.IPredicate;
+import fr.labri.patterndetector.runtime.predicates.INacBeginMarker;
+import fr.labri.patterndetector.runtime.predicates.INacEndMarker;
 
 import java.util.ArrayList;
 
@@ -18,14 +20,18 @@ public class Transition implements ITransition {
     private TransitionType _type;
     private String _matchBufferKey;
     private ArrayList<IPredicate> _predicates;
+    private ArrayList<INacBeginMarker> _startNacMarkers;
+    private ArrayList<INacEndMarker> _stopNacMarkers;
 
     public Transition(IState source, IState target, String label, TransitionType type) {
         _source = source;
         _target = target;
         _label = label;
         _type = type;
-        _matchBufferKey = null;
-        _predicates = null;
+
+        _predicates = new ArrayList<>();
+        _startNacMarkers = new ArrayList<>();
+        _stopNacMarkers = new ArrayList<>();
     }
 
     @Override
@@ -54,13 +60,30 @@ public class Transition implements ITransition {
     }
 
     @Override
+    public String getMatchbufferKey() {
+        return _matchBufferKey;
+    }
+
+    @Override
     public ArrayList<IPredicate> getPredicates() {
         return _predicates;
     }
 
     @Override
-    public String getMatchbufferKey() {
-        return _matchBufferKey;
+    public ArrayList<INacBeginMarker> getNacBeginMarkers() {
+        return _startNacMarkers;
+    }
+
+    @Override
+    public ArrayList<INacEndMarker> getNacEndMarkers() {
+        return _stopNacMarkers;
+    }
+
+    @Override
+    public ITransition setMatchBufferKey(String matchBufferKey) {
+        _matchBufferKey = matchBufferKey;
+
+        return this;
     }
 
     @Override
@@ -70,8 +93,16 @@ public class Transition implements ITransition {
         return this;
     }
 
-    public ITransition setMatchBufferKey(String matchBufferKey) {
-        _matchBufferKey = matchBufferKey;
+    @Override
+    public ITransition setNacBeginMarkers(ArrayList<INacBeginMarker> nacBeginMarkers) {
+        _startNacMarkers = nacBeginMarkers;
+
+        return this;
+    }
+
+    @Override
+    public ITransition setNacEndMarkers(ArrayList<INacEndMarker> nacEndMarkers) {
+        _stopNacMarkers = nacEndMarkers;
 
         return this;
     }

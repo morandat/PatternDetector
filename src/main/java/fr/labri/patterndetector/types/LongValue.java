@@ -5,13 +5,13 @@ import fr.labri.patterndetector.automaton.Transition;
 /**
  * Created by wbraik on 09/05/16.
  */
-public class IntegerValue extends AbstractValue<Integer> {
+public class LongValue extends AbstractValue<Long> {
 
-    public IntegerValue(Integer value) {
+    public LongValue(Long value) {
         super(value);
     }
 
-    public IntegerValue(int value) {
+    public LongValue(long value) {
         super(value);
     }
 }

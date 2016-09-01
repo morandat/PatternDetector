@@ -2,6 +2,8 @@ package fr.labri.patterndetector.rule;
 
 import fr.labri.patterndetector.runtime.predicates.IPredicate;
 import fr.labri.patterndetector.rule.visitors.IRuleVisitor;
+import fr.labri.patterndetector.runtime.predicates.INacBeginMarker;
+import fr.labri.patterndetector.runtime.predicates.INacEndMarker;
 
 import java.util.ArrayList;
 
@@ -27,6 +29,10 @@ public interface IRule {
 
     ArrayList<IPredicate> getPredicates();
 
+    ArrayList<INacBeginMarker> getNacBeginMarkers();
+
+    ArrayList<INacEndMarker> getNacEndMarkers();
+
     Runnable getAction();
 
     /**
@@ -41,6 +47,14 @@ public interface IRule {
     IRule addPredicate(IPredicate predicate);
 
     IRule setPredicates(ArrayList<IPredicate> predicates);
+
+    IRule addNacBeginMarker(INacBeginMarker startNacMarker);
+
+    IRule setNacBeginMarkers(ArrayList<INacBeginMarker> startNacMarkers);
+
+    IRule addNacEndMarker(INacEndMarker stopNacMarker);
+
+    IRule setNacEndMarkers(ArrayList<INacEndMarker> stopNacMarkers);
 
     void accept(IRuleVisitor visitor);
 

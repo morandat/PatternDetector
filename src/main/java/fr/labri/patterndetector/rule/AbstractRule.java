@@ -2,6 +2,8 @@ package fr.labri.patterndetector.rule;
 
 import fr.labri.patterndetector.runtime.predicates.IPredicate;
 import fr.labri.patterndetector.rule.visitors.RuleStringifier;
+import fr.labri.patterndetector.runtime.predicates.INacBeginMarker;
+import fr.labri.patterndetector.runtime.predicates.INacEndMarker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,16 +17,20 @@ import java.util.ArrayList;
 public abstract class AbstractRule implements IRule {
 
     // Concrete subclasses should log with their own class names
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final Logger Logger = LoggerFactory.getLogger(getClass());
 
     protected String _name;
     protected String _symbol;
     protected ArrayList<IPredicate> _predicates;
+    protected ArrayList<INacBeginMarker> _startNacMarkers;
+    protected ArrayList<INacEndMarker> _stopNacMarkers;
     protected Runnable _action;
 
     public AbstractRule(String symbol) {
         _symbol = symbol;
-        _predicates = null;
+        _predicates = new ArrayList<>();
+        _startNacMarkers = new ArrayList<>();
+        _stopNacMarkers = new ArrayList<>();
         _action = null;
     }
 
@@ -58,15 +64,22 @@ public abstract class AbstractRule implements IRule {
     }
 
     @Override
+    public ArrayList<INacBeginMarker> getNacBeginMarkers() {
+        return _startNacMarkers;
+    }
+
+    @Override
+    public ArrayList<INacEndMarker> getNacEndMarkers() {
+        return _stopNacMarkers;
+    }
+
+    @Override
     public Runnable getAction() {
         return _action;
     }
 
     @Override
     public IRule addPredicate(IPredicate predicate) {
-        if (_predicates == null)
-            _predicates = new ArrayList<>();
-
         _predicates.add(predicate);
 
         return this;
@@ -74,10 +87,35 @@ public abstract class AbstractRule implements IRule {
 
     @Override
     public IRule setPredicates(ArrayList<IPredicate> predicates) {
-        if (_predicates == null)
-            _predicates = new ArrayList<>();
-
         _predicates.addAll(predicates);
+
+        return this;
+    }
+
+    @Override
+    public IRule addNacBeginMarker(INacBeginMarker startNacMarker) {
+        _startNacMarkers.add(startNacMarker);
+
+        return this;
+    }
+
+    @Override
+    public IRule setNacBeginMarkers(ArrayList<INacBeginMarker> startNacMarkers) {
+        _startNacMarkers.addAll(startNacMarkers);
+
+        return this;
+    }
+
+    @Override
+    public IRule addNacEndMarker(INacEndMarker stopNacMarker) {
+        _stopNacMarkers.add(stopNacMarker);
+
+        return this;
+    }
+
+    @Override
+    public IRule setNacEndMarkers(ArrayList<INacEndMarker> stopNacMarkers) {
+        _stopNacMarkers.addAll(stopNacMarkers);
 
         return this;
     }

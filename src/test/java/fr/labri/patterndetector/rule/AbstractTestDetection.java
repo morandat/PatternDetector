@@ -18,11 +18,11 @@ abstract public class AbstractTestDetection {
     @Parameterized.Parameter(1)
     public IRule _testRule;
     @Parameterized.Parameter(2)
-    public Collection<IEvent> _expectedPattern;
+    public Collection<Event> _expectedPattern;
     @Parameterized.Parameter(3)
     public AutomatonRunnerType _runnerType;
 
-    public abstract Stream<? extends IEvent> generate();
+    public abstract Stream<? extends Event> generate();
 
     @Test
     public void patternDetectionTest() {
@@ -31,7 +31,7 @@ abstract public class AbstractTestDetection {
         IAutomatonRunner runner = ruleManager.addRule(_testRule, _runnerType);
         final AtomicInteger found = new AtomicInteger();
         runner.registerPatternObserver(
-                (Collection<IEvent> pattern) -> {
+                (Collection<Event> pattern) -> {
                     found.incrementAndGet();
                     assertThat(pattern, is(equalTo(_expectedPattern)));
                 });
