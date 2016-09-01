@@ -3,13 +3,14 @@ package fr.labri.patterndetector.runtime.predicates;
 import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.types.IValue;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Optional;
 
 /**
  * Created by wbraik on 08/06/16.
  */
-public class FieldAtom extends AbstractField {
+public class FieldAtom extends AbstractField implements Serializable {
 
     public FieldAtom(String patternId, String fieldName) {
         super(patternId, fieldName);

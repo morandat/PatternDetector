@@ -4,13 +4,14 @@ import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.types.IValue;
 import fr.labri.patterndetector.types.LongValue;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Optional;
 
 /**
  * Created by wbraik on 08/06/16.
  */
-public class TimeFieldKleeneStaticIndex extends FieldKleeneStaticIndex {
+public class TimeFieldKleeneStaticIndex extends FieldKleeneStaticIndex implements Serializable {
 
     public TimeFieldKleeneStaticIndex(String patternId, int index) {
         super(patternId, null, index);

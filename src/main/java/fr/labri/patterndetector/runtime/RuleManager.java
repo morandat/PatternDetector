@@ -50,10 +50,11 @@ public final class RuleManager implements IPatternObserver {
             Logger.info("Rule added : " + rule);
             Logger.debug("Powerset : " + powerset);
 
-            //serializeAutomaton(powerset, "D:\\automaton_" + rule.getName() + ".ser");
+            serializeAutomaton(powerset, "D:\\automaton_" + rule.getName() + ".ser");
 
             return runner;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException("Could not add rule : " + e.getMessage());
         }
     }

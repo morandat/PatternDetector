@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Created by william.braik on 28/06/2016.
  */
-public class NacEndMarker implements INacEndMarker {
+public class NacEndMarker implements INacEndMarker, Serializable {
 
     private String _nacId;
 

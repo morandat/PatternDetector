@@ -3,13 +3,14 @@ package fr.labri.patterndetector.runtime.predicates;
 import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.types.IValue;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Optional;
 
 /**
  * Created by wbraik on 08/06/16.
  */
-public class FieldKleeneStaticIndex extends AbstractField {
+public class FieldKleeneStaticIndex extends AbstractField implements Serializable {
 
     protected int _index;
 

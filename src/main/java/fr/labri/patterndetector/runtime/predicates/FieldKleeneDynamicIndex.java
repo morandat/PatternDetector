@@ -3,6 +3,7 @@ package fr.labri.patterndetector.runtime.predicates;
 import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.types.IValue;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.IntFunction;
@@ -10,7 +11,7 @@ import java.util.function.IntFunction;
 /**
  * Created by wbraik on 08/06/16.
  */
-public class FieldKleeneDynamicIndex extends AbstractField {
+public class FieldKleeneDynamicIndex extends AbstractField implements Serializable {
 
     protected IntFunction<Integer> _indexFunc;
 

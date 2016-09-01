@@ -10,6 +10,7 @@ import fr.labri.patterndetector.automaton.ITransition;
 import fr.labri.patterndetector.runtime.predicates.INacBeginMarker;
 import fr.labri.patterndetector.runtime.predicates.INacEndMarker;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 /**
  * Fork and play, no reset
  */
-public final class NonDeterministicRunner extends AbstractAutomatonRunner {
+public final class NonDeterministicRunner extends AbstractAutomatonRunner implements Serializable {
 
     private NonDeterministicRunContext _context;
 

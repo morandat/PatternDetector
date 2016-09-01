@@ -4,6 +4,7 @@ import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.types.IValue;
 import fr.labri.patterndetector.types.LongValue;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.IntFunction;
@@ -11,7 +12,7 @@ import java.util.function.IntFunction;
 /**
  * Created by wbraik on 08/06/16.
  */
-public class TimeFieldKleeneDynamicIndex extends FieldKleeneDynamicIndex {
+public class TimeFieldKleeneDynamicIndex extends FieldKleeneDynamicIndex implements Serializable {
 
     public TimeFieldKleeneDynamicIndex(String patternId, IntFunction<Integer> indexFunc) {
         super(patternId, null, indexFunc);

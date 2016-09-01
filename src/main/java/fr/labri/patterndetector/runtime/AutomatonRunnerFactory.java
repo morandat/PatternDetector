@@ -2,10 +2,12 @@ package fr.labri.patterndetector.runtime;
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 
+import java.io.Serializable;
+
 /**
  * Created by wbraik on 5/18/2016.
  */
-public class AutomatonRunnerFactory {
+public class AutomatonRunnerFactory implements Serializable {
 
     public IAutomatonRunner getRunner(AutomatonRunnerType runnerType, IRuleAutomaton automaton) {
         switch (runnerType) {

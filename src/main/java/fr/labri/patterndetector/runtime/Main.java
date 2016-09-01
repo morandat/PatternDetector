@@ -2,16 +2,11 @@ package fr.labri.patterndetector.runtime;
 
 import fr.labri.patterndetector.rule.*;
 import fr.labri.patterndetector.runtime.predicates.*;
-import fr.labri.patterndetector.types.DoubleValue;
-import fr.labri.patterndetector.types.StringValue;
+import fr.labri.patterndetector.types.*;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.BiPredicate;
-import java.util.function.IntFunction;
 import java.util.stream.Stream;
 
 /**
@@ -45,14 +40,10 @@ public class Main {
                 new FollowedBy(
                         new Atom("SEARCH"),
                         new Atom("PRODUCT_SHEET")
-                                .addPredicate(new DoublePredicateArity2(
-                                        new FieldAtom("0", "price"),
-                                        new FieldAtom("1", "price"),
-                                        (BiPredicate<DoubleValue, DoubleValue> & Serializable) (x, y) -> x.getValue().equals(y.getValue())))),
-                                /*.addPredicate(new StringPredicateArity2(
+                                .addPredicate(new StringPredicateArity2(
                                         new FieldAtom("0", "url"),
                                         new FieldAtom("1", "referrer"),
-                                        (BiPredicate<StringValue, StringValue> & Serializable) (x, y) -> x.getValue().equals(y.getValue())))),*/
+                                        (BiPredicate<StringValue, StringValue> & Serializable) (x, y) -> x.getValue().equals(y.getValue())))),
                 new Atom("ADD_TO_BASKET"))
                 .setName("basic");
 

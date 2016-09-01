@@ -1,9 +1,11 @@
 package fr.labri.patterndetector.runtime.predicates;
 
+import java.io.Serializable;
+
 /**
  * Created by wbraik on 6/13/2016.
  */
-public abstract class AbstractField implements IField {
+public abstract class AbstractField implements IField, Serializable {
 
     protected String _patternId;
     protected String _fieldName;

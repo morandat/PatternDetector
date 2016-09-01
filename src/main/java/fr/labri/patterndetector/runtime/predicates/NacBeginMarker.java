@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * Created by william.braik on 28/06/2016.
  */
-public class NacBeginMarker implements INacBeginMarker {
+public class NacBeginMarker implements INacBeginMarker, Serializable{
 
     private IRule _nacRule;
     private String _nacId;

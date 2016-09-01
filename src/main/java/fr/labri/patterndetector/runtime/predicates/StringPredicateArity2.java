@@ -3,13 +3,14 @@ package fr.labri.patterndetector.runtime.predicates;
 import fr.labri.patterndetector.types.IValue;
 import fr.labri.patterndetector.types.StringValue;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.function.BiPredicate;
 
 /**
  * Created by wbraik on 5/18/2016.
  */
-public class StringPredicateArity2 implements IPredicate {
+public class StringPredicateArity2 implements IPredicate, Serializable {
 
     private IField _field1;
     private IField _field2;

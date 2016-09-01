@@ -3,13 +3,14 @@ package fr.labri.patterndetector.runtime.predicates;
 import fr.labri.patterndetector.types.IValue;
 import fr.labri.patterndetector.types.LongValue;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.function.Predicate;
 
 /**
  * Created by wbraik on 5/18/2016.
  */
-public class LongPredicateArity1 implements IPredicate {
+public class LongPredicateArity1 implements IPredicate, Serializable {
 
     private IField _field;
     private Predicate<LongValue> _predicate;
