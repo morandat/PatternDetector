@@ -1,5 +1,6 @@
 package fr.labri.patterndetector.runtime;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -7,12 +8,12 @@ import java.util.Collection;
  * <p>
  * Base interface for pattern observers.
  */
-public interface IPatternObserver {
+public interface IPatternObserver extends Serializable {
 
     /**
      * This method must be called by a rule automaton when a pattern is detected.
      *
-     * @param pattern       The detected pattern.
+     * @param pattern The detected pattern.
      */
     void notifyPattern(Collection<Event> pattern);
 }

@@ -1,7 +1,6 @@
 package fr.labri.patterndetector.automaton;
 
-import fr.labri.patterndetector.runtime.Event;
-
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -9,7 +8,7 @@ import java.util.*;
  * <p>
  * A state of a rule automaton. Can be initial, final, or regular.
  */
-public class State implements IState {
+public class State implements IState, Serializable {
 
     public static final String LABEL_FINAL = "F";
     public static final String LABEL_INITIAL = "I";
@@ -39,16 +38,6 @@ public class State implements IState {
         _transitions.values().forEach(list -> list.forEach(transitions::add));
 
         return transitions;
-    }
-
-    @Override
-    public List<ITransition> getTransitionsByLabel(String label) {
-        Collection<ITransition> transitions = _transitions.get(label);
-
-        if (transitions == null)
-            return null;
-
-        return _transitions.get(label);
     }
 
     @Override
@@ -144,8 +133,8 @@ public class State implements IState {
     }
 
     @Override
-    public ITransition pickTransition(Event event) {
-        List<ITransition> transitions = _transitions.get(event.getType());
+    public ITransition pickTransition(String eventType) {
+        List<ITransition> transitions = _transitions.get(eventType);
         if (transitions == null) {
             transitions = _transitions.get(Transition.LABEL_STAR);
         }

@@ -9,13 +9,14 @@ import fr.labri.patterndetector.automaton.ITransition;
 import fr.labri.patterndetector.runtime.predicates.INacBeginMarker;
 import fr.labri.patterndetector.runtime.predicates.INacEndMarker;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Deterministic, resetContext when no transition found
  */
-public class DeterministicRunner extends AbstractAutomatonRunner {
+public class DeterministicRunner extends AbstractAutomatonRunner implements Serializable {
 
     protected DeterministicRunContext _context;
 
@@ -32,13 +33,18 @@ public class DeterministicRunner extends AbstractAutomatonRunner {
     }
 
     @Override
+    public IRunContext getContext() {
+        return _context;
+    }
+
+    @Override
     public void fire(Event e) {
         // Fire NACs
         ArrayList<DeterministicRunner> nacRunnersCopy = new ArrayList<>();
         nacRunnersCopy.addAll(_context.getNacRunners());
         nacRunnersCopy.forEach(nacRunner -> nacRunner.fire(e));
 
-        ITransition t = _context.getCurrentState().pickTransition(e);
+        ITransition t = _context.getCurrentState().pickTransition(e.getType());
 
         if (t == null) {
             Logger.debug(getContextId() + " : can't transition (" + e + ")");

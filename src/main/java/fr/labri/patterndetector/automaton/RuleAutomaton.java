@@ -4,6 +4,7 @@ import fr.labri.patterndetector.automaton.exception.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -13,8 +14,8 @@ import java.util.*;
  * A type of timed automaton. Contains clocks for each event type.
  */
 
-public class RuleAutomaton implements IRuleAutomaton {
-    
+public class RuleAutomaton implements IRuleAutomaton, Serializable {
+
     private IState _initialState;
     private Map<String, IState> _finalStates;
     private Map<String, IState> _connectionStates;

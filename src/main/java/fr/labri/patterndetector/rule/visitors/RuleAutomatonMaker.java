@@ -29,7 +29,6 @@ public final class RuleAutomatonMaker {
     }
 
     private static class RuleAutomatonMakerVisitor extends AbstractRuleVisitor {
-
         private final Logger Logger = LoggerFactory.getLogger(RuleAutomatonMakerVisitor.class);
 
         private IRuleAutomaton _automaton;

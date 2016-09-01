@@ -29,6 +29,11 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
     }
 
     @Override
+    public IRunContext getContext() {
+        return _context;
+    }
+
+    @Override
     public void fire(Event e) {
         ArrayList<DeterministicRunContext> subContextsCopy = new ArrayList<>();
         subContextsCopy.addAll(_context.getSubContexts());
@@ -39,7 +44,7 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
             nacRunnersCopy.addAll(currentSubContext.getNacRunners());
             nacRunnersCopy.forEach(nacRunner -> nacRunner.fire(e));
 
-            ITransition t = currentSubContext.getCurrentState().pickTransition(e);
+            ITransition t = currentSubContext.getCurrentState().pickTransition(e.getType());
 
             if (t == null) {
                 Logger.debug(currentSubContext.getContextId() + " : can't transition (" + e + ")");

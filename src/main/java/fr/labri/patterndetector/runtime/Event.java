@@ -1,30 +1,50 @@
 package fr.labri.patterndetector.runtime;
 
+import fr.labri.patterndetector.types.DoubleValue;
 import fr.labri.patterndetector.types.IValue;
 import fr.labri.patterndetector.types.LongValue;
 import fr.labri.patterndetector.types.StringValue;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by William Braik on 6/22/2015.
  */
-public class Event {
+public class Event implements Serializable {
 
     private String _type; // Type of event (ex: View, Add...)
     private long _timestamp; // Time of occurence of the event
+    private String _pid; // ID of the producer of the event
     private Map<String, IValue<?>> _payload; // Some data (or payload) attached to the event. Maps field names to values
 
+    // FIXME constructor with dummy pid for convenience only
     public Event(String type, long timestamp) {
         _type = type;
         _timestamp = timestamp;
+        _pid = "pid";
+        _payload = new HashMap<>();
+    }
+
+    public Event(String type, long timestamp, String pid) {
+        _type = type;
+        _timestamp = timestamp;
+        _pid = pid;
         _payload = new HashMap<>();
     }
 
     public Event(String type, long timestamp, Map<String, IValue<?>> payload) {
         _type = type;
         _timestamp = timestamp;
+        _pid = "pid";
+        _payload = payload;
+    }
+
+    public Event(String type, long timestamp, String pid, Map<String, IValue<?>> payload) {
+        _type = type;
+        _timestamp = timestamp;
+        _pid = pid;
         _payload = payload;
     }
 
@@ -36,11 +56,21 @@ public class Event {
         return _timestamp;
     }
 
+    public String getPid() {
+        return _pid;
+    }
+
     public Map<String, IValue<?>> getPayload() {
         return _payload;
     }
 
     public Event setData(String key, Integer value) {
+        _payload.put(key, new LongValue(value.longValue()));
+
+        return this;
+    }
+
+    public Event setData(String key, Long value) {
         _payload.put(key, new LongValue(value));
 
         return this;
@@ -48,6 +78,12 @@ public class Event {
 
     public Event setData(String key, String value) {
         _payload.put(key, new StringValue(value));
+
+        return this;
+    }
+
+    public Event setData(String key, Double value) {
+        _payload.put(key, new DoubleValue(value));
 
         return this;
     }

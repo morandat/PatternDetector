@@ -2,6 +2,7 @@ package fr.labri.patterndetector.runtime;
 
 import fr.labri.patterndetector.automaton.IState;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -11,7 +12,7 @@ import java.util.stream.Stream;
  * <p>
  * A non-deterministic context is essentially a collection of concurrent deterministic contexts
  */
-public class NonDeterministicRunContext extends AbstractRunContext {
+public class NonDeterministicRunContext extends AbstractRunContext implements Serializable {
 
     private ArrayList<DeterministicRunContext> _subContexts;
 
@@ -43,5 +44,10 @@ public class NonDeterministicRunContext extends AbstractRunContext {
 
     public void clearSubContexts() {
         _subContexts.clear();
+    }
+
+    @Override
+    public String toString() {
+        return getSubContexts().toString();
     }
 }

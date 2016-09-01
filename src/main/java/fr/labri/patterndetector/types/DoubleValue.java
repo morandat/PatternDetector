@@ -5,9 +5,9 @@ import java.io.Serializable;
 /**
  * Created by wbraik on 09/05/16.
  */
-public class StringValue extends AbstractValue<String> implements Serializable {
+public class DoubleValue extends AbstractValue<Double> implements Serializable {
 
-    public StringValue(String value) {
+    public DoubleValue(Double value) {
         super(value);
     }
 }

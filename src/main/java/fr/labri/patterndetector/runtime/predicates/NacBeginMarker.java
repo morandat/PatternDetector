@@ -2,6 +2,8 @@ package fr.labri.patterndetector.runtime.predicates;
 
 import fr.labri.patterndetector.rule.IRule;
 
+import java.io.Serializable;
+
 /**
  * Created by william.braik on 28/06/2016.
  */

@@ -12,6 +12,7 @@ import fr.labri.patterndetector.rule.visitors.RulesNamer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.*;
 import java.util.*;
 
 public final class RuleManager implements IPatternObserver {
@@ -49,9 +50,11 @@ public final class RuleManager implements IPatternObserver {
             Logger.info("Rule added : " + rule);
             Logger.debug("Powerset : " + powerset);
 
+            //serializeAutomaton(powerset, "D:\\automaton_" + rule.getName() + ".ser");
+
             return runner;
         } catch (Exception e) {
-            throw new RuntimeException("Could not instantiate runner class : " + e.getClass());
+            throw new RuntimeException("Could not add rule : " + e.getMessage());
         }
     }
 
@@ -62,5 +65,12 @@ public final class RuleManager implements IPatternObserver {
     @Override
     public void notifyPattern(Collection<Event> pattern) {
         Logger.info("Pattern found : " + pattern);
+    }
+
+    private void serializeAutomaton(IRuleAutomaton automaton, String file) throws IOException {
+        FileOutputStream fos = new FileOutputStream(file);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(automaton);
+        Logger.debug("Automaton serialized");
     }
 }

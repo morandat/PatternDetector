@@ -1,9 +1,11 @@
 package fr.labri.patterndetector.runtime;
 
+import java.io.Serializable;
+
 /**
  * Created by william.braik on 01/07/2016.
  */
-public class AbstractRunContext implements IRunContext {
+public class AbstractRunContext implements IRunContext, Serializable {
 
     private static long currentContextId = 0;
 

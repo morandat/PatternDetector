@@ -1,9 +1,6 @@
 package fr.labri.patterndetector.automaton;
 
-import fr.labri.patterndetector.runtime.Event;
-
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -16,14 +13,6 @@ public interface IState {
     String getLabel();
 
     Set<ITransition> getTransitions();
-
-    /**
-     * Get all transitions mapped to a given label.
-     *
-     * @param label A transition label.
-     * @return The transitions mapped to the label, or null if no transitions are mapped to the label.
-     */
-    List<ITransition> getTransitionsByLabel(String label);
 
     boolean isInitial();
 
@@ -51,11 +40,11 @@ public interface IState {
      * Given an event, pick a transition that matches all the event properties (i.e. its label, its predicates,
      * and its clock guards).
      *
-     * @param event The event to pick a transition for.
+     * @param eventType The event type.
      * @return A transition that matches all the event properties, or null if no transitions match.
      * In a non-deterministic rule automaton, if several transitions match, one is picked randomly.
      */
-    ITransition pickTransition(Event event);
+    ITransition pickTransition(String eventType);
 
     void performActions();
 }

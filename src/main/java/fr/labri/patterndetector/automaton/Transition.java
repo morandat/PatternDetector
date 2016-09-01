@@ -4,12 +4,13 @@ import fr.labri.patterndetector.runtime.predicates.IPredicate;
 import fr.labri.patterndetector.runtime.predicates.INacBeginMarker;
 import fr.labri.patterndetector.runtime.predicates.INacEndMarker;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by William Braik on 7/27/2015.
  */
-public class Transition implements ITransition {
+public class Transition implements ITransition, Serializable {
 
     public static final String LABEL_EPSILON = "$";
     public static final String LABEL_STAR = "*";

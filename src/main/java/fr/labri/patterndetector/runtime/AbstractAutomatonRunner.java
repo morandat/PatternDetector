@@ -4,13 +4,14 @@ import fr.labri.patterndetector.automaton.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
 /**
  * Created by wbraik on 5/12/2016.
  */
-public abstract class AbstractAutomatonRunner implements IAutomatonRunner {
+public abstract class AbstractAutomatonRunner implements IAutomatonRunner, Serializable {
 
     // Concrete subclasses should log with their own class names
     protected final Logger Logger = LoggerFactory.getLogger(getClass());

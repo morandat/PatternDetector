@@ -13,6 +13,8 @@ public interface IAutomatonRunner {
      */
     void fire(Event e);
 
+    IRunContext getContext();
+
     /**
      * Register a pattern observer.
      *
