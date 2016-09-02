@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 public class Main {
 
     public static void main(String[] args) {
+
         /*IRule nacRule = new Atom("AddBasket")
                 .addPredicate(new StringPredicateArity2(
                         new FieldAtom("0", "productId"),
@@ -41,10 +42,14 @@ public class Main {
                         new Atom("SEARCH"),
                         new Atom("PRODUCT_SHEET")
                                 .addPredicate(new StringPredicateArity2(
-                                        new FieldAtom("0", "url"),
-                                        new FieldAtom("1", "referrer"),
+                                        new FieldAtom("0", "cleanUrl"),
+                                        new FieldAtom("1", "cleanReferrer"),
                                         (BiPredicate<StringValue, StringValue> & Serializable) (x, y) -> x.getValue().equals(y.getValue())))),
-                new Atom("ADD_TO_BASKET"))
+                new Atom("ADD_TO_BASKET")
+                        .addPredicate(new StringPredicateArity2(
+                                new FieldAtom("1", "cleanUrl"),
+                                new FieldAtom("2", "cleanReferrer"),
+                                (BiPredicate<StringValue, StringValue> & Serializable) (x, y) -> x.getValue().equals(y.getValue()))))
                 .setName("basic");
 
         RuleManager ruleManager = new RuleManager();
@@ -52,17 +57,6 @@ public class Main {
         Detector detector = new Detector(ruleManager);
         detector.detect(Main.generate());
     }
-
-    /*private static Stream<? extends Event> generate() {
-        return Arrays.asList(
-                //new Event("View", 1).setData("productId", "sku"),
-                new Event("View", 4).setData("productId", "sku2"),
-                //new Event("AddBasket", 5).setData("productId", "sku"),
-                //new Event("View", 6).setData("productId", "sku"),
-                new Event("View", 7).setData("productId", "sku2"),
-                new Event("Exit", 10)
-        ).stream();
-    }*/
 
     private static Stream<? extends Event> generate() {
         return Arrays.asList(
@@ -78,6 +72,7 @@ public class Main {
                 new Event("ADD_TO_BASKET", 7)
                         .setData("url", "http://www.cdiscount.com/chaussures/baskets-enfant-chaussures-chaussures-de-sports-b/r2-150-mp03218702-106520079.html")
                         .setData("referrer", "http://www.cdiscount.com/chaussures/baskets-enfant-chaussures-chaussures-de-sports-b/f-150-mp03218702.html")
+                        .setData("price", 12.8)
         ).stream();
     }
 }

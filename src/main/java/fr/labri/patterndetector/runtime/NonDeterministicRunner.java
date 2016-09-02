@@ -2,6 +2,8 @@ package fr.labri.patterndetector.runtime;
 
 /**
  * Created by wbraik on 5/12/2016.
+ * <p>
+ * Fork and play
  */
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
@@ -16,16 +18,12 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- * Fork and play, no reset
- */
 public final class NonDeterministicRunner extends AbstractAutomatonRunner implements Serializable {
 
     private NonDeterministicRunContext _context;
 
     public NonDeterministicRunner(IRuleAutomaton automaton) {
         super(automaton);
-
         _context = new NonDeterministicRunContext(automaton.getInitialState());
     }
 
@@ -105,6 +103,11 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner implem
                         case TRANSITION_DROP:
                     }
                 }
+
+                // TODO should we keep matching this event if it already matched once ? if yes, one pattern PER MATCH will be output
+                // TODO if not, at most one pattern will be output if there is a match.
+                // TODO expected behaviour or not ? depends on the use case ? probably needs to be a configurable policy / strategy
+                // break;
             }
         }
 
