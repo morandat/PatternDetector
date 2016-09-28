@@ -71,7 +71,7 @@ public class TestSearchDetection extends AbstractTestDetection {
                                         new Event("View", 3),
                                         new Event("View", 5),
                                         new Event("AddBasket", 6)),
-                                AutomatonRunnerType.NonDeterministic
+                                AutomatonRunnerType.NonDeterministicMatchAll
                         }
                 });
     }

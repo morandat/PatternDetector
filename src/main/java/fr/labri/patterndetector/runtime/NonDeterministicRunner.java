@@ -15,16 +15,19 @@ import fr.labri.patterndetector.runtime.predicates.INacEndMarker;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public final class NonDeterministicRunner extends AbstractAutomatonRunner implements Serializable {
 
     private NonDeterministicRunContext _context;
+    private RunnerMatchStrategy _matchStrategy;
 
-    public NonDeterministicRunner(IRuleAutomaton automaton) {
+    public NonDeterministicRunner(IRuleAutomaton automaton, RunnerMatchStrategy matchStrategy) {
         super(automaton);
         _context = new NonDeterministicRunContext(automaton.getInitialState());
+        _matchStrategy = matchStrategy;
     }
 
     @Override
@@ -37,7 +40,46 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner implem
         ArrayList<DeterministicRunContext> subContextsCopy = new ArrayList<>();
         subContextsCopy.addAll(_context.getSubContexts());
 
-        for (DeterministicRunContext currentSubContext : subContextsCopy) {
+        // Find all the potentially matchable sub-contexts
+        ArrayList<DeterministicRunContext> matchingSubContexts = findMatchingSubContexts(subContextsCopy, e);
+
+        // Apply strategy to figure out which sub-contexts are to be actually matched
+        List<DeterministicRunContext> subContextsToMatch = new ArrayList<>();
+        switch (_matchStrategy) {
+            case MatchAll:
+                subContextsToMatch = matchingSubContexts;
+                break;
+            case MatchFirst:
+                if (matchingSubContexts.size() > 1)
+                    subContextsToMatch = matchingSubContexts.subList(0, 1);
+                else
+                    subContextsToMatch = matchingSubContexts;
+                break;
+            case MatchLast:
+                if (matchingSubContexts.size() > 1)
+                    subContextsToMatch = matchingSubContexts.subList(matchingSubContexts.size() - 1, matchingSubContexts.size());
+                else
+                    subContextsToMatch = matchingSubContexts;
+                break;
+            default:
+        }
+
+        matchSubContexts(subContextsToMatch, e);
+
+        Logger.debug(_context.getContextId() + " : current contexts : " + _context.getSubContexts());
+    }
+
+    /**
+     * Filter subContexts that match the current event
+     *
+     * @param subContexts All currently registered subContexts
+     * @param e           Current event
+     * @return subContexts that match e
+     */
+    private ArrayList<DeterministicRunContext> findMatchingSubContexts(ArrayList<DeterministicRunContext> subContexts, Event e) {
+        ArrayList<DeterministicRunContext> matchingSubContexts = new ArrayList<>();
+
+        for (DeterministicRunContext currentSubContext : subContexts) {
             // Fire NACs
             ArrayList<DeterministicRunner> nacRunnersCopy = new ArrayList<>();
             nacRunnersCopy.addAll(currentSubContext.getNacRunners());
@@ -54,64 +96,66 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner implem
                     // Save current event in match buffer or discard it depending on the transition's type
                     switch (t.getType()) {
                         case TRANSITION_APPEND:
-                            // Update current state
-                            IState nextState = t.getTarget();
-
-                            if (!nextState.isFinal()) {
-                                DeterministicRunContext newSubContext = _context.addSubContext(nextState,
-                                        currentSubContext.getMatchBuffersMap(), currentSubContext.getNacRunnersMap());
-                                Logger.debug(currentSubContext.getContextId() + " : new subcontext created (" + newSubContext.getContextId() + ")");
-
-                                // Update match buffer
-                                newSubContext.appendEvent(e, t.getMatchbufferKey());
-
-                                // NAC markers are ignored for NAC runners
-                                if (!_isNac) {
-                                    // Start NACs if there are any NAC START markers on the current transition
-                                    if (!t.getNacBeginMarkers().isEmpty()) {
-                                        for (INacBeginMarker startNacMarker : t.getNacBeginMarkers()) {
-                                            Optional<DeterministicRunner> nacRunner = newSubContext.startNac(startNacMarker.getNacId(), startNacMarker.getNacRule());
-
-                                            if (nacRunner.isPresent()) {
-                                                nacRunner.get().registerPatternObserver((Collection<Event> pattern) -> {
-                                                    Logger.debug(newSubContext.getContextId() + " : NAC matched, removing subcontext " + newSubContext.getContextId());
-                                                    _context.getSubContexts().remove(newSubContext);
-                                                });
-                                            }
-                                        }
-                                    }
-
-                                    // Stop NACs if there are any NAC STOP markers on the current transition
-                                    if (!t.getNacEndMarkers().isEmpty()) {
-                                        for (INacEndMarker stopNacMarker : t.getNacEndMarkers()) {
-                                            newSubContext.stopNac(stopNacMarker.getNacId());
-                                        }
-                                    }
-                                }
-                            } else {
-                                Logger.debug(currentSubContext.getContextId() + " : final state reached");
-
-                                ArrayList<Event> pattern = new ArrayList<>(currentSubContext.getMatchBuffersStream().collect(Collectors.toList()));
-                                pattern.add(e);
-                                postPattern(pattern);
-                            }
-
-                            // function callbacks
-                            nextState.performActions();
+                            matchingSubContexts.add(currentSubContext);
                             break;
-
                         case TRANSITION_DROP:
                     }
                 }
-
-                // TODO should we keep matching this event if it already matched once ? if yes, one pattern PER MATCH will be output
-                // TODO if not, at most one pattern will be output if there is a match.
-                // TODO expected behaviour or not ? depends on the use case ? probably needs to be a configurable policy / strategy
-                // break;
             }
         }
 
-        Logger.debug(_context.getContextId() + " : current contexts : " + _context.getSubContexts());
+        return matchingSubContexts;
+    }
+
+    private void matchSubContexts(List<DeterministicRunContext> subContexts, Event e) {
+        for (DeterministicRunContext currentSubContext : subContexts) {
+            ITransition t = currentSubContext.getCurrentState().pickTransition(e.getType());
+
+            // Update current state
+            IState nextState = t.getTarget();
+
+            if (!nextState.isFinal()) {
+                DeterministicRunContext newSubContext = _context.addSubContext(nextState,
+                        currentSubContext.getMatchBuffersMap(), currentSubContext.getNacRunnersMap());
+                Logger.debug(currentSubContext.getContextId() + " : new subcontext created (" + newSubContext.getContextId() + ")");
+
+                // Update match buffer
+                newSubContext.appendEvent(e, t.getMatchbufferKey());
+
+                // NAC markers are ignored for NAC runners
+                if (!_isNac) {
+                    // Start NACs if there are any NAC START markers on the current transition
+                    if (!t.getNacBeginMarkers().isEmpty()) {
+                        for (INacBeginMarker startNacMarker : t.getNacBeginMarkers()) {
+                            Optional<DeterministicRunner> nacRunner = newSubContext.startNac(startNacMarker.getNacId(), startNacMarker.getNacRule());
+
+                            if (nacRunner.isPresent()) {
+                                nacRunner.get().registerPatternObserver((Collection<Event> pattern) -> {
+                                    Logger.debug(newSubContext.getContextId() + " : NAC matched, removing subcontext " + newSubContext.getContextId());
+                                    _context.getSubContexts().remove(newSubContext);
+                                });
+                            }
+                        }
+                    }
+
+                    // Stop NACs if there are any NAC STOP markers on the current transition
+                    if (!t.getNacEndMarkers().isEmpty()) {
+                        for (INacEndMarker stopNacMarker : t.getNacEndMarkers()) {
+                            newSubContext.stopNac(stopNacMarker.getNacId());
+                        }
+                    }
+                }
+            } else {
+                Logger.debug(currentSubContext.getContextId() + " : final state reached");
+
+                ArrayList<Event> pattern = new ArrayList<>(currentSubContext.getMatchBuffersStream().collect(Collectors.toList()));
+                pattern.add(e);
+                postPattern(pattern);
+            }
+
+            // function callbacks
+            nextState.performActions();
+        }
     }
 
     @Override

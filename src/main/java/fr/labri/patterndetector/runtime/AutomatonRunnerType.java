@@ -6,5 +6,7 @@ package fr.labri.patterndetector.runtime;
 public enum AutomatonRunnerType {
 
     Deterministic,
-    NonDeterministic
+    NonDeterministicMatchAll,
+    NonDeterministicMatchFirst,
+    NonDeterministicMatchLast
 }

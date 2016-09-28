@@ -13,8 +13,12 @@ public class AutomatonRunnerFactory implements Serializable {
         switch (runnerType) {
             case Deterministic:
                 return new DeterministicRunner(automaton);
-            case NonDeterministic:
-                return new NonDeterministicRunner(automaton);
+            case NonDeterministicMatchAll:
+                return new NonDeterministicRunner(automaton, RunnerMatchStrategy.MatchAll);
+            case NonDeterministicMatchFirst:
+                return new NonDeterministicRunner(automaton, RunnerMatchStrategy.MatchFirst);
+            case NonDeterministicMatchLast:
+                return new NonDeterministicRunner(automaton, RunnerMatchStrategy.MatchLast);
             default:
                 throw new RuntimeException("Unknown runner type. Cannot instantiate runner");
         }
