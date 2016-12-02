@@ -9,16 +9,16 @@ import java.io.Serializable;
  */
 public class AutomatonRunnerFactory implements Serializable {
 
-    public IAutomatonRunner getRunner(AutomatonRunnerType runnerType, IRuleAutomaton automaton) {
+    public IAutomatonRunner getRunner(AutomatonRunnerType runnerType, IRuleAutomaton automaton, int matchbufferSize) {
         switch (runnerType) {
             case Deterministic:
-                return new DeterministicRunner(automaton);
+                return new DeterministicRunner(automaton, matchbufferSize);
             case NonDeterministicMatchAll:
-                return new NonDeterministicRunner(automaton, RunnerMatchStrategy.MatchAll);
+                return new NonDeterministicRunner(automaton, RunnerMatchStrategy.MatchAll, matchbufferSize);
             case NonDeterministicMatchFirst:
-                return new NonDeterministicRunner(automaton, RunnerMatchStrategy.MatchFirst);
+                return new NonDeterministicRunner(automaton, RunnerMatchStrategy.MatchFirst, matchbufferSize);
             case NonDeterministicMatchLast:
-                return new NonDeterministicRunner(automaton, RunnerMatchStrategy.MatchLast);
+                return new NonDeterministicRunner(automaton, RunnerMatchStrategy.MatchLast, matchbufferSize);
             default:
                 throw new RuntimeException("Unknown runner type. Cannot instantiate runner");
         }

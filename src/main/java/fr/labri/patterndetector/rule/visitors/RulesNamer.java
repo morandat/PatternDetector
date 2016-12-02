@@ -6,7 +6,8 @@ import fr.labri.patterndetector.runtime.predicates.INacBeginMarker;
 /**
  * Created by wbraik on 19/11/15.
  * <p>
- * Classic depth first traversal
+ * Sets rule names
+ * Sets rule positions
  */
 
 public final class RulesNamer {
@@ -16,14 +17,16 @@ public final class RulesNamer {
     private RulesNamer() {
     }
 
-    public static void nameRules(IRule rule) {
+    public static int nameRules(IRule rule) {
         _ruleCounter = 0;
         RulesNamerVisitor visitor = new RulesNamerVisitor();
         rule.accept(visitor);
+
+        int matchbufferSize = _ruleCounter;
+        return matchbufferSize;
     }
 
     private static class RulesNamerVisitor extends AbstractRuleVisitor {
-
         @Override
         public void visit(AbstractUnaryRule unaryRule) {
             unaryRule.getChildRule().accept(new RulesNamerVisitor());
@@ -41,7 +44,9 @@ public final class RulesNamer {
                 startNacMarker.getNacRule().accept(new RulesNamerVisitor());
             }
 
-            terminalRule.setName("" + _ruleCounter++);
+            terminalRule.setName("" + _ruleCounter);
+            terminalRule.setMatchbufferPosition(_ruleCounter);
+            _ruleCounter++;
         }
     }
 }

@@ -36,7 +36,7 @@ public final class RuleAutomatonMaker {
         @Override
         public void visit(Atom atom) {
             try {
-                _automaton = makeAtomAutomaton(atom.getName(), atom.getEventType(), atom.getPredicates(),
+                _automaton = makeAtomAutomaton(atom.getMatchbufferPosition(), atom.getEventType(), atom.getPredicates(),
                         atom.getNacBeginMarkers(), atom.getNacEndMarkers(), atom.getAction());
             } catch (RuleAutomatonException e) {
                 Logger.error("Compilation failed : " + e.getMessage() + "(" + atom + ")\n"
@@ -114,7 +114,7 @@ public final class RuleAutomatonMaker {
         @Override
         public void visit(Kleene kleene) {
             try {
-                IRuleAutomaton baseAutomaton = makeAtomAutomaton(kleene.getName(), kleene.getEventType(), kleene.getPredicates(),
+                IRuleAutomaton baseAutomaton = makeAtomAutomaton(kleene.getMatchbufferPosition(), kleene.getEventType(), kleene.getPredicates(),
                         kleene.getNacBeginMarkers(), kleene.getNacEndMarkers(), kleene.getAction());
                 IRuleAutomaton automaton = new RuleAutomaton();
 
@@ -209,7 +209,7 @@ public final class RuleAutomatonMaker {
             return _automaton;
         }
 
-        private IRuleAutomaton makeAtomAutomaton(String patternId, String eventType, ArrayList<IPredicate> predicates,
+        private IRuleAutomaton makeAtomAutomaton(int patternId, String eventType, ArrayList<IPredicate> predicates,
                                                  ArrayList<INacBeginMarker> startNacMarkers, ArrayList<INacEndMarker> stopNacMarkers,
                                                  Runnable action) throws RuleAutomatonException {
             IState i = new State(); // Initial state
@@ -222,7 +222,7 @@ public final class RuleAutomatonMaker {
                     .setPredicates(predicates)
                     .setNacBeginMarkers(startNacMarkers)
                     .setNacEndMarkers(stopNacMarkers)
-                    .setMatchBufferKey(patternId);
+                    .setMatchBufferPosition(patternId);
 
             IRuleAutomaton automaton = new RuleAutomaton();
             automaton.setInitialState(i);

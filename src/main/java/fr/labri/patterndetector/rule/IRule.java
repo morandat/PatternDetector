@@ -13,6 +13,9 @@ import java.util.ArrayList;
  * Operator which binds atoms or sub-patterns together to form patterns.
  */
 public interface IRule {
+
+    int getMatchbufferPosition();
+
     /**
      * Get the name of the rule.
      *
@@ -34,6 +37,11 @@ public interface IRule {
     ArrayList<INacEndMarker> getNacEndMarkers();
 
     Runnable getAction();
+
+    /**
+     * SETTERS
+     **/
+    IRule setMatchbufferPosition(int id);
 
     /**
      * Set the name of the rule.

@@ -19,6 +19,7 @@ public abstract class AbstractRule implements IRule {
     // Concrete subclasses should log with their own class names
     protected final Logger Logger = LoggerFactory.getLogger(getClass());
 
+    protected int _matchbufferPosition;
     protected String _name;
     protected String _symbol;
     protected ArrayList<IPredicate> _predicates;
@@ -32,6 +33,18 @@ public abstract class AbstractRule implements IRule {
         _startNacMarkers = new ArrayList<>();
         _stopNacMarkers = new ArrayList<>();
         _action = null;
+    }
+
+    @Override
+    public int getMatchbufferPosition() {
+        return _matchbufferPosition;
+    }
+
+    @Override
+    public IRule setMatchbufferPosition(int id) {
+        _matchbufferPosition = id;
+
+        return this;
     }
 
     @Override

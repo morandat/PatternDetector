@@ -19,7 +19,7 @@ public class Transition implements ITransition, Serializable {
     private IState _target;
     private String _label;
     private TransitionType _type;
-    private String _matchBufferKey;
+    private int _matchBufferPosition;
     private ArrayList<IPredicate> _predicates;
     private ArrayList<INacBeginMarker> _startNacMarkers;
     private ArrayList<INacEndMarker> _stopNacMarkers;
@@ -61,8 +61,8 @@ public class Transition implements ITransition, Serializable {
     }
 
     @Override
-    public String getMatchbufferKey() {
-        return _matchBufferKey;
+    public int getMatchbufferPosition() {
+        return _matchBufferPosition;
     }
 
     @Override
@@ -81,8 +81,8 @@ public class Transition implements ITransition, Serializable {
     }
 
     @Override
-    public ITransition setMatchBufferKey(String matchBufferKey) {
-        _matchBufferKey = matchBufferKey;
+    public ITransition setMatchBufferPosition(int matchBufferKey) {
+        _matchBufferPosition = matchBufferKey;
 
         return this;
     }

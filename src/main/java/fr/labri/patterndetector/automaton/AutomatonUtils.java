@@ -118,7 +118,7 @@ public final class AutomatonUtils {
         Map<String, ArrayList<IPredicate>> predicates = new HashMap<>();
         Map<String, ArrayList<INacBeginMarker>> startNacMarkers = new HashMap<>();
         Map<String, ArrayList<INacEndMarker>> stopNacMarkers = new HashMap<>();
-        Map<String, String> matchBufferKeys = new HashMap<>();
+        Map<String, Integer> matchBufferPositions = new HashMap<>();
 
         for (IState state : currentStateSet) {
             for (ITransition t : state.getTransitions()) {
@@ -136,7 +136,7 @@ public final class AutomatonUtils {
                     predicates.put(t.getLabel(), t.getPredicates());
                     startNacMarkers.put(t.getLabel(), t.getNacBeginMarkers());
                     stopNacMarkers.put(t.getLabel(), t.getNacEndMarkers());
-                    matchBufferKeys.put(t.getLabel(), t.getMatchbufferKey());
+                    matchBufferPositions.put(t.getLabel(), t.getMatchbufferPosition());
                 }
             }
         }
@@ -176,7 +176,7 @@ public final class AutomatonUtils {
                     .setPredicates(predicates.get(label))
                     .setNacBeginMarkers(startNacMarkers.get(label))
                     .setNacEndMarkers(stopNacMarkers.get(label))
-                    .setMatchBufferKey(matchBufferKeys.get(label));
+                    .setMatchBufferPosition(matchBufferPositions.get(label));
         });
     }
 

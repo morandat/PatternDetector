@@ -51,13 +51,13 @@ public class DeterministicRunner extends AbstractAutomatonRunner implements Seri
 
             resetContext();
         } else {
-            if (_context.testPredicates(t.getPredicates(), t.getMatchbufferKey(), e)) {
+            if (_context.testPredicates(t.getPredicates(), t.getMatchbufferPosition(), e)) {
                 Logger.debug(getContextId() + " : transitioning : " + t + " (" + e + ")");
 
                 // Save current event in match buffer or discard it depending on the transition's type
                 switch (t.getType()) {
                     case TRANSITION_APPEND:
-                        _context.appendEvent(e, t.getMatchbufferKey());
+                        _context.appendEvent(e, t.getMatchbufferPosition());
                         break;
 
                     case TRANSITION_DROP:

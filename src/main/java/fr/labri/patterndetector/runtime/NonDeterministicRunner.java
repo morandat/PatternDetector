@@ -90,7 +90,7 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner implem
             if (t == null) {
                 Logger.debug(currentSubContext.getContextId() + " : can't transition (" + e + ")");
             } else {
-                if (currentSubContext.testPredicates(t.getPredicates(), t.getMatchbufferKey(), e)) {
+                if (currentSubContext.testPredicates(t.getPredicates(), t.getMatchbufferPosition(), e)) {
                     Logger.debug(currentSubContext.getContextId() + " : transitioning : " + t + " (" + e + ")");
 
                     // Save current event in match buffer or discard it depending on the transition's type
@@ -120,7 +120,7 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner implem
                 Logger.debug(currentSubContext.getContextId() + " : new subcontext created (" + newSubContext.getContextId() + ")");
 
                 // Update match buffer
-                newSubContext.appendEvent(e, t.getMatchbufferKey());
+                newSubContext.appendEvent(e, t.getMatchbufferPosition());
 
                 // NAC markers are ignored for NAC runners
                 if (!_isNac) {

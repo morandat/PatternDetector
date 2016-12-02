@@ -34,16 +34,15 @@ public final class RuleManager implements IPatternObserver {
      * @return The rule's name.
      */
     public IAutomatonRunner addRule(IRule rule, AutomatonRunnerType runnerType) {
-        RulesNamer.nameRules(rule);
+        int matchbufferSize = RulesNamer.nameRules(rule);
         IRuleAutomaton automaton = RuleAutomatonMaker.makeAutomaton(rule); // Try to build the rule automaton.
 
         IRuleAutomaton powerset = automaton.powerset();
-
         powerset.validate();
 
         // Instantiate runner
         try {
-            IAutomatonRunner runner = _runnerFactory.getRunner(runnerType, powerset);
+            IAutomatonRunner runner = _runnerFactory.getRunner(runnerType, powerset, matchbufferSize);
             runner.registerPatternObserver(this);
             _runners.add(runner);
 

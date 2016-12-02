@@ -21,7 +21,7 @@ public interface ITransition {
 
     TransitionType getType();
 
-    String getMatchbufferKey();
+    int getMatchbufferPosition();
 
     ArrayList<IPredicate> getPredicates();
 
@@ -29,7 +29,7 @@ public interface ITransition {
 
     ArrayList<INacEndMarker> getNacEndMarkers();
 
-    ITransition setMatchBufferKey(String matchBufferKey);
+    ITransition setMatchBufferPosition(int matchBufferKey);
 
     ITransition setPredicates(ArrayList<IPredicate> predicates);
 
