@@ -18,6 +18,7 @@ public class Main {
         for (Rule rule: rules) {
             PrettyPrinter.print(System.out, rule);
             new NameResolver(rule).resolve();
+            PrettyPrinter.print(System.out, rule, true);
             rule.hashCode();
         }
     }

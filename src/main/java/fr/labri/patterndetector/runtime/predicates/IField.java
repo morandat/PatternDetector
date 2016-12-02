@@ -1,9 +1,12 @@
 package fr.labri.patterndetector.runtime.predicates;
 
 import fr.labri.patterndetector.runtime.Event;
-import fr.labri.patterndetector.types.IValue;
+import fr.labri.patterndetector.runtime.MatchBuffer;
+import fr.labri.patterndetector.runtime.UnknownFieldException;
+import fr.labri.patterndetector.runtime.types.IValue;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -11,16 +14,14 @@ import java.util.Optional;
  */
 public interface IField {
 
-    String getPatternId();
+    Optional<IValue<?>> resolve(MatchBuffer matchBuffer, Event currentEvent) throws UnknownFieldException;
 
-    /**
-     * Returns whether the field can be resolved within a given matchbuffer
-     *
-     * @param matchBuffer
-     * @param currentEvent
-     * @return
-     */
-    boolean isResolvable(ArrayList<Event> matchBuffer, String currentMatchBufferKey, Event currentEvent);
+    String getFieldName();
 
-    Optional<IValue<?>> resolve(ArrayList<Event> matchBuffer, String currentMatchBufferKey, Event currentEvent);
+    default IValue<?> getFieldValue(Event event) throws UnknownFieldException {
+        Map<String, IValue<?>> payload = event.getPayload();
+        if (payload.containsKey(getFieldName()))
+            return payload.get(getFieldName());
+        throw new UnknownFieldException(event, this);
+    }
 }

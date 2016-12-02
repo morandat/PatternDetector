@@ -1,6 +1,6 @@
 package fr.labri.patterndetector.runtime.predicates;
 
-import fr.labri.patterndetector.types.IValue;
+import fr.labri.patterndetector.runtime.types.IValue;
 
 import java.util.ArrayList;
 
@@ -9,7 +9,7 @@ import java.util.ArrayList;
  */
 public interface IPredicate {
 
-    ArrayList<IField> getFields();
+    IField[] getFields();
 
     boolean eval(IValue<?>... values);
 }

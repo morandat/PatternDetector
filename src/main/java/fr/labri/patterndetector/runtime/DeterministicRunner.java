@@ -26,10 +26,10 @@ public class DeterministicRunner extends AbstractAutomatonRunner implements Seri
         _context = new DeterministicRunContext(automaton.getInitialState());
     }
 
-    public DeterministicRunner(IRuleAutomaton automaton, Map<String, ArrayList<Event>> matchBuffers) {
+    public DeterministicRunner(IRuleAutomaton automaton, MatchBuffer matchBuffer) {
         super(automaton, true);
 
-        _context = new DeterministicRunContext(automaton.getInitialState(), matchBuffers);
+        _context = new DeterministicRunContext(automaton.getInitialState(), matchBuffer);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class DeterministicRunner extends AbstractAutomatonRunner implements Seri
                     Logger.debug(getContextId() + " : final state reached");
 
                     // If the final state has been reached, post the found pattern and resetContext the automaton
-                    postPattern(_context.getMatchBuffersStream().collect(Collectors.toList()));
+                    postPattern(_context.getMatchBuffer().asStream().collect(Collectors.toList()));
                     resetContext();
                 }
             }

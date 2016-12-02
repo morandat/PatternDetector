@@ -29,7 +29,7 @@ public interface ITransition {
 
     ArrayList<INacEndMarker> getNacEndMarkers();
 
-    ITransition setMatchBufferPosition(int matchBufferKey);
+    ITransition setMatchbufferPosition(int matchbufferPositionKey);
 
     ITransition setPredicates(ArrayList<IPredicate> predicates);
 

@@ -2,10 +2,11 @@ package fr.labri.patterndetector.runtime;
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.automaton.IState;
+import fr.labri.patterndetector.automaton.Transition;
 import fr.labri.patterndetector.rule.IRule;
 import fr.labri.patterndetector.rule.visitors.RuleAutomatonMaker;
 import fr.labri.patterndetector.runtime.predicates.*;
-import fr.labri.patterndetector.types.IValue;
+import fr.labri.patterndetector.runtime.types.IValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,27 +22,27 @@ public class DeterministicRunContext extends AbstractRunContext implements Seria
     private final Logger Logger = LoggerFactory.getLogger(DeterministicRunContext.class);
 
     private IState _currentState;
-    private Map<String, ArrayList<Event>> _matchBuffers; // maps pattern ids to corresponding pattern events
+    private MatchBuffer _matchBuffer; // maps pattern ids to corresponding pattern events
     private Map<String, DeterministicRunner> _nacRunners; // maps NAC IDs to corresponding automata
 
-    public DeterministicRunContext(IState initialState) {
+    public DeterministicRunContext(IState initialState, int matchBufferSize) {
         super();
         _currentState = initialState;
-        _matchBuffers = new HashMap<>();
+        _matchBuffer = new MatchBuffer(matchBufferSize);
         _nacRunners = new HashMap<>();
     }
 
-    public DeterministicRunContext(IState initialState, Map<String, ArrayList<Event>> matchBuffers) {
+    public DeterministicRunContext(IState initialState, MatchBuffer matchBuffer) {
         super();
         _currentState = initialState;
-        _matchBuffers = copyMatchBuffers(matchBuffers); // FIXME inefficient : matchbuffers might not need to be copied to each NAC / subcontext
+        _matchBuffer = matchBuffer.duplicate(); // FIXME inefficient : matchbuffers might not need to be copied to each NAC / subcontext
         _nacRunners = new HashMap<>();
     }
 
-    public DeterministicRunContext(IState initialState, Map<String, ArrayList<Event>> matchBuffers, Map<String, DeterministicRunner> nacRunners) {
+    public DeterministicRunContext(IState initialState, MatchBuffer matchBuffer, Map<String, DeterministicRunner> nacRunners) {
         super();
         _currentState = initialState;
-        _matchBuffers = copyMatchBuffers(matchBuffers);
+        _matchBuffer = matchBuffer.duplicate();
         _nacRunners = new HashMap<>(); // FIXME inefficient : NACS might not need to be copied
         _nacRunners.putAll(nacRunners);
     }
@@ -58,20 +59,8 @@ public class DeterministicRunContext extends AbstractRunContext implements Seria
         _currentState = newState;
     }
 
-    public Map<String, ArrayList<Event>> getMatchBuffersMap() {
-        return _matchBuffers;
-    }
-
-    public ArrayList<Event> getMatchBuffer(String patternId) {
-        return _matchBuffers.get(patternId);
-    }
-
-    public Stream<Event> getMatchBuffersStream() {
-        ArrayList<Event> matchBuffer = new ArrayList<>();
-        _matchBuffers.values().forEach(matchBuffer::addAll);
-
-        return matchBuffer.stream()
-                .sorted((e1, e2) -> new Long(e1.getTimestamp()).compareTo(e2.getTimestamp())); // make sure it's sorted by timestamp
+    public MatchBuffer getMatchBuffer() {
+        return _matchBuffer;
     }
 
     public Map<String, DeterministicRunner> getNacRunnersMap() {
@@ -82,31 +71,47 @@ public class DeterministicRunContext extends AbstractRunContext implements Seria
         return _nacRunners.values();
     }
 
-    public void appendEvent(Event event, String patternId) {
-        ArrayList<Event> matchBuffer = getMatchBuffer(patternId);
-        if (matchBuffer == null) {
-            matchBuffer = new ArrayList<>();
-        }
-        matchBuffer.add(event);
-        _matchBuffers.put(patternId, matchBuffer);
+    public void appendEvent(Event event, int patternId) {
+        _matchBuffer.append(patternId, event);
     }
 
     public void clearMatchBuffers() {
-        _matchBuffers.clear();
+        _matchBuffer.clear();
     }
 
     public void clearNacRunners() {
         _nacRunners.clear();
     }
 
-    public boolean testPredicates(ArrayList<IPredicate> predicates, String currentMatchBufferKey, Event currentEvent) {
+    public boolean isTransitionValid(Transition transition, Event current) throws UnknownFieldException {
+        for (IPredicate predicate: transition.getPredicates()) {
+            if (!evaluatePredicate(predicate, current))
+                return false;
+        }
+        return true;
+    }
+
+    public boolean evaluatePredicate(IPredicate predicate, Event current) throws UnknownFieldException {
+        IField[] fields = predicate.getFields();
+        IValue<?>[] values = new IValue[fields.length];
+        for (int i = 0; i < fields.length; i++) {
+            Optional<IValue<?>> field = fields[i].resolve(_matchBuffer, current);
+            if (!field.isPresent())
+                return true;
+            values[i] = field.get();
+        }
+        predicate.eval(values);
+        return true;
+    }
+
+    public boolean testPredicates(ArrayList<IPredicate> predicates, int currentMatchBufferKey, Event currentEvent) {
         // No predicates to test
         if (predicates.isEmpty()) {
             return true;
         }
 
         for (IPredicate predicate : predicates) {
-            ArrayList<IField> fields = predicate.getFields();
+            IField[] fields = predicate.getFields();
             ArrayList<IValue<?>> values = new ArrayList<>();
             boolean skipPredicateCheck = false; // if true, means that current predicate cannot be checked and must be skipped
 
@@ -143,7 +148,7 @@ public class DeterministicRunContext extends AbstractRunContext implements Seria
             IRuleAutomaton nacPowerset = RuleAutomatonMaker.makeAutomaton(nacRule).powerset();
             nacPowerset.validate();
 
-            DeterministicRunner nacRunner = new DeterministicRunner(nacPowerset, _matchBuffers);
+            DeterministicRunner nacRunner = new DeterministicRunner(nacPowerset, _matchBuffer);
             _nacRunners.put(nacId, nacRunner);
 
             Logger.debug(_contextId + " : NAC \"" + nacId + "\" started with context " + nacRunner.getContextId() + " : " + nacRule);
@@ -160,15 +165,6 @@ public class DeterministicRunContext extends AbstractRunContext implements Seria
     }
 
     public String toString() {
-        return _contextId + ":(" + _currentState + ", " + _matchBuffers + ")";
-    }
-
-    private Map<String, ArrayList<Event>> copyMatchBuffers(Map<String, ArrayList<Event>> matchBuffers) {
-        Map<String, ArrayList<Event>> copy = new HashMap<>();
-        for (Map.Entry<String, ArrayList<Event>> entry : matchBuffers.entrySet()) {
-            copy.put(entry.getKey(), new ArrayList<>(entry.getValue()));
-        }
-
-        return copy;
+        return _contextId + ":(" + _currentState + ", " + _matchBuffer + ")";
     }
 }

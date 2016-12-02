@@ -1,1 +1,1 @@
-rule: foo bar baz # foo.truc = bar[ i ].referer
+rule: foo bar baz # foo.truc = bar[ i - 1 ] .referer

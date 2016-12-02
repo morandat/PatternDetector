@@ -270,7 +270,7 @@ public class AST {
     public static class SimpleSelector extends Selector {
         public final String _name;
         public boolean _field;
-        public boolean _isIndex;
+        public boolean _index;
 
         SimpleSelector(String reference) {
             _name = reference;

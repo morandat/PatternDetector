@@ -7,13 +7,19 @@ import java.io.PrintStream;
 public class PrettyPrinter {
 
     final PrintStream _out;
+    final boolean _debug;
 
-    PrettyPrinter(PrintStream out) {
+    PrettyPrinter(PrintStream out, boolean debug) {
         _out = out;
+        _debug = debug;
     }
 
     static final void print(PrintStream out, Rule rule) {
-        new PrettyPrinter(out).print(rule);
+        print(out, rule, false);
+    }
+
+    static final void print(PrintStream out, Rule rule, boolean debug) {
+        new PrettyPrinter(out, debug).print(rule);
     }
 
     void print(Rule rule) {
@@ -51,7 +57,12 @@ public class PrettyPrinter {
 
         @Override
         void visit(SimpleSelector selector) {
-            _out.printf("%s", selector._name);
+            if (_debug && selector._field)
+                _out.printf("{%s}", selector._name);
+            else if (_debug && selector._index)
+                _out.printf("<%s>", selector._name);
+            else
+                _out.printf("%s", selector._name);
         }
 
         @Override

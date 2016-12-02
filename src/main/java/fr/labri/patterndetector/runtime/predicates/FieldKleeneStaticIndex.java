@@ -1,10 +1,13 @@
 package fr.labri.patterndetector.runtime.predicates;
 
 import fr.labri.patterndetector.runtime.Event;
-import fr.labri.patterndetector.types.IValue;
+import fr.labri.patterndetector.runtime.MatchBuffer;
+import fr.labri.patterndetector.runtime.UnknownFieldException;
+import fr.labri.patterndetector.runtime.types.IValue;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -14,55 +17,21 @@ public class FieldKleeneStaticIndex extends AbstractField implements Serializabl
 
     protected int _index;
 
-    public FieldKleeneStaticIndex(String patternId, String fieldName, int index) {
-        super(patternId, fieldName);
+    public FieldKleeneStaticIndex(String fieldName, int fieldPosition, int index) {
+        super(fieldName, fieldPosition);
         _index = index;
     }
 
-    public int getIndex() {
-        return _index;
+    int computeIndex(List<Event> events) {
+        return _index >= 0 ? _index : events.size() + _index;
     }
 
     @Override
-    public boolean isResolvable(ArrayList<Event> matchBuffer, String currentMatchBufferKey, Event currentEvent) {
-        if (_patternId.equals(currentMatchBufferKey)) { // currently processed kleene
-            if (matchBuffer == null) { // current event is first event of the kleene
-                if (_index != 0)
-                    return false;
-            } else { // already at least one event in the kleene
-                int currentIndex = matchBuffer.size();
-                if (_index > currentIndex)
-                    return false;
-            }
-        } else if (_index >= matchBuffer.size()) { // previously processed kleene
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public Optional<IValue<?>> resolve(ArrayList<Event> matchBuffer, String currentMatchBufferKey, Event currentEvent) {
-        if (_patternId.equals(currentMatchBufferKey)) {
-            if (matchBuffer == null) { // first event of the current kleene seq
-                return Optional.ofNullable(currentEvent.getPayload().get(_fieldName));
-            } else { // at least one event already in current kleene seq
-                int currentIndex = matchBuffer.size(); // index of the currently processed event (not yet appended)
-
-                if (_index == currentIndex) {
-                    return Optional.ofNullable(currentEvent.getPayload().get(_fieldName));
-                } else {
-                    Event event = matchBuffer.get(_index);
-                    return Optional.ofNullable(event.getPayload().get(_fieldName));
-                }
-            }
-        } else { // past kleene sequence
-            if (_index >= matchBuffer.size()) {
-                return Optional.empty();
-            } else {
-                Event event = matchBuffer.get(_index);
-                return Optional.ofNullable(event.getPayload().get(_fieldName));
-            }
-        }
+    public Optional<IValue<?>> resolve(MatchBuffer matchBuffer, Event currentEvent) throws UnknownFieldException {
+        List<Event> events = matchBuffer.get(_fieldPosition);
+        int index = computeIndex(events);
+        if (events.size() >= index)
+            return Optional.of(getFieldValue(events.get(index)));
+        return Optional.empty();
     }
 }

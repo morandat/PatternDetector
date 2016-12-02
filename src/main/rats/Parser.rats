@@ -30,7 +30,7 @@ Expression condition
     ;
 
 Expression function
-    = SYMBOL n args { yyValue = null; }
+    = SYMBOL n void:'(' n args void:')' n { yyValue = null; }
     ;
 
 Expression binary
@@ -71,7 +71,7 @@ Expression arg
     ;
 
 Selector selector // FIXME the last should be a field, thus we must left recurse instead of right
-    = s:SYMBOL r:range? right:(void:'.' selector)? { yyValue = newSelector(s, r, right); }
+    = s:SYMBOL r:range? right:(n void:'.' selector)? { yyValue = newSelector(s, r, right); }
     ;
 
 Pair<Expression> range
@@ -88,7 +88,7 @@ Pair<Expression> range_spec
     ;
 
 Expression simple_arith
-    = l:variable_or_number { yyValue = l; } y:(o:arith_symbol r:variable_or_number { yyValue = newFunctionCall(o, null, r); })? {
+    = l:variable_or_number n { yyValue = l; } y:(o:arith_symbol n r:variable_or_number n { yyValue = newFunctionCall(o, null, r); })? {
         if (y != null){
             ((FunctionCall)y)._args.set(0, l);
             yyValue = ((FunctionCall)y);
@@ -97,8 +97,8 @@ Expression simple_arith
     ;
 
 Expression variable_or_number
-    = s:SYMBOL n { yyValue = newSelector(s); }
-    / number n
+    = s:SYMBOL { yyValue = newSelector(s); }
+    / number
     ;
 Expression literal
     = number
@@ -138,7 +138,7 @@ String arith_symbol
 
 String RANGE = "..";
 
-String SYMBOL = ([a-zA-Z][a-zA-Z0-9]*/[a-zA-Z0-9_]+);
+String SYMBOL = [_a-zA-Z][_a-zA-Z0-9]*;
 
 void REFERENCE = '@';
 
