@@ -16,10 +16,10 @@ public class NonDeterministicRunContext extends AbstractRunContext implements Se
 
     private ArrayList<DeterministicRunContext> _subContexts;
 
-    public NonDeterministicRunContext(IState initialState) {
+    public NonDeterministicRunContext(IState initialState, int matchbufferSize) {
         super();
         _subContexts = new ArrayList<>();
-        DeterministicRunContext initialContext = new DeterministicRunContext(initialState);
+        DeterministicRunContext initialContext = new DeterministicRunContext(initialState, matchbufferSize);
         _subContexts.add(initialContext);
     }
 
@@ -27,16 +27,16 @@ public class NonDeterministicRunContext extends AbstractRunContext implements Se
         return _subContexts;
     }
 
-    public DeterministicRunContext addSubContext(IState initialState, Map<String, ArrayList<Event>> matchBuffers) {
-        DeterministicRunContext subContext = new DeterministicRunContext(initialState, matchBuffers);
+    public DeterministicRunContext addSubContext(IState initialState, Matchbuffer matchBuffer) {
+        DeterministicRunContext subContext = new DeterministicRunContext(initialState, matchBuffer);
         _subContexts.add(subContext);
 
         return subContext;
     }
 
-    public DeterministicRunContext addSubContext(IState initialState, Map<String, ArrayList<Event>> matchBuffers,
+    public DeterministicRunContext addSubContext(IState initialState, Matchbuffer matchBuffer,
                                                  Map<String, DeterministicRunner> nacRunners) {
-        DeterministicRunContext subContext = new DeterministicRunContext(initialState, matchBuffers, nacRunners);
+        DeterministicRunContext subContext = new DeterministicRunContext(initialState, matchBuffer, nacRunners);
         _subContexts.add(subContext);
 
         return subContext;

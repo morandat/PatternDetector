@@ -2,7 +2,7 @@ package fr.labri.patterndetector.runtime;
 
 import fr.labri.patterndetector.rule.*;
 import fr.labri.patterndetector.runtime.predicates.*;
-import fr.labri.patterndetector.types.*;
+import fr.labri.patterndetector.runtime.types.*;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -37,7 +37,7 @@ public class Main {
         ruleManager.addRule(mainRule, AutomatonRunnerType.NonDeterministic);
         detector.detect(Main.generate());*/
 
-        IRule rule = new FollowedBy(
+        /*IRule rule = new FollowedBy(
                 new FollowedBy(
                         new Atom("SEARCH")
                                 .setAction((Runnable & Serializable) () -> System.out.println("SEARCH ACTION TRIGGERED !")),
@@ -55,10 +55,12 @@ public class Main {
                                 new FieldAtom("2", "ref"),
                                 (BiPredicate<StringValue, StringValue> & Serializable) (x, y) -> x.getValue().equals(y.getValue()))))
 
-                .setName("basic");
+                .setName("basic");*/
+
+        IRule rule = new FollowedBy(new Kleene("SEARCH"), "ADD_TO_BASKET");
 
         RuleManager ruleManager = new RuleManager();
-        ruleManager.addRule(rule, AutomatonRunnerType.NonDeterministicMatchLast);
+        ruleManager.addRule(rule, AutomatonRunnerType.Deterministic);
         Detector detector = new Detector(ruleManager);
         detector.detect(Main.generate());
     }

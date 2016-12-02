@@ -1,9 +1,6 @@
 package fr.labri.patterndetector.runtime;
 
-import fr.labri.patterndetector.types.DoubleValue;
-import fr.labri.patterndetector.types.IValue;
-import fr.labri.patterndetector.types.LongValue;
-import fr.labri.patterndetector.types.StringValue;
+import fr.labri.patterndetector.runtime.types.*;
 
 import java.io.Serializable;
 import java.util.HashMap;

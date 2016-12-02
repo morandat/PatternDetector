@@ -176,7 +176,7 @@ public final class AutomatonUtils {
                     .setPredicates(predicates.get(label))
                     .setNacBeginMarkers(startNacMarkers.get(label))
                     .setNacEndMarkers(stopNacMarkers.get(label))
-                    .setMatchBufferPosition(matchBufferPositions.get(label));
+                    .setMatchbufferPosition(matchBufferPositions.get(label));
         });
     }
 

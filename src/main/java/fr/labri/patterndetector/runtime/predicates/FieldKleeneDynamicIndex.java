@@ -1,7 +1,7 @@
 package fr.labri.patterndetector.runtime.predicates;
 
 import fr.labri.patterndetector.runtime.Event;
-import fr.labri.patterndetector.runtime.MatchBuffer;
+import fr.labri.patterndetector.runtime.Matchbuffer;
 import fr.labri.patterndetector.runtime.UnknownFieldException;
 import fr.labri.patterndetector.runtime.types.IValue;
 
@@ -21,8 +21,8 @@ public class FieldKleeneDynamicIndex extends AbstractField {
     }
 
     @Override
-    public Optional<IValue<?>> resolve(MatchBuffer matchBuffer, Event currentEvent) throws UnknownFieldException {
-        List<Event> events = matchBuffer.get(_fieldPosition);
+    public Optional<IValue<?>> resolve(Matchbuffer matchbuffer, Event currentEvent) throws UnknownFieldException {
+        List<Event> events = matchbuffer.get(_fieldPosition);
         int size = events.size();
         int index = _indexFunc.apply(size);
         if (size >= index)

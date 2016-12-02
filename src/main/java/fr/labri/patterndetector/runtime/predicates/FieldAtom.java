@@ -1,12 +1,11 @@
 package fr.labri.patterndetector.runtime.predicates;
 
 import fr.labri.patterndetector.runtime.Event;
-import fr.labri.patterndetector.runtime.MatchBuffer;
+import fr.labri.patterndetector.runtime.Matchbuffer;
 import fr.labri.patterndetector.runtime.UnknownFieldException;
 import fr.labri.patterndetector.runtime.types.IValue;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Optional;
 
 /**
@@ -19,7 +18,7 @@ public class FieldAtom extends AbstractField implements Serializable {
     }
 
     @Override
-    public Optional<IValue<?>> resolve(MatchBuffer matchBuffer, Event currentEvent) throws UnknownFieldException {
-        return Optional.of(getFieldValue(matchBuffer.get(_fieldPosition).get(0)));
+    public Optional<IValue<?>> resolve(Matchbuffer matchbuffer, Event currentEvent) throws UnknownFieldException {
+        return Optional.of(getFieldValue(matchbuffer.get(_fieldPosition).get(0)));
     }
 }

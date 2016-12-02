@@ -1,12 +1,11 @@
 package fr.labri.patterndetector.runtime.predicates;
 
 import fr.labri.patterndetector.runtime.Event;
-import fr.labri.patterndetector.runtime.MatchBuffer;
+import fr.labri.patterndetector.runtime.Matchbuffer;
 import fr.labri.patterndetector.runtime.UnknownFieldException;
 import fr.labri.patterndetector.runtime.types.IValue;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,8 +26,8 @@ public class FieldKleeneStaticIndex extends AbstractField implements Serializabl
     }
 
     @Override
-    public Optional<IValue<?>> resolve(MatchBuffer matchBuffer, Event currentEvent) throws UnknownFieldException {
-        List<Event> events = matchBuffer.get(_fieldPosition);
+    public Optional<IValue<?>> resolve(Matchbuffer matchbuffer, Event currentEvent) throws UnknownFieldException {
+        List<Event> events = matchbuffer.get(_fieldPosition);
         int index = computeIndex(events);
         if (events.size() >= index)
             return Optional.of(getFieldValue(events.get(index)));

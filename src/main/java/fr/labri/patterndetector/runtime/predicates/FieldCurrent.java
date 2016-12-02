@@ -1,7 +1,7 @@
 package fr.labri.patterndetector.runtime.predicates;
 
 import fr.labri.patterndetector.runtime.Event;
-import fr.labri.patterndetector.runtime.MatchBuffer;
+import fr.labri.patterndetector.runtime.Matchbuffer;
 import fr.labri.patterndetector.runtime.UnknownFieldException;
 import fr.labri.patterndetector.runtime.types.IValue;
 
@@ -19,7 +19,7 @@ public class FieldCurrent implements IField {
     }
 
     @Override
-    public Optional<IValue<?>> resolve(MatchBuffer matchBuffer, Event currentEvent) throws UnknownFieldException {
+    public Optional<IValue<?>> resolve(Matchbuffer matchbuffer, Event currentEvent) throws UnknownFieldException {
         return Optional.of(getFieldValue(currentEvent));
     }
 

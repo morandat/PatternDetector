@@ -81,7 +81,7 @@ public class Transition implements ITransition, Serializable {
     }
 
     @Override
-    public ITransition setMatchBufferPosition(int matchBufferKey) {
+    public ITransition setMatchbufferPosition(int matchBufferKey) {
         _matchBufferPosition = matchBufferKey;
 
         return this;

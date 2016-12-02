@@ -24,9 +24,9 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner implem
     private NonDeterministicRunContext _context;
     private RunnerMatchStrategy _matchStrategy;
 
-    public NonDeterministicRunner(IRuleAutomaton automaton, RunnerMatchStrategy matchStrategy) {
+    public NonDeterministicRunner(IRuleAutomaton automaton, RunnerMatchStrategy matchStrategy, int matchbufferSize) {
         super(automaton);
-        _context = new NonDeterministicRunContext(automaton.getInitialState());
+        _context = new NonDeterministicRunContext(automaton.getInitialState(), matchbufferSize);
         _matchStrategy = matchStrategy;
     }
 
@@ -90,16 +90,20 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner implem
             if (t == null) {
                 Logger.debug(currentSubContext.getContextId() + " : can't transition (" + e + ")");
             } else {
-                if (currentSubContext.testPredicates(t.getPredicates(), t.getMatchbufferPosition(), e)) {
-                    Logger.debug(currentSubContext.getContextId() + " : transitioning : " + t + " (" + e + ")");
+                try {
+                    if (currentSubContext.isTransitionValid(t, e)) {
+                        Logger.debug(currentSubContext.getContextId() + " : transitioning : " + t + " (" + e + ")");
 
-                    // Save current event in match buffer or discard it depending on the transition's type
-                    switch (t.getType()) {
-                        case TRANSITION_APPEND:
-                            matchingSubContexts.add(currentSubContext);
-                            break;
-                        case TRANSITION_DROP:
+                        // Save current event in match buffer or discard it depending on the transition's type
+                        switch (t.getType()) {
+                            case TRANSITION_APPEND:
+                                matchingSubContexts.add(currentSubContext);
+                                break;
+                            case TRANSITION_DROP:
+                        }
                     }
+                } catch (UnknownFieldException exception) {
+                    // TODO
                 }
             }
         }
@@ -116,7 +120,7 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner implem
 
             if (!nextState.isFinal()) {
                 DeterministicRunContext newSubContext = _context.addSubContext(nextState,
-                        currentSubContext.getMatchBuffersMap(), currentSubContext.getNacRunnersMap());
+                        currentSubContext.getMatchBuffer(), currentSubContext.getNacRunnersMap());
                 Logger.debug(currentSubContext.getContextId() + " : new subcontext created (" + newSubContext.getContextId() + ")");
 
                 // Update match buffer
@@ -148,7 +152,7 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner implem
             } else {
                 Logger.debug(currentSubContext.getContextId() + " : final state reached");
 
-                ArrayList<Event> pattern = new ArrayList<>(currentSubContext.getMatchBuffersStream().collect(Collectors.toList()));
+                ArrayList<Event> pattern = new ArrayList<>(currentSubContext.getMatchBuffer().asStream().collect(Collectors.toList()));
                 pattern.add(e);
                 postPattern(pattern);
             }

@@ -222,7 +222,7 @@ public final class RuleAutomatonMaker {
                     .setPredicates(predicates)
                     .setNacBeginMarkers(startNacMarkers)
                     .setNacEndMarkers(stopNacMarkers)
-                    .setMatchBufferPosition(patternId);
+                    .setMatchbufferPosition(patternId);
 
             IRuleAutomaton automaton = new RuleAutomaton();
             automaton.setInitialState(i);

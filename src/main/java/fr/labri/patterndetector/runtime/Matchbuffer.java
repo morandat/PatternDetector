@@ -8,10 +8,10 @@ import java.util.stream.Stream;
 /**
  * Created by morandat on 02/12/2016.
  */
-public class MatchBuffer {
+public class Matchbuffer {
     final private List<Event> _slots[];
 
-    public MatchBuffer(int fieldsCount) {
+    public Matchbuffer(int fieldsCount) {
         this._slots = new List[fieldsCount];
     }
 
@@ -48,8 +48,8 @@ public class MatchBuffer {
             _slots[i] = null;
     }
 
-    public MatchBuffer duplicate() {
-        MatchBuffer m = new MatchBuffer(_slots.length);
+    public Matchbuffer duplicate() {
+        Matchbuffer m = new Matchbuffer(_slots.length);
         for (int i = 0; i < _slots.length; i++) {
             List<Event> slot = _slots[i];
             if (slot != null) {

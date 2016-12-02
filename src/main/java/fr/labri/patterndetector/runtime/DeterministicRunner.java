@@ -20,16 +20,16 @@ public class DeterministicRunner extends AbstractAutomatonRunner implements Seri
 
     protected DeterministicRunContext _context;
 
-    public DeterministicRunner(IRuleAutomaton automaton) {
+    public DeterministicRunner(IRuleAutomaton automaton, int matchbufferSize) {
         super(automaton);
 
-        _context = new DeterministicRunContext(automaton.getInitialState());
+        _context = new DeterministicRunContext(automaton.getInitialState(), matchbufferSize);
     }
 
-    public DeterministicRunner(IRuleAutomaton automaton, MatchBuffer matchBuffer) {
+    public DeterministicRunner(IRuleAutomaton automaton, Matchbuffer matchbuffer) {
         super(automaton, true);
 
-        _context = new DeterministicRunContext(automaton.getInitialState(), matchBuffer);
+        _context = new DeterministicRunContext(automaton.getInitialState(), matchbuffer);
     }
 
     @Override
@@ -51,54 +51,58 @@ public class DeterministicRunner extends AbstractAutomatonRunner implements Seri
 
             resetContext();
         } else {
-            if (_context.testPredicates(t.getPredicates(), t.getMatchbufferPosition(), e)) {
-                Logger.debug(getContextId() + " : transitioning : " + t + " (" + e + ")");
+            try {
+                if (_context.isTransitionValid(t, e)) {
+                    Logger.debug(getContextId() + " : transitioning : " + t + " (" + e + ")");
 
-                // Save current event in match buffer or discard it depending on the transition's type
-                switch (t.getType()) {
-                    case TRANSITION_APPEND:
-                        _context.appendEvent(e, t.getMatchbufferPosition());
-                        break;
+                    // Save current event in match buffer or discard it depending on the transition's type
+                    switch (t.getType()) {
+                        case TRANSITION_APPEND:
+                            _context.appendEvent(e, t.getMatchbufferPosition());
+                            break;
 
-                    case TRANSITION_DROP:
-                }
+                        case TRANSITION_DROP:
+                    }
 
-                // NAC markers are ignored for NAC runners
-                if (!_isNac) {
-                    // Start NACs if there are any NAC START markers on the current transition
-                    if (!t.getNacBeginMarkers().isEmpty()) {
-                        for (INacBeginMarker startNacMarker : t.getNacBeginMarkers()) {
-                            Optional<DeterministicRunner> nacRunner = _context.startNac(startNacMarker.getNacId(), startNacMarker.getNacRule());
+                    // NAC markers are ignored for NAC runners
+                    if (!_isNac) {
+                        // Start NACs if there are any NAC START markers on the current transition
+                        if (!t.getNacBeginMarkers().isEmpty()) {
+                            for (INacBeginMarker startNacMarker : t.getNacBeginMarkers()) {
+                                Optional<DeterministicRunner> nacRunner = _context.startNac(startNacMarker.getNacId(), startNacMarker.getNacRule());
 
-                            if (nacRunner.isPresent()) {
-                                nacRunner.get().registerPatternObserver((Collection<Event> pattern) -> {
-                                    Logger.debug(getContextId() + " : NAC matched, resetting run context");
-                                    resetContext();
-                                });
+                                if (nacRunner.isPresent()) {
+                                    nacRunner.get().registerPatternObserver((Collection<Event> pattern) -> {
+                                        Logger.debug(getContextId() + " : NAC matched, resetting run context");
+                                        resetContext();
+                                    });
+                                }
+                            }
+                        }
+                        // Stop NACs if there are any NAC STOP markers on the current transition
+                        if (!t.getNacEndMarkers().isEmpty()) {
+                            for (INacEndMarker stopNacMarker : t.getNacEndMarkers()) {
+                                _context.stopNac(stopNacMarker.getNacId());
                             }
                         }
                     }
-                    // Stop NACs if there are any NAC STOP markers on the current transition
-                    if (!t.getNacEndMarkers().isEmpty()) {
-                        for (INacEndMarker stopNacMarker : t.getNacEndMarkers()) {
-                            _context.stopNac(stopNacMarker.getNacId());
-                        }
+
+                    // Update the current state
+                    _context.updateCurrentState(t.getTarget());
+
+                    // Run function callbacks attached to the current state
+                    _context.getCurrentState().performActions();
+
+                    if (_context.isCurrentStateFinal()) {
+                        Logger.debug(getContextId() + " : final state reached");
+
+                        // If the final state has been reached, post the found pattern and resetContext the automaton
+                        postPattern(_context.getMatchBuffer().asStream().collect(Collectors.toList()));
+                        resetContext();
                     }
                 }
-
-                // Update the current state
-                _context.updateCurrentState(t.getTarget());
-
-                // Run function callbacks attached to the current state
-                _context.getCurrentState().performActions();
-
-                if (_context.isCurrentStateFinal()) {
-                    Logger.debug(getContextId() + " : final state reached");
-
-                    // If the final state has been reached, post the found pattern and resetContext the automaton
-                    postPattern(_context.getMatchBuffer().asStream().collect(Collectors.toList()));
-                    resetContext();
-                }
+            } catch (UnknownFieldException exception) {
+                // TODO
             }
         }
     }
