@@ -1,8 +1,8 @@
 package fr.labri.patterndetector.runtime;
 
-import fr.labri.patterndetector.types.IValue;
-import fr.labri.patterndetector.types.LongValue;
-import fr.labri.patterndetector.types.StringValue;
+import fr.labri.patterndetector.runtime.types.IValue;
+import fr.labri.patterndetector.runtime.types.LongValue;
+import fr.labri.patterndetector.runtime.types.StringValue;
 
 import java.util.HashMap;
 import java.util.Map;

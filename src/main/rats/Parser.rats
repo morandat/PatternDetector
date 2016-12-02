@@ -30,7 +30,7 @@ Expression condition
     ;
 
 Expression function
-    = SYMBOL n args { yyValue = null; }
+    = SYMBOL n void:'(' n args void:')' n { yyValue = null; }
     ;
 
 Expression binary

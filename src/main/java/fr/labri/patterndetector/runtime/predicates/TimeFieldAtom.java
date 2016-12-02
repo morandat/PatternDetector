@@ -1,8 +1,8 @@
 package fr.labri.patterndetector.runtime.predicates;
 
 import fr.labri.patterndetector.runtime.Event;
-import fr.labri.patterndetector.types.IValue;
-import fr.labri.patterndetector.types.LongValue;
+import fr.labri.patterndetector.runtime.types.IValue;
+import fr.labri.patterndetector.runtime.types.LongValue;
 
 import java.util.ArrayList;
 import java.util.Optional;

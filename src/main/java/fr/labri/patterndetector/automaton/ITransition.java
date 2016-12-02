@@ -21,7 +21,7 @@ public interface ITransition {
 
     TransitionType getType();
 
-    String getMatchbufferKey();
+    int getMatchbufferKey();
 
     ArrayList<IPredicate> getPredicates();
 

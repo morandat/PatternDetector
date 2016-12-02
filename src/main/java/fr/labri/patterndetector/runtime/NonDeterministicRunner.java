@@ -55,7 +55,7 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner {
 
                             if (!nextState.isFinal()) {
                                 DeterministicRunContext newSubContext = _context.addSubContext(nextState,
-                                        currentSubContext.getMatchBuffersMap(), currentSubContext.getNacRunnersMap());
+                                        currentSubContext.getMatchBuffer(), currentSubContext.getNacRunnersMap());
                                 Logger.debug(currentSubContext.getContextId() + " : new subcontext created (" + newSubContext.getContextId() + ")");
 
                                 // Update match buffer
