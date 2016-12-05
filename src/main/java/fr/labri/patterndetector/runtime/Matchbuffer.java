@@ -37,7 +37,9 @@ public class Matchbuffer {
 
     public Stream<Event> asStream() {
         ArrayList<Event> matchBuffer = new ArrayList<>();
-        matchBuffer.addAll(Arrays.asList((Event[]) _slots));
+        for (List<Event> slot : _slots) {
+            matchBuffer.addAll(slot);
+        }
 
         return matchBuffer.stream()
                 .sorted((e1, e2) -> new Long(e1.getTimestamp()).compareTo(e2.getTimestamp())); // make sure it's sorted by timestamp

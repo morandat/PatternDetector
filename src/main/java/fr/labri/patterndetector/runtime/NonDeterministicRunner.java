@@ -107,7 +107,6 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner implem
                 }
             }
         }
-
         return matchingSubContexts;
     }
 

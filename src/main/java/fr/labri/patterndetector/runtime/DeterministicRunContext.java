@@ -83,7 +83,7 @@ public class DeterministicRunContext extends AbstractRunContext implements Seria
     }
 
     public boolean isTransitionValid(ITransition transition, Event current) throws UnknownFieldException {
-        for (IPredicate predicate : transition.getPredicates()) {
+        for (IPredicate predicate: transition.getPredicates()) {
             if (!evaluatePredicate(predicate, current))
                 return false;
         }

@@ -15,53 +15,68 @@ import java.util.stream.Stream;
 public class Main {
 
     public static void main(String[] args) {
+        IRule nacRule = new Atom("AddBasket")
+                .addPredicate(new Predicate2(
+                        new FieldAtom("productId", 0),
+                        new FieldKleeneStaticIndex("productId", 1, 0)) {
+                    @Override
+                    public boolean evaluate(String first, String second) {
+                        return first.equals(second);
+                    }
+                });
 
-        /*IRule nacRule = new Atom("AddBasket")
-                .addPredicate(new StringPredicateArity2(
-                        new FieldAtom("0", "productId"),
-                        new FieldKleeneStaticIndex("1", "productId", 0),
-                        (x, y) -> x.getValue().equals(y.getValue())));*/
-
-        /*IRule mainRule = new FollowedBy(
+        IRule mainRule = new FollowedBy(
                 new Kleene("View")
-                        .addPredicate(new StringPredicateArity2(
-                                new FieldKleeneDynamicIndex("1", "productId", (IntFunction<Integer> & Serializable) i -> i),
-                                new FieldKleeneDynamicIndex("1", "productId", (IntFunction<Integer> & Serializable) i -> i - 1),
-                                (BiPredicate<StringValue, StringValue> & Serializable) (x, y) -> x.getValue().equals(y.getValue())))
+                        .addPredicate(new Predicate2(
+                                new FieldKleeneDynamicIndex("productId", 1, i -> i),
+                                new FieldKleeneDynamicIndex("productId", 1, i -> i - 1)) {
+                            @Override
+                            public boolean evaluate(String first, String second) {
+                                return first.equals(second);
+                            }
+                        })
                         .addNacBeginMarker(new NacBeginMarker(nacRule, "nac")),
                 new Atom("Exit")
                         .addNacEndMarker(new NacEndMarker("nac")));
 
         RuleManager ruleManager = new RuleManager();
         Detector detector = new Detector(ruleManager);
-        ruleManager.addRule(mainRule, AutomatonRunnerType.NonDeterministic);
-        detector.detect(Main.generate());*/
+        ruleManager.addRule(mainRule, AutomatonRunnerType.NonDeterministicMatchFirst);
+        detector.detect(Main.generate());
 
-        /*IRule rule = new FollowedBy(
+        IRule rule = new FollowedBy(
                 new FollowedBy(
                         new Atom("SEARCH")
                                 .setAction((Runnable & Serializable) () -> System.out.println("SEARCH ACTION TRIGGERED !")),
 
                         new Atom("PRODUCT_SHEET")
-                                .addPredicate(new StringPredicateArity2(
-                                        new FieldAtom("0", "url"),
-                                        new FieldAtom("1", "ref"),
-                                        (BiPredicate<StringValue, StringValue> & Serializable) (x, y) -> x.getValue().equals(y.getValue())))
+                                .addPredicate(new Predicate2(
+                                        new FieldAtom("url", 0),
+                                        new FieldAtom("ref", 1)) {
+                                    @Override
+                                    public boolean evaluate(String first, String second) {
+                                        return first.equals(second);
+                                    }
+                                })
                                 .setAction((Runnable & Serializable) () -> System.out.println("PRODUCT SHEET ACTION TRIGGERED !"))),
 
                 new Atom("ADD_TO_BASKET")
-                        .addPredicate(new StringPredicateArity2(
-                                new FieldAtom("1", "url"),
-                                new FieldAtom("2", "ref"),
-                                (BiPredicate<StringValue, StringValue> & Serializable) (x, y) -> x.getValue().equals(y.getValue()))))
+                        .addPredicate(new Predicate2(
+                                new FieldAtom("url", 1),
+                                new FieldAtom("ref", 2)) {
+                            @Override
+                            public boolean evaluate(String first, String second) {
+                                return first.equals(second);
+                            }
+                        }))
 
-                .setName("basic");*/
+                .setName("basic");
 
-        IRule rule = new FollowedBy(new Kleene("SEARCH"), "ADD_TO_BASKET");
+        rule = new FollowedBy(new Kleene("SEARCH"), "ADD_TO_BASKET");
 
-        RuleManager ruleManager = new RuleManager();
+        ruleManager = new RuleManager();
         ruleManager.addRule(rule, AutomatonRunnerType.Deterministic);
-        Detector detector = new Detector(ruleManager);
+        detector = new Detector(ruleManager);
         detector.detect(Main.generate());
     }
 

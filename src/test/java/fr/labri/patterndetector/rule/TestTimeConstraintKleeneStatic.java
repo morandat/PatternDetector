@@ -2,11 +2,6 @@ package fr.labri.patterndetector.rule;
 
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
-import fr.labri.patterndetector.runtime.Event;
-import fr.labri.patterndetector.runtime.predicates.LongPredicateArity2;
-import fr.labri.patterndetector.runtime.predicates.TimeFieldAtom;
-import fr.labri.patterndetector.runtime.predicates.TimeFieldKleeneDynamicIndex;
-import fr.labri.patterndetector.runtime.predicates.TimeFieldKleeneStaticIndex;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 

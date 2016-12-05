@@ -4,6 +4,7 @@ import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.runtime.predicates.FieldAtom;
+import fr.labri.patterndetector.runtime.predicates.Predicate2;
 import fr.labri.patterndetector.runtime.predicates.StringPredicateArity2;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -55,15 +56,23 @@ public class TestScenario1Detection extends AbstractTestDetection {
                                 new FollowedBy("Search",
                                         new FollowedBy(
                                                 new Atom("View")
-                                                        .addPredicate(new StringPredicateArity2(
-                                                                new FieldAtom("0", "url"),
-                                                                new FieldAtom("1", "referrer"),
-                                                                (x, y) -> x.getValue().equals(y.getValue()))),
+                                                        .addPredicate(new Predicate2(
+                                                                new FieldAtom("url", 0),
+                                                                new FieldAtom("referrer", 1)) {
+                                                            @Override
+                                                            public boolean evaluate(String first, String second) {
+                                                                return first.equals(second);
+                                                            }
+                                                        }),
                                                 new Atom("AddBasket")
-                                                        .addPredicate(new StringPredicateArity2(
-                                                                new FieldAtom("1", "url"),
-                                                                new FieldAtom("2", "referrer"),
-                                                                (x, y) -> x.getValue().equals(y.getValue()))))),
+                                                        .addPredicate(new Predicate2(
+                                                                new FieldAtom("url", 1),
+                                                                new FieldAtom("referrer", 2)) {
+                                                            @Override
+                                                            public boolean evaluate(String first, String second) {
+                                                                return first.equals(second);
+                                                            }
+                                                        }))),
                                 Arrays.asList(
                                         new Event("Search", 1),
                                         new Event("View", 3),

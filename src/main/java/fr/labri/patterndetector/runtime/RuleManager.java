@@ -49,7 +49,7 @@ public final class RuleManager implements IPatternObserver {
             Logger.info("Rule added : " + rule);
             Logger.debug("Powerset : " + powerset);
 
-            serializeAutomaton(powerset, "D:\\automaton_" + rule.getName() + ".ser");
+//            serializeAutomaton(powerset, "D:\\automaton_" + rule.getName() + ".ser"); // FIXME what is this sh*t
 
             return runner;
         } catch (Exception e) {
