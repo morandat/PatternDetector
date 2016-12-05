@@ -2,7 +2,10 @@ package fr.labri.patterndetector.rule;
 
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
+import fr.labri.patterndetector.runtime.predicates.Constant;
 import fr.labri.patterndetector.runtime.predicates.FieldAtomTime;
+import fr.labri.patterndetector.runtime.predicates.FieldCurrentTime;
+import fr.labri.patterndetector.runtime.predicates.builtins.Add;
 import fr.labri.patterndetector.runtime.predicates.builtins.GreaterThan;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -40,13 +43,8 @@ public class TestTimeConstraintAtom extends AbstractTestDetection {
                                         new Atom("Search"),
                                         new Atom("Purchase")
                                                 .addPredicate(new GreaterThan(
-                                                        new FieldAtomTime(0),
-                                                        new FieldAtomTime(1)){
-                                                    @Override
-                                                    public boolean evaluate(long first, long second) {
-                                                        return super.evaluate(first + 5, second); // FIXME we need expressions
-                                                    }
-                                                })),
+                                                        new Add(new FieldAtomTime(0), new Constant(5)),
+                                                        new FieldCurrentTime()))),
                                 Arrays.asList(
                                         new Event("Search", 1),
                                         new Event("Purchase", 6)),
@@ -60,13 +58,8 @@ public class TestTimeConstraintAtom extends AbstractTestDetection {
                                         new Atom("Search"),
                                         new Atom("Purchase")
                                                 .addPredicate(new GreaterThan(
-                                                        new FieldAtomTime(0),
-                                                        new FieldAtomTime(1)) {
-                                                    @Override
-                                                    public boolean evaluate(long first, long second) {
-                                                        return super.evaluate(first + 2, second); // FIXME we need expressions
-                                                    }
-                                                })),
+                                                        new Add(new FieldAtomTime(0), new Constant(2)),
+                                                        new FieldCurrentTime()))),
                                 new ArrayList<>(),
                                 AutomatonRunnerType.Deterministic
                         },

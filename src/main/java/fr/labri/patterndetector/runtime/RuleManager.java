@@ -34,7 +34,7 @@ public final class RuleManager implements IPatternObserver {
      * @return The rule's name.
      */
     public IAutomatonRunner addRule(IRule rule, AutomatonRunnerType runnerType) {
-        int matchbufferSize = RulesNamer.nameRules(rule);
+        int matchbufferSize = RulesNamer.numberRule(rule);
         IRuleAutomaton automaton = RuleAutomatonMaker.makeAutomaton(rule); // Try to build the rule automaton.
 
         IRuleAutomaton powerset = automaton.powerset();

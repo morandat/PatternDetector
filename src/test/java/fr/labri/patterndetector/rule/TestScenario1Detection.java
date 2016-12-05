@@ -4,6 +4,7 @@ import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.runtime.predicates.FieldAtom;
 import fr.labri.patterndetector.runtime.predicates.Predicate2;
+import fr.labri.patterndetector.runtime.predicates.builtins.Equal;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -54,23 +55,13 @@ public class TestScenario1Detection extends AbstractTestDetection {
                                 new FollowedBy("Search",
                                         new FollowedBy(
                                                 new Atom("View")
-                                                        .addPredicate(new Predicate2(
+                                                        .addPredicate(new Equal(
                                                                 new FieldAtom(0, "url"),
-                                                                new FieldAtom(1, "referrer")) {
-                                                            @Override
-                                                            public boolean evaluate(String first, String second) {
-                                                                return first.equals(second);
-                                                            }
-                                                        }),
+                                                                new FieldAtom(1, "referrer"))),
                                                 new Atom("AddBasket")
-                                                        .addPredicate(new Predicate2(
+                                                        .addPredicate(new Equal(
                                                                 new FieldAtom(1, "url"),
-                                                                new FieldAtom(2, "referrer")) {
-                                                            @Override
-                                                            public boolean evaluate(String first, String second) {
-                                                                return first.equals(second);
-                                                            }
-                                                        }))),
+                                                                new FieldAtom(2, "referrer"))))),
                                 Arrays.asList(
                                         new Event("Search", 1),
                                         new Event("View", 3),

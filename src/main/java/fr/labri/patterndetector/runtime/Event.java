@@ -62,25 +62,25 @@ public class Event implements Serializable {
     }
 
     public Event setData(String key, Integer value) {
-        _payload.put(key, new LongValue(value.longValue()));
+        _payload.put(key, LongValue.from(value.longValue()));
 
         return this;
     }
 
     public Event setData(String key, Long value) {
-        _payload.put(key, new LongValue(value));
+        _payload.put(key, LongValue.from(value));
 
         return this;
     }
 
     public Event setData(String key, String value) {
-        _payload.put(key, new StringValue(value));
+        _payload.put(key, StringValue.from(value));
 
         return this;
     }
 
     public Event setData(String key, Double value) {
-        _payload.put(key, new DoubleValue(value));
+        _payload.put(key, DoubleValue.from(value));
 
         return this;
     }

@@ -6,13 +6,15 @@ package fr.labri.patterndetector.runtime.types;
 public class StringValue implements IValue<String> {
    public final String _value;
 
-    public StringValue(String value) {
+    private StringValue(String value) {
         _value = value;
     }
 
-    static StringValue from(String value) {
+    public static StringValue from(String value) {
         return new StringValue(value);
     }
+
+    public final static StringValue EMPTY = new StringValue("");
 
     @Override
     public String getValue() {
@@ -22,5 +24,10 @@ public class StringValue implements IValue<String> {
     @Override
     public int getTypeID() {
         return IValue.STRING;
+    }
+
+    @Override
+    public String toString() {
+        return _value;
     }
 }

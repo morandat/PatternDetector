@@ -3,6 +3,7 @@ package fr.labri.patterndetector.rule;
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.runtime.predicates.*;
+import fr.labri.patterndetector.runtime.predicates.builtins.Add;
 import fr.labri.patterndetector.runtime.predicates.builtins.Equal;
 import fr.labri.patterndetector.runtime.predicates.builtins.GreaterThan;
 import fr.labri.patterndetector.runtime.predicates.builtins.NotEqual;
@@ -38,7 +39,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                 "Detect A, with simple predicate",
                                 new Atom("a")
                                         .addPredicate(new GreaterThan(
-                                        new FieldAtom(0, "x"),
+                                        new FieldCurrent("x"),
                                         new Constant(5))),
                                 Arrays.asList(
                                         new Event("a", 1)),
@@ -49,7 +50,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                 "NOT Detect A, with simple predicate",
                                 new Atom("a")
                                         .addPredicate(new GreaterThan(
-                                        new FieldAtom(0, "x"),
+                                        new FieldCurrent("x"),
                                         new Constant(12))),
                                 new ArrayList<>(),
                                 AutomatonRunnerType.Deterministic
@@ -62,7 +63,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                         new Atom("b")
                                                 .addPredicate(new Equal(
                                                         new FieldAtom(0, "x"),
-                                                        new FieldAtom(1, "y")))),
+                                                        new FieldCurrent("y")))),
                                 Arrays.asList(
                                         new Event("a", 1),
                                         new Event("b", 5)),
@@ -76,7 +77,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                         new Atom("b")
                                                 .addPredicate(new NotEqual(
                                                         new FieldAtom(0, "x"),
-                                                        new FieldAtom(1, "y")))),
+                                                        new FieldCurrent("y")))),
                                 Arrays.asList(
                                         new Event("a", 1),
                                         new Event("b", 2)),
@@ -84,7 +85,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                         },
 
                         {
-                                " Detect A followed by Kleene(B) followed by C with predicates ",
+                                " Detect A followed by Kleene(B) followed by C # a.x = b[i].x ",
                                 new FollowedBy("a",
                                         new FollowedBy(
                                                 new Kleene("b")
@@ -101,24 +102,14 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                         },
 
                         {
-                                " Detect A followed by Kleene(B) followed by C with predicates ",
+                                " Detect A followed by Kleene(B) followed by C # b[] ",
                                 new FollowedBy("a",
                                         new FollowedBy(
                                                 new Kleene("b"),
                                                 new Atom("c")
-                                                        .addPredicate(new Predicate2(
-                                                                new FieldAtom(2, "y"),
-                                                                new FieldKleeneStaticIndex(1, "y", 0)) {
-                                                            @Override
-                                                            public boolean evaluate(String first, String second) {
-                                                                throw new RuntimeException("???"); // FIXME we need composite Expression
-                                                            }
-
-                                                            @Override
-                                                            public boolean evaluate(long first, long second) {
-                                                                return first + 1 == second;
-                                                            }
-                                                        }))),
+                                                        .addPredicate(new Equal(
+                                                                new Add(new FieldKleeneStaticIndex(1, "y", 0), new Constant(1)),
+                                                                new FieldCurrent("y"))))),
                                 Arrays.asList(
                                         new Event("a", 1),
                                         new Event("b", 2),
@@ -146,7 +137,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                         },
 
                         {
-                                " Detect Kleene(B) followed by C with Kleene predicates ",
+                                " Detect Kleene(B) followed by C with Kleene # b[i].y = b[i - 1].y",
                                 new FollowedBy(
                                         new Kleene("b")
                                                 .addPredicate(new Equal(

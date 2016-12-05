@@ -21,15 +21,15 @@ public class Constant implements IField {
     }
 
     public Constant(String value) {
-        this(new StringValue(value));
+        this(StringValue.from(value));
     }
 
     public Constant(double value) {
-        this(new DoubleValue(value));
+        this(DoubleValue.from(value));
     }
 
     public Constant(long value) {
-        this(new LongValue(value));
+        this(LongValue.from(value));
     }
 
     @Override

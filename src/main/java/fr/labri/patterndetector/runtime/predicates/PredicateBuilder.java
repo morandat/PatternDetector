@@ -1,6 +1,5 @@
 package fr.labri.patterndetector.runtime.predicates;
 
-import fr.labri.patterndetector.runtime.predicates.builtins.Equal;
 import org.atteo.classindex.ClassFilter;
 import org.atteo.classindex.ClassIndex;
 

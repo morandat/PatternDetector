@@ -18,6 +18,6 @@ public class FieldCurrentTime implements IField {
 
     @Override
     public Optional<IValue<?>> resolve(Matchbuffer matchbuffer, Event currentEvent) throws UnknownFieldException {
-        return Optional.of(new LongValue(currentEvent.getTimestamp()));
+        return Optional.of(LongValue.from(currentEvent.getTimestamp()));
     }
 }

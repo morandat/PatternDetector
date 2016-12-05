@@ -14,17 +14,17 @@ public class NotEqual extends Predicate2 {
     }
 
     @Override
-    public boolean evaluate(String first, String second) {
+    public Boolean evaluate(String first, String second) {
         return !first.equals(second);
     }
 
     @Override
-    public boolean evaluate(double first, double second) {
+    public Boolean evaluate(double first, double second) {
         return first != second;
     }
 
     @Override
-    public boolean evaluate(long first, long second) {
+    public Boolean evaluate(long first, long second) {
         return first != second;
     }
 }

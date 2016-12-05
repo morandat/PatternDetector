@@ -32,7 +32,7 @@ public class FieldKleeneStaticIndexTime implements IField {
         List<Event> events = matchbuffer.get(_fieldPosition);
         int index = computeIndex(events);
         if (events.size() >= index)
-            return Optional.of(new LongValue(events.get(index).getTimestamp()));
+            return Optional.of(LongValue.from(events.get(index).getTimestamp()));
         return Optional.empty();
     }
 }

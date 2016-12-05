@@ -6,13 +6,15 @@ package fr.labri.patterndetector.runtime.types;
 public class DoubleValue implements IValue<Double> {
     public final double _value;
 
-    public DoubleValue(double value) {
+    private DoubleValue(double value) {
         _value = value;
     }
 
-    static DoubleValue from(double value) {
+    public static DoubleValue from(double value) {
         return new DoubleValue(value);
     }
+
+    public static final DoubleValue ZERO = new DoubleValue(0);
 
     @Override
     public Double getValue() {
@@ -22,5 +24,10 @@ public class DoubleValue implements IValue<Double> {
     @Override
     public int getTypeID() {
         return IValue.DOUBLE;
+    }
+
+    @Override
+    public String toString() {
+        return Double.toString(_value);
     }
 }

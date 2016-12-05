@@ -2,8 +2,10 @@ package fr.labri.patterndetector.rule;
 
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
+import fr.labri.patterndetector.runtime.predicates.Constant;
 import fr.labri.patterndetector.runtime.predicates.FieldCurrentTime;
 import fr.labri.patterndetector.runtime.predicates.FieldKleeneStaticIndexTime;
+import fr.labri.patterndetector.runtime.predicates.builtins.Add;
 import fr.labri.patterndetector.runtime.predicates.builtins.Equal;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -39,12 +41,7 @@ public class TestTimeConstraintKleeneDyn extends AbstractTestDetection {
                                         new Kleene("k")
                                                 .addPredicate(new Equal(
                                                         new FieldCurrentTime(),
-                                                        new FieldKleeneStaticIndexTime(0, -1)) {
-                                                    @Override
-                                                    public boolean evaluate(long first, long second) {
-                                                        return super.evaluate(first, second + 1);
-                                                    }
-                                                }),
+                                                        new Add(new FieldKleeneStaticIndexTime(0, -1), new Constant(1)))),
                                         "end"),
                                 Arrays.asList(
                                         new Event("k", 1),

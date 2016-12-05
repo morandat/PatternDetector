@@ -20,6 +20,6 @@ public class FieldAtomTime implements IField {
 
     @Override
     public Optional<IValue<?>> resolve(Matchbuffer matchbuffer, Event currentEvent) throws UnknownFieldException {
-        return Optional.of(new LongValue(matchbuffer.get(_fieldPosition).get(0).getTimestamp()));
+        return Optional.of(LongValue.from(matchbuffer.get(_fieldPosition).get(0).getTimestamp()));
     }
 }

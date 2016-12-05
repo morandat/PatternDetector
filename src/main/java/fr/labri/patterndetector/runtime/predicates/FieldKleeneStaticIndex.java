@@ -30,8 +30,10 @@ public class FieldKleeneStaticIndex extends AbstractField implements Serializabl
     @Override
     public Optional<IValue<?>> resolve(Matchbuffer matchbuffer, Event currentEvent) throws UnknownFieldException {
         List<Event> events = matchbuffer.get(_fieldPosition);
+        if (events == null)
+            return Optional.empty();
         int index = computeIndex(events);
-        if (events.size() >= index)
+        if (index < events.size())
             return Optional.of(getFieldValue(events.get(index)));
         return Optional.empty();
     }

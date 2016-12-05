@@ -12,36 +12,29 @@ import fr.labri.patterndetector.runtime.predicates.INacBeginMarker;
 
 public final class RulesNamer {
 
-    static private int _ruleCounter = 0;
-
-    private RulesNamer() {
-    }
-
-    public static int nameRules(IRule rule) {
-        _ruleCounter = 0;
+    public static int numberRule(IRule rule) {
         RulesNamerVisitor visitor = new RulesNamerVisitor();
         rule.accept(visitor);
-
-        int matchbufferSize = _ruleCounter;
-        return matchbufferSize;
+        return visitor._ruleCounter;
     }
 
     private static class RulesNamerVisitor extends AbstractRuleVisitor {
+        private int _ruleCounter = 0;
         @Override
         public void visit(AbstractUnaryRule unaryRule) {
-            unaryRule.getChildRule().accept(new RulesNamerVisitor());
+            unaryRule.getChildRule().accept(this);
         }
 
         @Override
         public void visit(AbstractBinaryRule binaryRule) {
-            binaryRule.getLeftChildRule().accept(new RulesNamerVisitor());
-            binaryRule.getRightChildRule().accept(new RulesNamerVisitor());
+            binaryRule.getLeftChildRule().accept(this);
+            binaryRule.getRightChildRule().accept(this);
         }
 
         @Override
         public void visit(AbstractTerminalRule terminalRule) {
             for (INacBeginMarker startNacMarker : terminalRule.getNacBeginMarkers()) {
-                startNacMarker.getNacRule().accept(new RulesNamerVisitor());
+                startNacMarker.getNacRule().accept(this);
             }
 
             terminalRule.setName("" + _ruleCounter);

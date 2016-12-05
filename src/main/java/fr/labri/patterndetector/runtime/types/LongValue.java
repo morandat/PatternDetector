@@ -7,13 +7,15 @@ public class LongValue implements IValue<Long> {
 
     public final long _value;
 
-    public LongValue(long value) {
+    private LongValue(long value) {
         _value = value;
     }
 
-    static LongValue from(long value) {
+    public static LongValue from(long value) {
         return new LongValue(value);
     }
+
+    public final static LongValue ZERO = new LongValue(0);
 
     @Override
     public Long getValue() {
@@ -23,5 +25,10 @@ public class LongValue implements IValue<Long> {
     @Override
     public int getTypeID() {
         return IValue.LONG;
+    }
+
+    @Override
+    public String toString() {
+        return Long.toString(_value);
     }
 }

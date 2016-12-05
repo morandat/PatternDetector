@@ -38,7 +38,8 @@ public class Matchbuffer {
     public Stream<Event> asStream() {
         ArrayList<Event> matchBuffer = new ArrayList<>();
         for (List<Event> slot : _slots) {
-            matchBuffer.addAll(slot);
+            if (slot != null)
+                matchBuffer.addAll(slot);
         }
 
         return matchBuffer.stream()
