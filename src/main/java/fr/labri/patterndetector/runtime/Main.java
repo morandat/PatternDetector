@@ -1,6 +1,5 @@
 package fr.labri.patterndetector.runtime;
 
-import fr.labri.patterndetector.lang.Builtin;
 import fr.labri.patterndetector.rule.*;
 import fr.labri.patterndetector.runtime.expressions.*;
 import fr.labri.patterndetector.runtime.expressions.predicates.Equal;

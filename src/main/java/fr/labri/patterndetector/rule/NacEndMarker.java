@@ -1,4 +1,6 @@
-package fr.labri.patterndetector.runtime.expressions;
+package fr.labri.patterndetector.rule;
+
+import fr.labri.patterndetector.rule.INacEndMarker;
 
 import java.io.Serializable;
 

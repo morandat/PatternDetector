@@ -1,7 +1,7 @@
 package fr.labri.patterndetector.rule.visitors;
 
 import fr.labri.patterndetector.rule.*;
-import fr.labri.patterndetector.runtime.expressions.INacBeginMarker;
+import fr.labri.patterndetector.rule.INacBeginMarker;
 
 /**
  * Created by wbraik on 19/11/15.
