@@ -10,21 +10,14 @@ import java.util.Optional;
 /**
  * Created by morandat on 02/12/2016.
  */
-public class FieldCurrent implements IField {
-
-    private final String _fieldName;
+public class FieldCurrent extends AbstractField {
 
     public FieldCurrent(String fieldName) {
-        _fieldName = fieldName;
+        super(fieldName);
     }
 
     @Override
     public Optional<IValue<?>> resolve(Matchbuffer matchbuffer, Event currentEvent) throws UnknownFieldException {
         return Optional.of(getFieldValue(currentEvent));
-    }
-
-    @Override
-    public String getFieldName() {
-        return _fieldName;
     }
 }

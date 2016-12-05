@@ -13,4 +13,9 @@ public interface IPredicate extends Serializable {
     IField[] getFields();
 
     boolean eval(IValue<?>... values);
+
+    void validate() throws InvalidPredicate;
+
+    class InvalidPredicate extends Exception {
+    }
 }

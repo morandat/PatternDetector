@@ -2,10 +2,8 @@ package fr.labri.patterndetector.rule;
 
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
-import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.runtime.predicates.FieldAtom;
 import fr.labri.patterndetector.runtime.predicates.Predicate2;
-import fr.labri.patterndetector.runtime.predicates.StringPredicateArity2;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -57,8 +55,8 @@ public class TestScenario1Detection extends AbstractTestDetection {
                                         new FollowedBy(
                                                 new Atom("View")
                                                         .addPredicate(new Predicate2(
-                                                                new FieldAtom("url", 0),
-                                                                new FieldAtom("referrer", 1)) {
+                                                                new FieldAtom(0, "url"),
+                                                                new FieldAtom(1, "referrer")) {
                                                             @Override
                                                             public boolean evaluate(String first, String second) {
                                                                 return first.equals(second);
@@ -66,8 +64,8 @@ public class TestScenario1Detection extends AbstractTestDetection {
                                                         }),
                                                 new Atom("AddBasket")
                                                         .addPredicate(new Predicate2(
-                                                                new FieldAtom("url", 1),
-                                                                new FieldAtom("referrer", 2)) {
+                                                                new FieldAtom(1, "url"),
+                                                                new FieldAtom(2, "referrer")) {
                                                             @Override
                                                             public boolean evaluate(String first, String second) {
                                                                 return first.equals(second);

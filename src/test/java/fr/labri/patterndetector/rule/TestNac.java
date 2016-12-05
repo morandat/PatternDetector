@@ -2,8 +2,8 @@ package fr.labri.patterndetector.rule;
 
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
-import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.runtime.predicates.*;
+import fr.labri.patterndetector.runtime.predicates.builtins.Equal;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -40,17 +40,15 @@ public class TestNac extends AbstractTestDetection {
                                 " Detect scenario : k+ -> end # end.t - k[0].t < 10 ",
                                 new FollowedBy(
                                         new Kleene("View")
-                                                .addPredicate(new StringPredicateArity2(
-                                                        new FieldKleeneDynamicIndex("1", "productId", i -> i),
-                                                        new FieldKleeneDynamicIndex("1", "productId", i -> i - 1),
-                                                        (x, y) -> x.getValue().equals(y.getValue())))
+                                                .addPredicate(new Equal(
+                                                        new FieldCurrent("productId"),
+                                                        new FieldKleeneStaticIndex(1, "productId", -1)))
                                                 .addNacBeginMarker(new NacBeginMarker(
                                                         // NAC rule
                                                         new Atom("AddBasket")
-                                                                .addPredicate(new StringPredicateArity2(
-                                                                        new FieldAtom("0", "productId"),
-                                                                        new FieldKleeneStaticIndex("1", "productId", 0),
-                                                                        (x, y) -> x.getValue().equals(y.getValue()))),
+                                                                .addPredicate(new Equal(
+                                                                        new FieldAtom(0, "productId"),
+                                                                        new FieldKleeneStaticIndex(1, "productId", 0))),
                                                         "nac")),
                                         new Atom("Exit")
                                                 .addNacEndMarker(new NacEndMarker("nac"))),

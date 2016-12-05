@@ -2,11 +2,10 @@ package fr.labri.patterndetector.runtime;
 
 import fr.labri.patterndetector.rule.*;
 import fr.labri.patterndetector.runtime.predicates.*;
-import fr.labri.patterndetector.runtime.types.*;
+import fr.labri.patterndetector.runtime.predicates.builtins.Equal;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
 /**
@@ -15,26 +14,16 @@ import java.util.stream.Stream;
 public class Main {
 
     public static void main(String[] args) {
+        PredicateBuilder.initBuiltins();
         IRule nacRule = new Atom("AddBasket")
-                .addPredicate(new Predicate2(
-                        new FieldAtom("productId", 0),
-                        new FieldKleeneStaticIndex("productId", 1, 0)) {
-                    @Override
-                    public boolean evaluate(String first, String second) {
-                        return first.equals(second);
-                    }
-                });
+                .addPredicate(new Equal(
+                        new FieldAtom(0, "productId"), new FieldKleeneStaticIndex(1, "productId", 0)));
 
         IRule mainRule = new FollowedBy(
                 new Kleene("View")
-                        .addPredicate(new Predicate2(
-                                new FieldKleeneDynamicIndex("productId", 1, i -> i),
-                                new FieldKleeneDynamicIndex("productId", 1, i -> i - 1)) {
-                            @Override
-                            public boolean evaluate(String first, String second) {
-                                return first.equals(second);
-                            }
-                        })
+                        .addPredicate(new Equal(
+                                new FieldKleeneDynamicIndex(1, "productId", i -> i),
+                                new FieldKleeneDynamicIndex(1, "productId", i -> i - 1)))
                         .addNacBeginMarker(new NacBeginMarker(nacRule, "nac")),
                 new Atom("Exit")
                         .addNacEndMarker(new NacEndMarker("nac")));
@@ -44,35 +33,25 @@ public class Main {
         ruleManager.addRule(mainRule, AutomatonRunnerType.NonDeterministicMatchFirst);
         detector.detect(Main.generate());
 
-        IRule rule = new FollowedBy(
+        IRule rule_not_working = new FollowedBy(
                 new FollowedBy(
                         new Atom("SEARCH")
                                 .setAction((Runnable & Serializable) () -> System.out.println("SEARCH ACTION TRIGGERED !")),
 
                         new Atom("PRODUCT_SHEET")
-                                .addPredicate(new Predicate2(
-                                        new FieldAtom("url", 0),
-                                        new FieldAtom("ref", 1)) {
-                                    @Override
-                                    public boolean evaluate(String first, String second) {
-                                        return first.equals(second);
-                                    }
-                                })
+                                .addPredicate(new Equal(
+                                        new FieldAtom(0, "url"),
+                                        new FieldAtom(1, "ref")))
                                 .setAction((Runnable & Serializable) () -> System.out.println("PRODUCT SHEET ACTION TRIGGERED !"))),
 
                 new Atom("ADD_TO_BASKET")
-                        .addPredicate(new Predicate2(
-                                new FieldAtom("url", 1),
-                                new FieldAtom("ref", 2)) {
-                            @Override
-                            public boolean evaluate(String first, String second) {
-                                return first.equals(second);
-                            }
-                        }))
+                        .addPredicate(new Equal(
+                                new FieldAtom(1, "url"),
+                                new FieldAtom(2, "ref"))))
 
                 .setName("basic");
 
-        rule = new FollowedBy(new Kleene("SEARCH"), "ADD_TO_BASKET");
+        IRule rule = new FollowedBy(new Kleene("SEARCH"), "ADD_TO_BASKET");
 
         ruleManager = new RuleManager();
         ruleManager.addRule(rule, AutomatonRunnerType.Deterministic);

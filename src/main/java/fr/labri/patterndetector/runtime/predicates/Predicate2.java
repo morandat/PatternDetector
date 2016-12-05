@@ -8,20 +8,18 @@ import static fr.labri.patterndetector.runtime.types.IValue.*;
 /**
  * Created by morandat on 02/12/2016.
  */
-public abstract class Predicate2 implements IPredicate {
+public abstract class Predicate2 extends AbstractPredicate {
 
-    private final IField _fields[];
-
-    public Predicate2(IField firstField, IField secondField) {
-        _fields = new IField[]{ firstField, secondField };
+    public Predicate2(IField... fields) {
+        super(fields);
     }
 
-    @Override
-    public IField[] getFields() {
-        return _fields;
+
+    public void validate() throws InvalidPredicate {
+        if (getFields().length != 2)
+            throw new InvalidPredicate();
     }
 
-    @Override
     public boolean eval(IValue<?>... values) {
         assert values.length == 2;
         return evaluate(values[0], values[1]);

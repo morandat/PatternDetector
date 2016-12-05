@@ -2,9 +2,8 @@ package fr.labri.patterndetector.rule;
 
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
-import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.runtime.predicates.FieldAtom;
-import fr.labri.patterndetector.runtime.predicates.StringPredicateArity2;
+import fr.labri.patterndetector.runtime.predicates.builtins.Equal;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -55,16 +54,14 @@ public class TestSearchDetection extends AbstractTestDetection {
                                 new FollowedBy(new Atom("Search").setAction(() -> System.out.println("Found Search event")),
                                         new FollowedBy(
                                                 new Atom("View")
-                                                        .addPredicate(new StringPredicateArity2(
-                                                                new FieldAtom("0", "url"),
-                                                                new FieldAtom("1", "referrer"),
-                                                                (x, y) -> x.getValue().equals(y.getValue())))
+                                                        .addPredicate(new Equal(
+                                                                new FieldAtom(0, "url"),
+                                                                new FieldAtom(1, "referrer")))
                                                         .setAction(() -> System.out.println("Found View event")),
                                                 new Atom("AddBasket")
-                                                        .addPredicate(new StringPredicateArity2(
-                                                                new FieldAtom("1", "url"),
-                                                                new FieldAtom("2", "referrer"),
-                                                                (x, y) -> x.getValue().equals(y.getValue())))
+                                                        .addPredicate(new Equal(
+                                                                new FieldAtom(1, "url"),
+                                                                new FieldAtom(2, "referrer")))
                                                         .setAction(() -> System.out.println("Found Basket event")))),
                                 Arrays.asList(
                                         new Event("Search", 1),

@@ -2,6 +2,8 @@ package fr.labri.patterndetector.rule;
 
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
+import fr.labri.patterndetector.runtime.predicates.FieldAtomTime;
+import fr.labri.patterndetector.runtime.predicates.builtins.GreaterThan;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -37,10 +39,14 @@ public class TestTimeConstraintAtom extends AbstractTestDetection {
                                 new FollowedBy(
                                         new Atom("Search"),
                                         new Atom("Purchase")
-                                                .addPredicate(new LongPredicateArity2(
-                                                        new TimeFieldAtom("0"),
-                                                        new TimeFieldAtom("1"),
-                                                        (x, y) -> (y.getValue() - x.getValue()) <= 5))),
+                                                .addPredicate(new GreaterThan(
+                                                        new FieldAtomTime(0),
+                                                        new FieldAtomTime(1)){
+                                                    @Override
+                                                    public boolean evaluate(long first, long second) {
+                                                        return super.evaluate(first + 5, second); // FIXME we need expressions
+                                                    }
+                                                })),
                                 Arrays.asList(
                                         new Event("Search", 1),
                                         new Event("Purchase", 6)),
@@ -53,10 +59,14 @@ public class TestTimeConstraintAtom extends AbstractTestDetection {
                                 new FollowedBy(
                                         new Atom("Search"),
                                         new Atom("Purchase")
-                                                .addPredicate(new LongPredicateArity2(
-                                                        new TimeFieldAtom("0"),
-                                                        new TimeFieldAtom("1"),
-                                                        (x, y) -> (y.getValue() - x.getValue()) <= 2))),
+                                                .addPredicate(new GreaterThan(
+                                                        new FieldAtomTime(0),
+                                                        new FieldAtomTime(1)) {
+                                                    @Override
+                                                    public boolean evaluate(long first, long second) {
+                                                        return super.evaluate(first + 2, second); // FIXME we need expressions
+                                                    }
+                                                })),
                                 new ArrayList<>(),
                                 AutomatonRunnerType.Deterministic
                         },

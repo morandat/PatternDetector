@@ -14,10 +14,13 @@ import java.util.function.IntFunction;
  */
 public class FieldKleeneDynamicIndex extends AbstractField {
 
-    protected IntFunction<Integer> _indexFunc;
+    private final IntFunction<Integer> _indexFunc;
+    private final int _fieldPosition;
 
-    public FieldKleeneDynamicIndex(String fieldName, int fieldPosition, IntFunction<Integer> computeIndex) {
-        super(fieldName, fieldPosition);
+    public FieldKleeneDynamicIndex(int fieldPosition, String fieldName, IntFunction<Integer> computeIndex) {
+        super(fieldName);
+        _fieldPosition = fieldPosition;
+        _indexFunc = computeIndex;
     }
 
     @Override

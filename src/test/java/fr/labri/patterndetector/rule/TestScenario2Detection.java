@@ -2,9 +2,10 @@ package fr.labri.patterndetector.rule;
 
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
+import fr.labri.patterndetector.runtime.predicates.Constant;
 import fr.labri.patterndetector.runtime.predicates.FieldAtom;
-import fr.labri.patterndetector.runtime.predicates.Predicate1;
-import fr.labri.patterndetector.runtime.predicates.Predicate2;
+import fr.labri.patterndetector.runtime.predicates.builtins.Equal;
+import fr.labri.patterndetector.runtime.predicates.builtins.GreaterThan;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -58,29 +59,15 @@ public class TestScenario2Detection extends AbstractTestDetection {
                                 new FollowedBy(
                                         new Atom("Search"),
                                         new Atom("AddBasket")
-                                                .addPredicate(new Predicate2(
-                                                        new FieldAtom("url", 0),
-                                                        new FieldAtom("referrer", 1)) {
-                                                    @Override
-                                                    public boolean evaluate(String first, String second) {
-                                                        return first.equals(second);
-                                                    }
-                                                })
-                                                .addPredicate(new Predicate1(
-                                                        new FieldAtom("category", 1)) {
-                                                    @Override
-                                                    public boolean evaluate(String value) {
-                                                        return "TV".equals(value);
-                                                    }
-                                                })
-                                                .addPredicate(new Predicate1(
-                                                        new FieldAtom("rating", 1)) {
-                                                    @Override
-                                                    public boolean evaluate(String value) {
-                                                        return Long.parseLong(value) > 3;
-                                                    }
-                                                }
-                                                )),
+                                                .addPredicate(new Equal(
+                                                        new FieldAtom(0, "url"),
+                                                        new FieldAtom(1, "referrer")))
+                                                .addPredicate(new Equal(
+                                                        new FieldAtom(1, "category"),
+                                                        new Constant("TV")))
+                                                .addPredicate(new GreaterThan(
+                                                        new FieldAtom(1, "rating"),
+                                                        new Constant(3)))),
                                 Arrays.asList(
                                         new Event("Search", 1),
                                         new Event("AddBasket", 6)),

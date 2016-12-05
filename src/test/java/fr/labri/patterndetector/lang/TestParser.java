@@ -37,14 +37,14 @@ public class TestParser {
         assertThat(p.pscript(0), parseTo(expected));
     }
 
-    static Pair<Rule> simple = pairOf(
+    final static Pair<Rule> simple = pairOf(
         new Rule("rule").
                 appendPattern(newSimplePattern("foo")).
                 appendPattern(newSimplePattern("bar")).
                 appendPattern(newSimplePattern("baz"))
     );
 
-    static Pair<Rule> multiple = pairOf(
+    final static Pair<Rule> multiple = pairOf(
         new Rule("rule").
                 appendPattern(newSimplePattern("foo")).
                 appendPattern(newSimplePattern("bar")).
@@ -55,7 +55,7 @@ public class TestParser {
                 appendPattern(newKleene(newSimplePattern("baz"))),
         new Rule("yetanother").
                 appendPattern(newSimplePattern("foo")).
-                appendPattern(newKleene(newCompositePattern(new Pair(newSimplePattern("bar"))))).
+                appendPattern(newKleene(newCompositePattern(new Pair<>(newSimplePattern("bar"))))).
                 appendPattern(newSimplePattern("baz"))
     );
 
@@ -68,10 +68,11 @@ public class TestParser {
         });
     }
 
+    @SafeVarargs
     public static <R> Pair<R> pairOf(R... objects) {
         if (objects.length == 0)
             return Pair.empty();
-        Pair<R> pair = new Pair(objects[0]);
+        Pair<R> pair = new Pair<>(objects[0]);
         for (int i = 1 ; i < objects.length ; i ++)
            pair.add(objects[i]);
         return pair;

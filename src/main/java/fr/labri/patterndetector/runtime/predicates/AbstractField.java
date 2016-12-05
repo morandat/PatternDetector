@@ -12,14 +12,11 @@ import java.util.Map;
 public abstract class AbstractField implements IField {
 
     final protected String _fieldName;
-    protected final int _fieldPosition;
 
-    public AbstractField(String fieldName, int fieldPosition) {
+    public AbstractField(String fieldName) {
         _fieldName = fieldName;
-        _fieldPosition = fieldPosition;
     }
 
-    @Override
     public IValue<?> getFieldValue(Event event) throws UnknownFieldException {
         Map<String, IValue<?>> payload = event.getPayload();
         if (payload.containsKey(getFieldName()))
@@ -27,7 +24,6 @@ public abstract class AbstractField implements IField {
         throw new UnknownFieldException(event, this);
     }
 
-    @Override
     public String getFieldName() {
         return _fieldName;
     }

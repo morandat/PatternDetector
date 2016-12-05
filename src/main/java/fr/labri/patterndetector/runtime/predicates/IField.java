@@ -15,12 +15,4 @@ public interface IField {
 
     Optional<IValue<?>> resolve(Matchbuffer matchbuffer, Event currentEvent) throws UnknownFieldException;
 
-    String getFieldName();
-
-    default IValue<?> getFieldValue(Event event) throws UnknownFieldException {
-        Map<String, IValue<?>> payload = event.getPayload();
-        if (payload.containsKey(getFieldName()))
-            return payload.get(getFieldName());
-        throw new UnknownFieldException(event, this);
-    }
 }

@@ -2,6 +2,9 @@ package fr.labri.patterndetector.rule;
 
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
+import fr.labri.patterndetector.runtime.predicates.FieldAtomTime;
+import fr.labri.patterndetector.runtime.predicates.FieldKleeneStaticIndexTime;
+import fr.labri.patterndetector.runtime.predicates.builtins.GreaterThan;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -31,14 +34,18 @@ public class TestTimeConstraintKleeneStatic extends AbstractTestDetection {
         return Arrays.asList(
                 new Object[][]{
                         {
-                                " Detect scenario : k+ -> end # end.t - k[0].t < 10 ",
+                                " Detect scenario : k+ -> end # end.t - k[0].t <= 10 ",
                                 new FollowedBy(
                                         new Kleene("k"),
                                         new Atom("end")
-                                                .addPredicate(new LongPredicateArity2(
-                                                        new TimeFieldKleeneStaticIndex("0", 0),
-                                                        new TimeFieldAtom("1"),
-                                                        (x, y) -> y.getValue() - x.getValue() < 10))),
+                                                .addPredicate(new GreaterThan(
+                                                        new FieldKleeneStaticIndexTime(0, 0),
+                                                        new FieldAtomTime(1) ){
+                                                    @Override
+                                                    public boolean evaluate(long first, long second) {
+                                                        return super.evaluate(first + 10, second); // FIXME we need expressions
+                                                    }
+                                                })),
                                 Arrays.asList(
                                         new Event("k", 1),
                                         new Event("k", 2),

@@ -2,9 +2,8 @@ package fr.labri.patterndetector.rule;
 
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
-import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.runtime.predicates.FieldAtom;
-import fr.labri.patterndetector.runtime.predicates.StringPredicateArity2;
+import fr.labri.patterndetector.runtime.predicates.builtins.Equal;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -39,10 +38,9 @@ public class TestScenario3Detection extends AbstractTestDetection {
                                 new FollowedBy(
                                         new Atom("PayOpts"),
                                         new Atom("RemoveBasket")
-                                                .addPredicate(new StringPredicateArity2(
-                                                        new FieldAtom("0", "url"),
-                                                        new FieldAtom("1", "referrer"),
-                                                        (x, y) -> x.getValue().equals(y.getValue())))),
+                                                .addPredicate(new Equal(
+                                                        new FieldAtom(0, "url"),
+                                                        new FieldAtom(1, "referrer")))),
                                 Arrays.asList(
                                         new Event("PayOpts", 1),
                                         new Event("RemoveBasket", 2)),
