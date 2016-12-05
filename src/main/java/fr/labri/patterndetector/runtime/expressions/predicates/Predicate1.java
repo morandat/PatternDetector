@@ -1,5 +1,7 @@
-package fr.labri.patterndetector.runtime.predicates;
+package fr.labri.patterndetector.runtime.expressions.predicates;
 
+import fr.labri.patterndetector.runtime.expressions.IField;
+import fr.labri.patterndetector.runtime.expressions.IPredicate;
 import fr.labri.patterndetector.runtime.types.IValue;
 import fr.labri.patterndetector.runtime.types.*;
 
@@ -13,16 +15,12 @@ public abstract class Predicate1 implements IPredicate {
     private final IField _fields[];
 
     public Predicate1(IField... fields) {
+        assert fields.length == 1;
         _fields = fields;
     }
 
     public IField[] getFields() {
         return _fields;
-    }
-    @Override
-    public void validate() throws InvalidPredicate {
-        if (getFields().length != 1)
-            throw new InvalidPredicate();
     }
 
     @Override

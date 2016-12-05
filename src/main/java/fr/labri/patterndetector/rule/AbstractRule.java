@@ -1,9 +1,9 @@
 package fr.labri.patterndetector.rule;
 
-import fr.labri.patterndetector.runtime.predicates.IPredicate;
+import fr.labri.patterndetector.runtime.expressions.IPredicate;
 import fr.labri.patterndetector.rule.visitors.RuleStringifier;
-import fr.labri.patterndetector.runtime.predicates.INacBeginMarker;
-import fr.labri.patterndetector.runtime.predicates.INacEndMarker;
+import fr.labri.patterndetector.runtime.expressions.INacBeginMarker;
+import fr.labri.patterndetector.runtime.expressions.INacEndMarker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

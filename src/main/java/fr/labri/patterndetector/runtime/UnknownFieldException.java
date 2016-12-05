@@ -1,6 +1,6 @@
 package fr.labri.patterndetector.runtime;
 
-import fr.labri.patterndetector.runtime.predicates.IField;
+import fr.labri.patterndetector.runtime.expressions.IField;
 
 /**
  * Created by morandat on 02/12/2016.

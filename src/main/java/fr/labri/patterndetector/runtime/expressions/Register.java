@@ -1,5 +1,6 @@
-package fr.labri.patterndetector.runtime.predicates;
+package fr.labri.patterndetector.runtime.expressions;
 
+import fr.labri.patterndetector.runtime.expressions.predicates.Factory;
 import org.atteo.classindex.IndexAnnotated;
 
 import java.lang.annotation.ElementType;
@@ -13,10 +14,10 @@ import java.lang.annotation.Target;
 @IndexAnnotated
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Predicate {
+public @interface Register {
     String name() default "";
 
     int parameters() default Integer.MIN_VALUE;
 
-    Class<? extends PredicateFactory> factory() default PredicateFactory.class;
+    Class<? extends Factory> factory() default Factory.class;
 }

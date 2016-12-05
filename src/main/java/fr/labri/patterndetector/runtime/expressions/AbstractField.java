@@ -1,4 +1,4 @@
-package fr.labri.patterndetector.runtime.predicates;
+package fr.labri.patterndetector.runtime.expressions;
 
 import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.runtime.UnknownFieldException;

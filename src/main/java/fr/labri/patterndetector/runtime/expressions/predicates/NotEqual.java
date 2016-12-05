@@ -1,13 +1,12 @@
-package fr.labri.patterndetector.runtime.predicates.builtins;
+package fr.labri.patterndetector.runtime.expressions.predicates;
 
-import fr.labri.patterndetector.runtime.predicates.IField;
-import fr.labri.patterndetector.runtime.predicates.Predicate;
-import fr.labri.patterndetector.runtime.predicates.Predicate2;
+import fr.labri.patterndetector.runtime.expressions.IField;
+import fr.labri.patterndetector.runtime.expressions.Register;
 
 /**
  * Created by morandat on 05/12/2016.
  */
-@Predicate(name = "=")
+@Register(name = "=")
 public class NotEqual extends Predicate2 {
     public NotEqual(IField... fields) {
         super(fields);

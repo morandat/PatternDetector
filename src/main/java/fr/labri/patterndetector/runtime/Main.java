@@ -1,8 +1,9 @@
 package fr.labri.patterndetector.runtime;
 
+import fr.labri.patterndetector.lang.Builtin;
 import fr.labri.patterndetector.rule.*;
-import fr.labri.patterndetector.runtime.predicates.*;
-import fr.labri.patterndetector.runtime.predicates.builtins.Equal;
+import fr.labri.patterndetector.runtime.expressions.*;
+import fr.labri.patterndetector.runtime.expressions.predicates.Equal;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -14,7 +15,6 @@ import java.util.stream.Stream;
 public class Main {
 
     public static void main(String[] args) {
-        PredicateBuilder.initBuiltins();
         IRule nacRule = new Atom("AddBasket")
                 .addPredicate(new Equal(
                         new FieldAtom(0, "productId"), new FieldKleeneStaticIndex(1, "productId", 0)));

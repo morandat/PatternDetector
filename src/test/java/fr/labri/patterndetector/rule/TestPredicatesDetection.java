@@ -2,11 +2,11 @@ package fr.labri.patterndetector.rule;
 
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
-import fr.labri.patterndetector.runtime.predicates.*;
-import fr.labri.patterndetector.runtime.predicates.builtins.Add;
-import fr.labri.patterndetector.runtime.predicates.builtins.Equal;
-import fr.labri.patterndetector.runtime.predicates.builtins.GreaterThan;
-import fr.labri.patterndetector.runtime.predicates.builtins.NotEqual;
+import fr.labri.patterndetector.runtime.expressions.*;
+import fr.labri.patterndetector.runtime.expressions.arithmetic.Add;
+import fr.labri.patterndetector.runtime.expressions.predicates.Equal;
+import fr.labri.patterndetector.runtime.expressions.predicates.GreaterThan;
+import fr.labri.patterndetector.runtime.expressions.predicates.NotEqual;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 

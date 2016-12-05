@@ -1,7 +1,9 @@
-package fr.labri.patterndetector.runtime.predicates;
+package fr.labri.patterndetector.runtime.expressions.predicates;
 
+import fr.labri.patterndetector.runtime.expressions.BinaryOperation;
+import fr.labri.patterndetector.runtime.expressions.IField;
+import fr.labri.patterndetector.runtime.expressions.IPredicate;
 import fr.labri.patterndetector.runtime.types.IValue;
-import fr.labri.patterndetector.runtime.types.*;
 
 
 /**
@@ -19,10 +21,5 @@ public abstract class Predicate2 extends BinaryOperation<Boolean> implements IPr
     public boolean eval(IValue<?>... values) {
         assert values.length == 2;
         return evaluate(values[0], values[1]);
-    }
-
-    public void validate() throws InvalidPredicate {
-        if (getFields().length != 2)
-            throw new InvalidPredicate();
     }
 }

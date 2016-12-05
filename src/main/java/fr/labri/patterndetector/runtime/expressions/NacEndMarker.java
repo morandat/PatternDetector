@@ -1,4 +1,4 @@
-package fr.labri.patterndetector.runtime.predicates;
+package fr.labri.patterndetector.runtime.expressions;
 
 import java.io.Serializable;
 

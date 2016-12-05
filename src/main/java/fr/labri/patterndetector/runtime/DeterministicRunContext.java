@@ -5,7 +5,7 @@ import fr.labri.patterndetector.automaton.IState;
 import fr.labri.patterndetector.automaton.ITransition;
 import fr.labri.patterndetector.rule.IRule;
 import fr.labri.patterndetector.rule.visitors.RuleAutomatonMaker;
-import fr.labri.patterndetector.runtime.predicates.*;
+import fr.labri.patterndetector.runtime.expressions.*;
 import fr.labri.patterndetector.runtime.types.IValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

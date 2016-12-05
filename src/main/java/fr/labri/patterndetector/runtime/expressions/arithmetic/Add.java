@@ -1,7 +1,8 @@
-package fr.labri.patterndetector.runtime.predicates.builtins;
+package fr.labri.patterndetector.runtime.expressions.arithmetic;
 
-import fr.labri.patterndetector.runtime.predicates.Expression;
-import fr.labri.patterndetector.runtime.predicates.IField;
+import fr.labri.patterndetector.runtime.expressions.Expression;
+import fr.labri.patterndetector.runtime.expressions.IField;
+import fr.labri.patterndetector.runtime.expressions.Register;
 import fr.labri.patterndetector.runtime.types.DoubleValue;
 import fr.labri.patterndetector.runtime.types.IValue;
 import fr.labri.patterndetector.runtime.types.LongValue;
@@ -10,6 +11,7 @@ import fr.labri.patterndetector.runtime.types.StringValue;
 /**
  * Created by morandat on 05/12/2016.
  */
+@Register(name = "+")
 public class Add extends Expression {
     public Add(IField... fields) {
         super(fields);

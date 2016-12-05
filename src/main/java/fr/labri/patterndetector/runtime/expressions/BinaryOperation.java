@@ -1,4 +1,4 @@
-package fr.labri.patterndetector.runtime.predicates;
+package fr.labri.patterndetector.runtime.expressions;
 
 import fr.labri.patterndetector.runtime.types.DoubleValue;
 import fr.labri.patterndetector.runtime.types.IValue;
@@ -14,6 +14,7 @@ public abstract class BinaryOperation<R> {
     private final IField _fields[];
 
     public BinaryOperation(IField... fields) {
+        assert fields.length == 2;
         _fields = fields;
     }
 
@@ -23,7 +24,7 @@ public abstract class BinaryOperation<R> {
 
     protected abstract R defaultValue();
 
-    R evaluate(IValue<?> first, IValue<?> second) {
+    protected R evaluate(IValue<?> first, IValue<?> second) {
         switch(subtypeValue(first.getTypeID(), second.getTypeID())) {
             case STRING_STRING:
                 return evaluate(((StringValue)first)._value, ((StringValue)second)._value);

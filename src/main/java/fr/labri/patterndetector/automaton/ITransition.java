@@ -1,8 +1,8 @@
 package fr.labri.patterndetector.automaton;
 
-import fr.labri.patterndetector.runtime.predicates.IPredicate;
-import fr.labri.patterndetector.runtime.predicates.INacBeginMarker;
-import fr.labri.patterndetector.runtime.predicates.INacEndMarker;
+import fr.labri.patterndetector.runtime.expressions.IPredicate;
+import fr.labri.patterndetector.runtime.expressions.INacBeginMarker;
+import fr.labri.patterndetector.runtime.expressions.INacEndMarker;
 
 import java.util.ArrayList;
 

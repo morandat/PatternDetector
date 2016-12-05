@@ -1,11 +1,11 @@
-package fr.labri.patterndetector.runtime.predicates.builtins;
+package fr.labri.patterndetector.runtime.expressions.predicates;
 
-import fr.labri.patterndetector.runtime.predicates.*;
+import fr.labri.patterndetector.runtime.expressions.*;
 
 /**
  * Created by morandat on 05/12/2016.
  */
-@Predicate(name = "=")
+@Register(name = "=")
 public class Equal extends Predicate2 {
     public Equal(IField... fields) {
         super(fields);

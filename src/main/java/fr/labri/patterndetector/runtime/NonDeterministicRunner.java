@@ -9,8 +9,8 @@ package fr.labri.patterndetector.runtime;
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.automaton.IState;
 import fr.labri.patterndetector.automaton.ITransition;
-import fr.labri.patterndetector.runtime.predicates.INacBeginMarker;
-import fr.labri.patterndetector.runtime.predicates.INacEndMarker;
+import fr.labri.patterndetector.runtime.expressions.INacBeginMarker;
+import fr.labri.patterndetector.runtime.expressions.INacEndMarker;
 
 import java.io.Serializable;
 import java.util.ArrayList;
