@@ -2,7 +2,6 @@ package fr.labri.patterndetector.runtime.expressions.builtins;
 
 import fr.labri.patterndetector.runtime.expressions.IField;
 import fr.labri.patterndetector.runtime.expressions.IPredicate;
-import fr.labri.patterndetector.runtime.expressions.Register;
 
 /**
  * Created by morandat on 05/12/2016.

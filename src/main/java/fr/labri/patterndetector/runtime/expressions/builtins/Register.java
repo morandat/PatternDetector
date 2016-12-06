@@ -1,6 +1,7 @@
-package fr.labri.patterndetector.runtime.expressions;
+package fr.labri.patterndetector.runtime.expressions.builtins;
 
-import fr.labri.patterndetector.lang.Builtin;
+import fr.labri.patterndetector.lang.Functions;
+import fr.labri.patterndetector.runtime.expressions.IField;
 import org.atteo.classindex.IndexAnnotated;
 
 import java.lang.annotation.ElementType;
@@ -26,6 +27,6 @@ public @interface Register {
     String NO_DOCUMENTATION = "No documentation";
 
     interface Factory<K> {
-        K instantiate(IField[] fields) throws Builtin.InvalidUsage;
+        K instantiate(IField[] fields) throws Functions.InvalidUsage;
     }
 }

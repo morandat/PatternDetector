@@ -24,8 +24,6 @@ public class Main {
         RuleManager ruleManager = new RuleManager();
         Detector detector = new Detector(ruleManager);
 
-
-
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         IRule negationRule = new Atom("AddBasket")

@@ -1,6 +1,7 @@
 package fr.labri.patterndetector.lang;
 
 import fr.labri.patterndetector.runtime.expressions.*;
+import fr.labri.patterndetector.runtime.expressions.builtins.Register;
 import org.atteo.classindex.ClassFilter;
 import org.atteo.classindex.ClassIndex;
 
@@ -12,13 +13,15 @@ import java.util.Objects;
 /**
  * Created by morandat on 05/12/2016.
  */
-public class Builtin {
+public class Functions {
     protected Map<String, Entry<IPredicate>> _predicates = new HashMap<>();
     protected Map<String, Entry<IExpression>> _expressions = new HashMap<>();
 
-    public static Builtin get() {
-        Builtin builder = new Builtin();
-        builder.initBuiltins();
+    private Functions() {}
+
+    public static Functions get() {
+        Functions builder = new Functions();
+        builder.init();
         return builder;
     }
 
@@ -36,7 +39,7 @@ public class Builtin {
         return entry._factory.instantiate(fields);
     }
 
-    public void initBuiltins() {
+    public void init() {
         initBuiltins(IPredicate.class, _predicates);
         initBuiltins(IExpression.class, _expressions);
     }
@@ -136,7 +139,7 @@ public class Builtin {
             _documentation = documentation;
         }
 
-        private String formatEntry() {
+        public String toString() {
             return String.format("%s: %s\n\t%s\n", _name, _factory.toString(), _documentation);
         }
     }

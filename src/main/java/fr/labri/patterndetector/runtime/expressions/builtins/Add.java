@@ -3,7 +3,6 @@ package fr.labri.patterndetector.runtime.expressions.builtins;
 import fr.labri.patterndetector.runtime.expressions.BinaryOperation;
 import fr.labri.patterndetector.runtime.expressions.IExpression;
 import fr.labri.patterndetector.runtime.expressions.IField;
-import fr.labri.patterndetector.runtime.expressions.Register;
 import fr.labri.patterndetector.runtime.expressions.IValue;
 
 /**
