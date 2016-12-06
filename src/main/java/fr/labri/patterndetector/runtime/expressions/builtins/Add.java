@@ -4,10 +4,7 @@ import fr.labri.patterndetector.runtime.expressions.BinaryOperation;
 import fr.labri.patterndetector.runtime.expressions.IExpression;
 import fr.labri.patterndetector.runtime.expressions.IField;
 import fr.labri.patterndetector.runtime.expressions.Register;
-import fr.labri.patterndetector.runtime.types.DoubleValue;
-import fr.labri.patterndetector.runtime.types.IValue;
-import fr.labri.patterndetector.runtime.types.LongValue;
-import fr.labri.patterndetector.runtime.types.StringValue;
+import fr.labri.patterndetector.runtime.expressions.IValue;
 
 /**
  * Created by morandat on 05/12/2016.
@@ -20,21 +17,21 @@ public class Add extends BinaryOperation.Arithmetic<IValue<?>> implements IExpre
 
     @Override
     protected IValue<?> defaultValue() {
-        return LongValue.ZERO;
+        return IValue.LongValue.ZERO;
     }
 
     @Override
     public IValue<?> evaluate(String first, String second) {
-        return StringValue.from(first.concat(second));
+        return IValue.StringValue.from(first.concat(second));
     }
 
     @Override
     public IValue<?> evaluate(double first, double second) {
-        return DoubleValue.from(first + second);
+        return IValue.DoubleValue.from(first + second);
     }
 
     @Override
     public IValue<?> evaluate(long first, long second) {
-        return LongValue.from(first + second);
+        return IValue.LongValue.from(first + second);
     }
 }

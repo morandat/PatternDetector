@@ -3,10 +3,6 @@ package fr.labri.patterndetector.runtime.expressions;
 import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.runtime.Matchbuffer;
 import fr.labri.patterndetector.runtime.UnknownFieldException;
-import fr.labri.patterndetector.runtime.types.DoubleValue;
-import fr.labri.patterndetector.runtime.types.IValue;
-import fr.labri.patterndetector.runtime.types.LongValue;
-import fr.labri.patterndetector.runtime.types.StringValue;
 
 import java.util.Optional;
 
@@ -21,13 +17,13 @@ public class Constant implements IField {
     }
 
     public static Constant from(String value) {
-        return new Constant(StringValue.from(value));
+        return new Constant(IValue.StringValue.from(value));
     }
     public static Constant from(double value) {
-        return new Constant(DoubleValue.from(value));
+        return new Constant(IValue.DoubleValue.from(value));
     }
     public static Constant from(long value) {
-        return new Constant(LongValue.from(value));
+        return new Constant(IValue.LongValue.from(value));
     }
 
     @Override

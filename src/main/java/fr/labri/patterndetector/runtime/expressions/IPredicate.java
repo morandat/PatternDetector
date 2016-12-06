@@ -1,15 +1,10 @@
 package fr.labri.patterndetector.runtime.expressions;
 
-import fr.labri.patterndetector.runtime.types.DoubleValue;
-import fr.labri.patterndetector.runtime.types.IValue;
-import fr.labri.patterndetector.runtime.types.LongValue;
-import fr.labri.patterndetector.runtime.types.StringValue;
-
 import java.io.Serializable;
 
-import static fr.labri.patterndetector.runtime.types.IValue.DOUBLE;
-import static fr.labri.patterndetector.runtime.types.IValue.LONG;
-import static fr.labri.patterndetector.runtime.types.IValue.STRING;
+import static fr.labri.patterndetector.runtime.expressions.IValue.DOUBLE;
+import static fr.labri.patterndetector.runtime.expressions.IValue.LONG;
+import static fr.labri.patterndetector.runtime.expressions.IValue.STRING;
 
 /**
  * Created by wbraik on 5/18/2016.
@@ -45,11 +40,11 @@ public interface IPredicate extends Serializable {
         boolean evaluate(IValue<?> value) {
             switch (value.getTypeID()) {
                 case STRING:
-                    return evaluate(((StringValue) value)._value);
+                    return evaluate(((IValue.StringValue) value)._value);
                 case DOUBLE:
-                    return evaluate(((DoubleValue) value)._value);
+                    return evaluate(((IValue.DoubleValue) value)._value);
                 case LONG:
-                    return evaluate(((LongValue) value)._value);
+                    return evaluate(((IValue.LongValue) value)._value);
 
             }
             return false;

@@ -3,7 +3,6 @@ package fr.labri.patterndetector.runtime.expressions;
 import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.runtime.Matchbuffer;
 import fr.labri.patterndetector.runtime.UnknownFieldException;
-import fr.labri.patterndetector.runtime.types.IValue;
 
 import java.util.Optional;
 

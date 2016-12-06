@@ -1,6 +1,6 @@
 package fr.labri.patterndetector.runtime;
 
-import fr.labri.patterndetector.runtime.types.*;
+import fr.labri.patterndetector.runtime.expressions.IValue;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -62,25 +62,25 @@ public class Event implements Serializable {
     }
 
     public Event setData(String key, Integer value) {
-        _payload.put(key, LongValue.from(value.longValue()));
+        _payload.put(key, IValue.LongValue.from(value.longValue()));
 
         return this;
     }
 
     public Event setData(String key, Long value) {
-        _payload.put(key, LongValue.from(value));
+        _payload.put(key, IValue.LongValue.from(value));
 
         return this;
     }
 
     public Event setData(String key, String value) {
-        _payload.put(key, StringValue.from(value));
+        _payload.put(key, IValue.StringValue.from(value));
 
         return this;
     }
 
     public Event setData(String key, Double value) {
-        _payload.put(key, DoubleValue.from(value));
+        _payload.put(key, IValue.DoubleValue.from(value));
 
         return this;
     }

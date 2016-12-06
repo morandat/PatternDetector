@@ -3,8 +3,6 @@ package fr.labri.patterndetector.runtime.expressions;
 import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.runtime.Matchbuffer;
 import fr.labri.patterndetector.runtime.UnknownFieldException;
-import fr.labri.patterndetector.runtime.types.IValue;
-import fr.labri.patterndetector.runtime.types.LongValue;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +33,7 @@ public interface FieldAccess {
                 return new IField() {
                     @Override
                     public Optional<IValue<?>> fetch(Matchbuffer matchbuffer, Event currentEvent) throws UnknownFieldException {
-                        return Optional.of(LongValue.from(currentEvent.getTimestamp()));
+                        return Optional.of(IValue.LongValue.from(currentEvent.getTimestamp()));
                     }
                 };
             }
@@ -61,7 +59,7 @@ public interface FieldAccess {
                     @Override
                     public Optional<IValue<?>> fetch(Matchbuffer matchbuffer, Event currentEvent) throws UnknownFieldException {
                         assert position < matchbuffer.size();
-                        return Optional.of(LongValue.from(matchbuffer.get(position).get(0).getTimestamp()));
+                        return Optional.of(IValue.LongValue.from(matchbuffer.get(position).get(0).getTimestamp()));
                     }
                 };
             }
@@ -84,7 +82,7 @@ public interface FieldAccess {
                 return new StaticIndex(position, index) {
                     @Override
                     IValue<?> getValue(Event e) throws UnknownFieldException {
-                        return LongValue.from(e.getTimestamp());
+                        return IValue.LongValue.from(e.getTimestamp());
                     }
                 };
             }
@@ -108,7 +106,7 @@ public interface FieldAccess {
                 return new DynamicIndex(position, indexFunction) {
                     @Override
                     IValue<?> getValue(Event e) throws UnknownFieldException {
-                        return LongValue.from(e.getTimestamp());
+                        return IValue.LongValue.from(e.getTimestamp());
                     }
                 };
             }
