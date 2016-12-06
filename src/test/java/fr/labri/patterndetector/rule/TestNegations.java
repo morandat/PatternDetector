@@ -3,7 +3,7 @@ package fr.labri.patterndetector.rule;
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.runtime.expressions.*;
-import fr.labri.patterndetector.runtime.expressions.predicates.Equals;
+import fr.labri.patterndetector.runtime.expressions.builtins.Equals;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -41,14 +41,14 @@ public class TestNegations extends AbstractTestDetection {
                                 new FollowedBy(
                                         new Kleene("View")
                                                 .addPredicate(new Equals(
-                                                        new FieldCurrent("productId"),
-                                                        new FieldKleeneStaticIndex(1, "productId", -1)))
+                                                        FieldAccess.current().named("productId"),
+                                                        FieldAccess.byStaticIndex(1, -2).named("productId")))
                                                 .addNegationBeginMarker(new NegationBeginMarker(
                                                         // negation rule
                                                         new Atom("AddBasket")
                                                                 .addPredicate(new Equals(
-                                                                        new FieldAtom(0, "productId"),
-                                                                        new FieldKleeneStaticIndex(1, "productId", 0))),
+                                                                        FieldAccess.current().named("productId"),
+                                                                        FieldAccess.byStaticIndex(1, 0).named("productId"))),
                                                         "negation")),
                                         new Atom("Exit")
                                                 .addNegationEndMarker(new NegationEndMarker("negation"))),

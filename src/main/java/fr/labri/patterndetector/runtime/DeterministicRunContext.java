@@ -94,7 +94,7 @@ public class DeterministicRunContext extends AbstractRunContext implements Seria
         IField[] fields = predicate.getFields();
         IValue<?>[] values = new IValue[fields.length];
         for (int i = 0; i < fields.length; i++) {
-            Optional<IValue<?>> field = fields[i].resolve(_matchbuffer, current);
+            Optional<IValue<?>> field = fields[i].fetch(_matchbuffer, current);
             if (!field.isPresent())
                 return true;
             values[i] = field.get();

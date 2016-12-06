@@ -2,8 +2,8 @@ package fr.labri.patterndetector.rule;
 
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
-import fr.labri.patterndetector.runtime.expressions.FieldAtom;
-import fr.labri.patterndetector.runtime.expressions.predicates.Equals;
+import fr.labri.patterndetector.runtime.expressions.FieldAccess;
+import fr.labri.patterndetector.runtime.expressions.builtins.Equals;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -55,13 +55,13 @@ public class TestSearchDetection extends AbstractTestDetection {
                                         new FollowedBy(
                                                 new Atom("View")
                                                         .addPredicate(new Equals(
-                                                                new FieldAtom(0, "url"),
-                                                                new FieldAtom(1, "referrer")))
+                                                                FieldAccess.byPosition(0).named("url"),
+                                                                FieldAccess.current().named("referrer")))
                                                         .setAction(() -> System.out.println("Found View event")),
                                                 new Atom("AddBasket")
                                                         .addPredicate(new Equals(
-                                                                new FieldAtom(1, "url"),
-                                                                new FieldAtom(2, "referrer")))
+                                                                FieldAccess.byPosition(1).named("url"),
+                                                                FieldAccess.current().named("referrer")))
                                                         .setAction(() -> System.out.println("Found Basket event")))),
                                 Arrays.asList(
                                         new Event("Search", 1),

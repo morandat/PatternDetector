@@ -1,4 +1,4 @@
-package fr.labri.patterndetector.runtime.expressions.predicates;
+package fr.labri.patterndetector.runtime.expressions.builtins;
 
 import fr.labri.patterndetector.runtime.expressions.*;
 
@@ -6,7 +6,7 @@ import fr.labri.patterndetector.runtime.expressions.*;
  * Created by morandat on 05/12/2016.
  */
 @Register(name = "=")
-public class Equals extends Predicate2 {
+public class Equals extends IPredicate.BinaryStringPredicate {
     public Equals(IField... fields) {
         super(fields);
     }

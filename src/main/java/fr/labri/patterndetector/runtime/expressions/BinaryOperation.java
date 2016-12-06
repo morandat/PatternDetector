@@ -24,7 +24,7 @@ public abstract class BinaryOperation<R> {
 
     protected abstract R defaultValue();
 
-    protected R evaluate(IValue<?> first, IValue<?> second) {
+    public R evaluate(IValue<?> first, IValue<?> second) {
         switch(subtypeValue(first.getTypeID(), second.getTypeID())) {
             case STRING_STRING:
                 return evaluate(((StringValue)first)._value, ((StringValue)second)._value);
@@ -48,37 +48,97 @@ public abstract class BinaryOperation<R> {
         return defaultValue();
     }
 
-    abstract public R evaluate(String first, String second);
+    abstract protected R evaluate(String first, String second);
 
-    public R evaluate(double first, String second) {
-        return evaluate(Double.toString(first), second);
+    abstract protected R evaluate(double first, String second);
+
+    abstract protected R evaluate(long first, String second);
+
+    abstract protected R evaluate(String first, double second);
+
+    abstract protected R evaluate(String first, long second);
+
+    abstract protected R evaluate(double first, double second);
+
+    abstract protected R evaluate(double first, long second);
+
+    abstract protected R evaluate(long first, double second);
+
+    abstract protected R evaluate(long first, long second);
+
+    public static abstract class Arithmetic<R> extends BinaryOperation<R> {
+         public Arithmetic(IField... fields) {
+             super(fields);
+         }
+
+        protected R evaluate(double first, String second) {
+            return evaluate(Double.toString(first), second);
+        }
+
+        protected R evaluate(long first, String second) {
+            return evaluate(Long.toString(first), second);
+        }
+
+        protected R evaluate(String first, double second) {
+            return evaluate(first, Double.toString(second));
+        }
+
+        protected R evaluate(String first, long second) {
+            return evaluate(first, Long.toString(second));
+        }
+
+        protected R evaluate(double first, double second) {
+            return evaluate(Double.toString(first), Double.toString(second));
+        }
+
+        protected R evaluate(double first, long second) {
+            return evaluate(first, (double) second);
+        }
+
+        protected R evaluate(long first, double second) {
+            return evaluate((double) first, (double) second);
+        }
+
+        protected R evaluate(long first, long second) {
+            return evaluate((double) first, (double) second);
+        }
     }
 
-    public R evaluate(long first, String second) {
-        return evaluate(Long.toString(first), second);
-    }
+    public static abstract class StringOperation<R> extends BinaryOperation<R> {
+        public StringOperation(IField... fields) {
+            super(fields);
+        }
 
-    public R evaluate(String first, double second) {
-        return evaluate(first, Double.toString(second));
-    }
+        protected R evaluate(double first, String second) {
+            return evaluate(Double.toString(first), second);
+        }
 
-    public R evaluate(String first, long second) {
-        return evaluate(first, Long.toString(second));
-    }
+        protected R evaluate(long first, String second) {
+            return evaluate(Long.toString(first), second);
+        }
 
-    public R evaluate(double first, double second) {
-        return evaluate(Double.toString(first), Double.toString(second));
-    }
+        protected R evaluate(String first, double second) {
+            return evaluate(first, Double.toString(second));
+        }
 
-    public R evaluate(double first, long second) {
-        return evaluate(first, (double) second);
-    }
+        protected R evaluate(String first, long second) {
+            return evaluate(first, Long.toString(second));
+        }
 
-    public R evaluate(long first, double second) {
-        return evaluate((double) first, (double) second);
-    }
+        protected R evaluate(double first, double second) {
+            return evaluate(Double.toString(first), Double.toString(second));
+        }
 
-    public R evaluate(long first, long second) {
-        return evaluate((double) first, (double) second);
+        protected R evaluate(double first, long second) {
+            return evaluate(first, (double) second);
+        }
+
+        protected R evaluate(long first, double second) {
+            return evaluate((double) first, (double) second);
+        }
+
+        protected R evaluate(long first, long second) {
+            return evaluate((double) first, (double) second);
+        }
     }
 }

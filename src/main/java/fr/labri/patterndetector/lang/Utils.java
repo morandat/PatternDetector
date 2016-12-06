@@ -3,6 +3,8 @@ package fr.labri.patterndetector.lang;
 import xtc.util.Pair;
 
 public class Utils {
+
+    @SafeVarargs
     public static <E> Pair<E> makeList(E... objects) {
         if (objects.length == 0) return Pair.empty();
         Pair<E> pair = new Pair<>(objects[0]);

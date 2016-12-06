@@ -3,7 +3,7 @@ package fr.labri.patterndetector.runtime;
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.rule.*;
 import fr.labri.patterndetector.runtime.expressions.*;
-import fr.labri.patterndetector.runtime.expressions.predicates.Equals;
+import fr.labri.patterndetector.runtime.expressions.builtins.Equals;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileOutputStream;
@@ -30,13 +30,14 @@ public class Main {
 
         IRule negationRule = new Atom("AddBasket")
                 .addPredicate(new Equals(
-                        new FieldAtom(0, "productId"), new FieldKleeneStaticIndex(1, "productId", 0)));
+                        FieldAccess.byPosition(0).named("productId"),
+                        FieldAccess.byStaticIndex(1, 0).named("productId")));
 
         IRule mainRule = new FollowedBy(
                 new Kleene("View")
                         .addPredicate(new Equals(
-                                new FieldKleeneDynamicIndex(1, "productId", i -> i),
-                                new FieldKleeneDynamicIndex(1, "productId", i -> i - 1)))
+                                FieldAccess.current().named("productId"),
+                                FieldAccess.byStaticIndex(1, -2).named("productId")))
                         .addNegationBeginMarker(new NegationBeginMarker(negationRule, "negation")),
                 new Atom("Exit")
                         .addNegationEndMarker(new NegationEndMarker("negation")));
@@ -53,13 +54,13 @@ public class Main {
                                 new Atom("SEARCH"),
                                 new Atom("PRODUCT_SHEET")
                                         .addPredicate(new Equals(
-                                                new FieldAtom(0, "url"),
-                                                new FieldAtom(1, "ref")))),
+                                                FieldAccess.byPosition(0).named("url"),
+                                                FieldAccess.current().named("ref")))),
 
                         new Atom("ADD_TO_BASKET")
                                 .addPredicate(new Equals(
-                                        new FieldAtom(1, "url"),
-                                        new FieldAtom(2, "ref"))));
+                                        FieldAccess.byPosition(1).named("url"),
+                                        FieldAccess.current().named("ref"))));
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

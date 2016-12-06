@@ -3,9 +3,9 @@ package fr.labri.patterndetector.rule;
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.runtime.expressions.Constant;
-import fr.labri.patterndetector.runtime.expressions.FieldAtom;
-import fr.labri.patterndetector.runtime.expressions.predicates.Equals;
-import fr.labri.patterndetector.runtime.expressions.predicates.GreaterThan;
+import fr.labri.patterndetector.runtime.expressions.FieldAccess;
+import fr.labri.patterndetector.runtime.expressions.builtins.Equals;
+import fr.labri.patterndetector.runtime.expressions.builtins.GreaterThan;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -60,14 +60,14 @@ public class TestScenario2Detection extends AbstractTestDetection {
                                         new Atom("Search"),
                                         new Atom("AddBasket")
                                                 .addPredicate(new Equals(
-                                                        new FieldAtom(0, "url"),
-                                                        new FieldAtom(1, "referrer")))
+                                                        FieldAccess.byPosition(0).named("url"),
+                                                        FieldAccess.current().named("referrer")))
                                                 .addPredicate(new Equals(
-                                                        new FieldAtom(1, "category"),
-                                                        new Constant("TV")))
+                                                        FieldAccess.current().named("category"),
+                                                        Constant.from("TV")))
                                                 .addPredicate(new GreaterThan(
-                                                        new FieldAtom(1, "rating"),
-                                                        new Constant(3)))),
+                                                        FieldAccess.current().named("rating"),
+                                                        Constant.from(3)))),
                                 Arrays.asList(
                                         new Event("Search", 1),
                                         new Event("AddBasket", 6)),

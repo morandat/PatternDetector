@@ -3,10 +3,9 @@ package fr.labri.patterndetector.rule;
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.runtime.expressions.Constant;
-import fr.labri.patterndetector.runtime.expressions.FieldCurrentTime;
-import fr.labri.patterndetector.runtime.expressions.FieldKleeneStaticIndexTime;
-import fr.labri.patterndetector.runtime.expressions.arithmetic.Add;
-import fr.labri.patterndetector.runtime.expressions.predicates.Equals;
+import fr.labri.patterndetector.runtime.expressions.FieldAccess;
+import fr.labri.patterndetector.runtime.expressions.builtins.Add;
+import fr.labri.patterndetector.runtime.expressions.builtins.Equals;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -40,8 +39,8 @@ public class TestTimeConstraintKleeneDyn extends AbstractTestDetection {
                                 new FollowedBy(
                                         new Kleene("k")
                                                 .addPredicate(new Equals(
-                                                        new FieldCurrentTime(),
-                                                        new Add(new FieldKleeneStaticIndexTime(0, -1), new Constant(1)))),
+                                                        FieldAccess.current().timestamp(),
+                                                        new Add(FieldAccess.byStaticIndex(0, -2).timestamp(), Constant.from(1)))),
                                         "end"),
                                 Arrays.asList(
                                         new Event("k", 1),

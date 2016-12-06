@@ -91,7 +91,7 @@ public final class RuleAutomatonMaker {
                 // State for ignoring irrelevant events occuring between left and right.
                 State s = new State();
 
-                // If the left automaton is Kleene, then the negation transition is already on the connection state.
+                // If the left automaton is KleeneAccess, then the negation transition is already on the connection state.
                 s.registerStarTransition(s, TransitionType.TRANSITION_DROP);
 
                 automaton.addState(s);
@@ -118,22 +118,22 @@ public final class RuleAutomatonMaker {
                         kleene.getNegationBeginMarkers(), kleene.getNegationEndMarkers(), kleene.getAction());
                 IRuleAutomaton automaton = new RuleAutomaton();
 
-                // The initial state of the base component becomes the initial state of the Kleene automaton.
+                // The initial state of the base component becomes the initial state of the KleeneAccess automaton.
                 IState baseInitialState = baseAutomaton.getInitialState();
                 automaton.setInitialState(baseInitialState);
 
-                // The final states of the base component become states of the Kleene automaton.
+                // The final states of the base component become states of the KleeneAccess automaton.
                 baseAutomaton.getFinalStates().forEach(finalState -> {
                     automaton.addState(finalState);
                     automaton.addConnectionState(finalState);
                 });
 
-                // The rest of the base component's states become states of the Kleene automaton.
+                // The rest of the base component's states become states of the KleeneAccess automaton.
                 baseAutomaton.getStates().forEach(automaton::addState);
 
-                // ### Add extra stuff to obtain the final Kleene automaton.
+                // ### Add extra stuff to obtain the final KleeneAccess automaton.
 
-                // State for ignoring irrelevant events occuring between each event captured by the Kleene sequence.
+                // State for ignoring irrelevant events occuring between each event captured by the KleeneAccess sequence.
                 IState s = new State();
                 baseAutomaton.getFinalStates().forEach(finalState -> finalState.registerEpsilonTransition(s));
                 s.registerStarTransition(s, TransitionType.TRANSITION_DROP);
@@ -190,7 +190,7 @@ public final class RuleAutomatonMaker {
                 // Initial state
                 State i = new State();
 
-                // If the left automaton is Kleene, then the negation transition is already on the connection state.
+                // If the left automaton is KleeneAccess, then the negation transition is already on the connection state.
                 i.registerEpsilonTransition(leftInitialState);
                 i.registerEpsilonTransition(rightInitialState);
 

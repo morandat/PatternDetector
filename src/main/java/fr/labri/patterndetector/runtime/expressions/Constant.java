@@ -20,20 +20,18 @@ public class Constant implements IField {
         _value = value;
     }
 
-    public Constant(String value) {
-        this(StringValue.from(value));
+    public static Constant from(String value) {
+        return new Constant(StringValue.from(value));
     }
-
-    public Constant(double value) {
-        this(DoubleValue.from(value));
+    public static Constant from(double value) {
+        return new Constant(DoubleValue.from(value));
     }
-
-    public Constant(long value) {
-        this(LongValue.from(value));
+    public static Constant from(long value) {
+        return new Constant(LongValue.from(value));
     }
 
     @Override
-    public Optional<IValue<?>> resolve(Matchbuffer matchbuffer, Event currentEvent) throws UnknownFieldException {
+    public Optional<IValue<?>> fetch(Matchbuffer matchbuffer, Event currentEvent) throws UnknownFieldException {
         return Optional.of(_value);
     }
 }

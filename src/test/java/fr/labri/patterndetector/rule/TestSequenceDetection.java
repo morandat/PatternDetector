@@ -39,7 +39,7 @@ public class TestSequenceDetection extends AbstractTestDetection {
         return Arrays.asList(
                 new Object[][]{
                         {
-                                " Detect Kleene(A) followed by B ",
+                                " Detect KleeneAccess(A) followed by B ",
                                 new FollowedBy(new Kleene("a"), "b"),
                                 Arrays.asList(
                                         new Event("a", 2),
@@ -51,7 +51,7 @@ public class TestSequenceDetection extends AbstractTestDetection {
                         },
 
                         {
-                                " Detect Kleene(A) followed by B followed by C ",
+                                " Detect KleeneAccess(A) followed by B followed by C ",
                                 new FollowedBy(new Kleene("a"), new FollowedBy("b", "c")),
                                 Arrays.asList(
                                         new Event("a", 2),

@@ -62,7 +62,7 @@ public class TestAlternativeDetection extends AbstractTestDetection {
                     },
 
                     {
-                            " Detect Kleene(A) followed by B, or A followed by B ",
+                            " Detect KleeneAccess(A) followed by B, or A followed by B ",
                             new Or(new FollowedBy(new Kleene("a"), "b"), new FollowedBy("a", "b")),
                             Arrays.asList(
                                     new Event("a", 1),

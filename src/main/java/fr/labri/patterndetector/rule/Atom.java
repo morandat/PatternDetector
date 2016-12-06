@@ -10,7 +10,7 @@ import java.util.function.Predicate;
  * <p>
  * The atom is the most elementary rule.
  * It represents the occurrence of a given event type.
- * Atoms can be used within FollowedBy and Kleene rules, to describe more complex rules.
+ * Atoms can be used within FollowedBy and KleeneAccess rules, to describe more complex rules.
  */
 public class Atom extends AbstractAtom {
 

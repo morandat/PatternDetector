@@ -29,6 +29,10 @@ public class Matchbuffer {
         return slot != null && slot.size() >= eventPosition;
     }
 
+    public int size() {
+        return _slots.length;
+    }
+
     void append(int position, Event e) {
         List<Event> slot = _slots[position];
         if (slot == null)

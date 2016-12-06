@@ -3,10 +3,9 @@ package fr.labri.patterndetector.rule;
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.runtime.expressions.Constant;
-import fr.labri.patterndetector.runtime.expressions.FieldAtomTime;
-import fr.labri.patterndetector.runtime.expressions.FieldCurrentTime;
-import fr.labri.patterndetector.runtime.expressions.arithmetic.Add;
-import fr.labri.patterndetector.runtime.expressions.predicates.GreaterThan;
+import fr.labri.patterndetector.runtime.expressions.FieldAccess;
+import fr.labri.patterndetector.runtime.expressions.builtins.Add;
+import fr.labri.patterndetector.runtime.expressions.builtins.GreaterThan;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -43,8 +42,8 @@ public class TestTimeConstraintAtom extends AbstractTestDetection {
                                         new Atom("Search"),
                                         new Atom("Purchase")
                                                 .addPredicate(new GreaterThan(
-                                                        new Add(new FieldAtomTime(0), new Constant(5)),
-                                                        new FieldCurrentTime()))),
+                                                        new Add(FieldAccess.byPosition(0).timestamp(), Constant.from(5)),
+                                                        FieldAccess.current().timestamp()))),
                                 Arrays.asList(
                                         new Event("Search", 1),
                                         new Event("Purchase", 6)),
@@ -58,8 +57,8 @@ public class TestTimeConstraintAtom extends AbstractTestDetection {
                                         new Atom("Search"),
                                         new Atom("Purchase")
                                                 .addPredicate(new GreaterThan(
-                                                        new Add(new FieldAtomTime(0), new Constant(2)),
-                                                        new FieldCurrentTime()))),
+                                                        new Add(FieldAccess.byPosition(0).timestamp(), Constant.from(2)),
+                                                        FieldAccess.current().timestamp()))),
                                 new ArrayList<>(),
                                 AutomatonRunnerType.Deterministic
                         },

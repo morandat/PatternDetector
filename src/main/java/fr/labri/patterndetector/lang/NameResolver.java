@@ -31,7 +31,7 @@ public class NameResolver {
 
     void collectName (Pattern context) { // FIXME should be recusive
         // TODO  move _names by level (i.e. pattern ?)
-        new PatternVisitor(){ // Add aliases
+        new PatternVisitor() { // Add aliases
             @Override
             void visit(Pattern pattern) {
                 for (String name: pattern._names) {
