@@ -2,8 +2,8 @@ package fr.labri.patterndetector.automaton;
 
 import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
 import fr.labri.patterndetector.runtime.expressions.IPredicate;
-import fr.labri.patterndetector.rule.INacBeginMarker;
-import fr.labri.patterndetector.rule.INacEndMarker;
+import fr.labri.patterndetector.rule.INegationBeginMarker;
+import fr.labri.patterndetector.rule.INegationEndMarker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,8 +116,8 @@ public final class AutomatonUtils {
         Map<String, Set<IState>> targetStateSets = new HashMap<>();
         Map<String, TransitionType> transitionTypes = new HashMap<>();
         Map<String, ArrayList<IPredicate>> predicates = new HashMap<>();
-        Map<String, ArrayList<INacBeginMarker>> startNacMarkers = new HashMap<>();
-        Map<String, ArrayList<INacEndMarker>> stopNacMarkers = new HashMap<>();
+        Map<String, ArrayList<INegationBeginMarker>> negationStartMarkers = new HashMap<>();
+        Map<String, ArrayList<INegationEndMarker>> negationStopMarkers = new HashMap<>();
         Map<String, Integer> matchBufferPositions = new HashMap<>();
 
         for (IState state : currentStateSet) {
@@ -134,8 +134,8 @@ public final class AutomatonUtils {
                     targetStateSets.put(t.getLabel(), stateSet);
                     transitionTypes.put(t.getLabel(), t.getType());
                     predicates.put(t.getLabel(), t.getPredicates());
-                    startNacMarkers.put(t.getLabel(), t.getNacBeginMarkers());
-                    stopNacMarkers.put(t.getLabel(), t.getNacEndMarkers());
+                    negationStartMarkers.put(t.getLabel(), t.getNegationBeginMarkers());
+                    negationStopMarkers.put(t.getLabel(), t.getNegationEndMarkers());
                     matchBufferPositions.put(t.getLabel(), t.getMatchbufferPosition());
                 }
             }
@@ -174,8 +174,8 @@ public final class AutomatonUtils {
                     Collectors.toSet()));
             currentState.registerTransition(targetState, label, transitionTypes.get(label))
                     .setPredicates(predicates.get(label))
-                    .setNacBeginMarkers(startNacMarkers.get(label))
-                    .setNacEndMarkers(stopNacMarkers.get(label))
+                    .setNegationBeginMarkers(negationStartMarkers.get(label))
+                    .setNegationEndMarkers(negationStopMarkers.get(label))
                     .setMatchbufferPosition(matchBufferPositions.get(label));
         });
     }

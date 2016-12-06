@@ -1,25 +1,26 @@
 package fr.labri.patterndetector.rule.visitors;
 
 import fr.labri.patterndetector.rule.*;
-import fr.labri.patterndetector.rule.INacBeginMarker;
+import fr.labri.patterndetector.rule.INegationBeginMarker;
 
 /**
  * Created by wbraik on 19/11/15.
  * <p>
- * Sets rule names
- * Sets rule positions
+ * Sets rule numbers
  */
 
-public final class RulesNamer {
+public final class RulesNumberer {
 
     public static int numberRule(IRule rule) {
-        RulesNamerVisitor visitor = new RulesNamerVisitor();
+        RulesNumbererVisitor visitor = new RulesNumbererVisitor();
         rule.accept(visitor);
-        return visitor._ruleCounter;
+
+        return visitor._ruleNumber;
     }
 
-    private static class RulesNamerVisitor extends AbstractRuleVisitor {
-        private int _ruleCounter = 0;
+    private static class RulesNumbererVisitor extends AbstractRuleVisitor {
+        private int _ruleNumber = 0;
+
         @Override
         public void visit(AbstractUnaryRule unaryRule) {
             unaryRule.getChildRule().accept(this);
@@ -33,13 +34,12 @@ public final class RulesNamer {
 
         @Override
         public void visit(AbstractTerminalRule terminalRule) {
-            for (INacBeginMarker startNacMarker : terminalRule.getNacBeginMarkers()) {
-                startNacMarker.getNacRule().accept(this);
+            for (INegationBeginMarker negationBeginMarker : terminalRule.getNegationBeginMarkers()) {
+                negationBeginMarker.getNegationRule().accept(this);
             }
 
-            terminalRule.setName("" + _ruleCounter);
-            terminalRule.setMatchbufferPosition(_ruleCounter);
-            _ruleCounter++;
+            terminalRule.setMatchbufferPosition(_ruleNumber);
+            _ruleNumber++;
         }
     }
 }

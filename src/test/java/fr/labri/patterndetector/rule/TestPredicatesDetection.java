@@ -4,7 +4,7 @@ import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.runtime.expressions.*;
 import fr.labri.patterndetector.runtime.expressions.arithmetic.Add;
-import fr.labri.patterndetector.runtime.expressions.predicates.Equal;
+import fr.labri.patterndetector.runtime.expressions.predicates.Equals;
 import fr.labri.patterndetector.runtime.expressions.predicates.GreaterThan;
 import fr.labri.patterndetector.runtime.expressions.predicates.NotEqual;
 import org.junit.runner.RunWith;
@@ -61,7 +61,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                 new FollowedBy(
                                         "a",
                                         new Atom("b")
-                                                .addPredicate(new Equal(
+                                                .addPredicate(new Equals(
                                                         new FieldAtom(0, "x"),
                                                         new FieldCurrent("y")))),
                                 Arrays.asList(
@@ -89,7 +89,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                 new FollowedBy("a",
                                         new FollowedBy(
                                                 new Kleene("b")
-                                                        .addPredicate(new Equal(
+                                                        .addPredicate(new Equals(
                                                                 new FieldAtom(0, "x"),
                                                                 new FieldCurrent("x"))),
                                                 "c")),
@@ -107,7 +107,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                         new FollowedBy(
                                                 new Kleene("b"),
                                                 new Atom("c")
-                                                        .addPredicate(new Equal(
+                                                        .addPredicate(new Equals(
                                                                 new Add(new FieldKleeneStaticIndex(1, "y", 0), new Constant(1)),
                                                                 new FieldCurrent("y"))))),
                                 Arrays.asList(
@@ -125,7 +125,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                 " Detect Kleene(B) followed by C with Kleene predicates ",
                                 new FollowedBy(
                                         new Kleene("b")
-                                                .addPredicate(new Equal(
+                                                .addPredicate(new Equals(
                                                         new FieldCurrent("x"),
                                                         new FieldKleeneStaticIndex(0, "x", -1))),
                                         "c"),
@@ -140,7 +140,7 @@ public class TestPredicatesDetection extends AbstractTestDetection {
                                 " Detect Kleene(B) followed by C with Kleene # b[i].y = b[i - 1].y",
                                 new FollowedBy(
                                         new Kleene("b")
-                                                .addPredicate(new Equal(
+                                                .addPredicate(new Equals(
                                                         new FieldCurrent("y"),
                                                         new FieldKleeneStaticIndex(0, "y", -1))),
                                         "c"),

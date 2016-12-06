@@ -3,7 +3,7 @@ package fr.labri.patterndetector.rule;
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.runtime.expressions.FieldAtom;
-import fr.labri.patterndetector.runtime.expressions.predicates.Equal;
+import fr.labri.patterndetector.runtime.expressions.predicates.Equals;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -54,12 +54,12 @@ public class TestSearchDetection extends AbstractTestDetection {
                                 new FollowedBy(new Atom("Search").setAction(() -> System.out.println("Found Search event")),
                                         new FollowedBy(
                                                 new Atom("View")
-                                                        .addPredicate(new Equal(
+                                                        .addPredicate(new Equals(
                                                                 new FieldAtom(0, "url"),
                                                                 new FieldAtom(1, "referrer")))
                                                         .setAction(() -> System.out.println("Found View event")),
                                                 new Atom("AddBasket")
-                                                        .addPredicate(new Equal(
+                                                        .addPredicate(new Equals(
                                                                 new FieldAtom(1, "url"),
                                                                 new FieldAtom(2, "referrer")))
                                                         .setAction(() -> System.out.println("Found Basket event")))),

@@ -4,8 +4,8 @@ import fr.labri.patterndetector.automaton.*;
 import fr.labri.patterndetector.automaton.exception.RuleAutomatonException;
 import fr.labri.patterndetector.runtime.expressions.IPredicate;
 import fr.labri.patterndetector.rule.*;
-import fr.labri.patterndetector.rule.INacBeginMarker;
-import fr.labri.patterndetector.rule.INacEndMarker;
+import fr.labri.patterndetector.rule.INegationBeginMarker;
+import fr.labri.patterndetector.rule.INegationEndMarker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,7 @@ public final class RuleAutomatonMaker {
         public void visit(Atom atom) {
             try {
                 _automaton = makeAtomAutomaton(atom.getMatchbufferPosition(), atom.getEventType(), atom.getPredicates(),
-                        atom.getNacBeginMarkers(), atom.getNacEndMarkers(), atom.getAction());
+                        atom.getNegationBeginMarkers(), atom.getNegationEndMarkers(), atom.getAction());
             } catch (RuleAutomatonException e) {
                 Logger.error("Compilation failed : " + e.getMessage() + "(" + atom + ")\n"
                         + e.getRuleAutomaton());
@@ -115,7 +115,7 @@ public final class RuleAutomatonMaker {
         public void visit(Kleene kleene) {
             try {
                 IRuleAutomaton baseAutomaton = makeAtomAutomaton(kleene.getMatchbufferPosition(), kleene.getEventType(), kleene.getPredicates(),
-                        kleene.getNacBeginMarkers(), kleene.getNacEndMarkers(), kleene.getAction());
+                        kleene.getNegationBeginMarkers(), kleene.getNegationEndMarkers(), kleene.getAction());
                 IRuleAutomaton automaton = new RuleAutomaton();
 
                 // The initial state of the base component becomes the initial state of the Kleene automaton.
@@ -210,7 +210,7 @@ public final class RuleAutomatonMaker {
         }
 
         private IRuleAutomaton makeAtomAutomaton(int patternId, String eventType, ArrayList<IPredicate> predicates,
-                                                 ArrayList<INacBeginMarker> startNacMarkers, ArrayList<INacEndMarker> stopNacMarkers,
+                                                 ArrayList<INegationBeginMarker> negationBeginMarkers, ArrayList<INegationEndMarker> negationEndMarkers,
                                                  Runnable action) throws RuleAutomatonException {
             IState i = new State(); // Initial state
             IState f = new State(); // Final state
@@ -220,8 +220,8 @@ public final class RuleAutomatonMaker {
 
             i.registerTransition(f, eventType, TransitionType.TRANSITION_APPEND)
                     .setPredicates(predicates)
-                    .setNacBeginMarkers(startNacMarkers)
-                    .setNacEndMarkers(stopNacMarkers)
+                    .setNegationBeginMarkers(negationBeginMarkers)
+                    .setNegationEndMarkers(negationEndMarkers)
                     .setMatchbufferPosition(patternId);
 
             IRuleAutomaton automaton = new RuleAutomaton();

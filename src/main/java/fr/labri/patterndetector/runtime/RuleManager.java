@@ -8,18 +8,17 @@ package fr.labri.patterndetector.runtime;
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.rule.visitors.RuleAutomatonMaker;
 import fr.labri.patterndetector.rule.IRule;
-import fr.labri.patterndetector.rule.visitors.RulesNamer;
+import fr.labri.patterndetector.rule.visitors.RulesNumberer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
 import java.util.*;
 
 public final class RuleManager implements IPatternObserver {
 
     private final Logger Logger = LoggerFactory.getLogger(RuleManager.class);
 
-    private ArrayList<IAutomatonRunner> _runners; // Maps rule names to rule automaton runners
+    private ArrayList<IAutomatonRunner> _runners;
     private AutomatonRunnerFactory _runnerFactory;
 
     public RuleManager() {
@@ -34,28 +33,20 @@ public final class RuleManager implements IPatternObserver {
      * @return The rule's name.
      */
     public IAutomatonRunner addRule(IRule rule, AutomatonRunnerType runnerType) {
-        int matchbufferSize = RulesNamer.numberRule(rule);
-        IRuleAutomaton automaton = RuleAutomatonMaker.makeAutomaton(rule); // Try to build the rule automaton.
-
+        int matchbufferSize = RulesNumberer.numberRule(rule);
+        IRuleAutomaton automaton = RuleAutomatonMaker.makeAutomaton(rule);
         IRuleAutomaton powerset = automaton.powerset();
         powerset.validate();
 
-        // Instantiate runner
-        try {
-            IAutomatonRunner runner = _runnerFactory.getRunner(runnerType, powerset, matchbufferSize);
-            runner.registerPatternObserver(this);
-            _runners.add(runner);
+        // Instantiate automaton runner
+        IAutomatonRunner runner = _runnerFactory.getRunner(runnerType, powerset, matchbufferSize);
+        runner.registerPatternObserver(this);
+        _runners.add(runner);
 
-            Logger.info("Rule added : " + rule);
-            Logger.debug("Powerset : " + powerset);
+        Logger.info("Rule added : " + rule);
+        Logger.debug("Powerset : " + powerset);
 
-//            serializeAutomaton(powerset, "D:\\automaton_" + rule.getName() + ".ser"); // FIXME what is this sh*t
-
-            return runner;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Could not add rule : " + e.getMessage());
-        }
+        return runner;
     }
 
     public void dispatchEvent(Event event) {
@@ -65,12 +56,5 @@ public final class RuleManager implements IPatternObserver {
     @Override
     public void notifyPattern(Collection<Event> pattern) {
         Logger.info("Pattern found : " + pattern);
-    }
-
-    private void serializeAutomaton(IRuleAutomaton automaton, String file) throws IOException {
-        FileOutputStream fos = new FileOutputStream(file);
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-        oos.writeObject(automaton);
-        Logger.debug("Automaton serialized");
     }
 }

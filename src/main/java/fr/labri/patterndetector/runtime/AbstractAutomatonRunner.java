@@ -18,18 +18,23 @@ public abstract class AbstractAutomatonRunner implements IAutomatonRunner, Seria
 
     protected Collection<IPatternObserver> _observers; // Pattern observers to be notified when a pattern is detected.
     protected IRuleAutomaton _automaton;
-    protected boolean _isNac;
+    protected boolean _isNegation;
 
     public AbstractAutomatonRunner(IRuleAutomaton automaton) {
         _automaton = automaton;
         _observers = new ArrayList<>();
-        _isNac = false;
+        _isNegation = false;
     }
 
-    public AbstractAutomatonRunner(IRuleAutomaton automaton, boolean isNac) {
+    public AbstractAutomatonRunner(IRuleAutomaton automaton, boolean isNegation) {
         _automaton = automaton;
         _observers = new ArrayList<>();
-        _isNac = isNac;
+        _isNegation = isNegation;
+    }
+
+    @Override
+    public IRuleAutomaton getAutomaton() {
+        return _automaton;
     }
 
     @Override

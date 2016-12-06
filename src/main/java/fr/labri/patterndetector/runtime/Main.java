@@ -1,10 +1,14 @@
 package fr.labri.patterndetector.runtime;
 
+import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.rule.*;
 import fr.labri.patterndetector.runtime.expressions.*;
-import fr.labri.patterndetector.runtime.expressions.predicates.Equal;
+import fr.labri.patterndetector.runtime.expressions.predicates.Equals;
+import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -13,48 +17,62 @@ import java.util.stream.Stream;
  */
 public class Main {
 
+    private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(Main.class);
+
     public static void main(String[] args) {
-        IRule nacRule = new Atom("AddBasket")
-                .addPredicate(new Equal(
+
+        RuleManager ruleManager = new RuleManager();
+        Detector detector = new Detector(ruleManager);
+
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        IRule negationRule = new Atom("AddBasket")
+                .addPredicate(new Equals(
                         new FieldAtom(0, "productId"), new FieldKleeneStaticIndex(1, "productId", 0)));
 
         IRule mainRule = new FollowedBy(
                 new Kleene("View")
-                        .addPredicate(new Equal(
+                        .addPredicate(new Equals(
                                 new FieldKleeneDynamicIndex(1, "productId", i -> i),
                                 new FieldKleeneDynamicIndex(1, "productId", i -> i - 1)))
-                        .addNacBeginMarker(new NacBeginMarker(nacRule, "nac")),
+                        .addNegationBeginMarker(new NegationBeginMarker(negationRule, "negation")),
                 new Atom("Exit")
-                        .addNacEndMarker(new NacEndMarker("nac")));
+                        .addNegationEndMarker(new NegationEndMarker("negation")));
 
-        RuleManager ruleManager = new RuleManager();
-        Detector detector = new Detector(ruleManager);
-        ruleManager.addRule(mainRule, AutomatonRunnerType.NonDeterministicMatchFirst);
-        detector.detect(Main.generate());
-
-        IRule rule_not_working = new FollowedBy(
-                new FollowedBy(
-                        new Atom("SEARCH")
-                                .setAction((Runnable & Serializable) () -> System.out.println("SEARCH ACTION TRIGGERED !")),
-
-                        new Atom("PRODUCT_SHEET")
-                                .addPredicate(new Equal(
-                                        new FieldAtom(0, "url"),
-                                        new FieldAtom(1, "ref")))
-                                .setAction((Runnable & Serializable) () -> System.out.println("PRODUCT SHEET ACTION TRIGGERED !"))),
-
-                new Atom("ADD_TO_BASKET")
-                        .addPredicate(new Equal(
-                                new FieldAtom(1, "url"),
-                                new FieldAtom(2, "ref"))))
-
-                .setName("basic");
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         IRule rule = new FollowedBy(new Kleene("SEARCH"), "ADD_TO_BASKET");
 
-        ruleManager = new RuleManager();
-        ruleManager.addRule(rule, AutomatonRunnerType.Deterministic);
-        detector = new Detector(ruleManager);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        IRule rule_not_working =
+                new FollowedBy(
+                        new FollowedBy(
+                                new Atom("SEARCH"),
+                                new Atom("PRODUCT_SHEET")
+                                        .addPredicate(new Equals(
+                                                new FieldAtom(0, "url"),
+                                                new FieldAtom(1, "ref")))),
+
+                        new Atom("ADD_TO_BASKET")
+                                .addPredicate(new Equals(
+                                        new FieldAtom(1, "url"),
+                                        new FieldAtom(2, "ref"))));
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+        IAutomatonRunner runner = ruleManager.addRule(rule_not_working, AutomatonRunnerType.Deterministic);
+
+        /*try { // FIXME ad-hoc code for spark automaton import. Uncomment to export automaton
+            Main.serializeAutomaton(runner.getAutomaton(), "D:\\automaton.ser");
+        } catch (IOException e) {
+            throw new RuntimeException("Automaton could not be serialized : " + e.getMessage());
+        }*/
+
         detector.detect(Main.generate());
     }
 
@@ -76,5 +94,12 @@ public class Main {
                         .setData("ref", "http://www.cdiscount.com/chaussures/baskets-enfant-chaussures-chaussures-de-sports-b/f-150-mp03218702.html")
                         .setData("price", 12.8)
         ).stream();
+    }
+
+    private static void serializeAutomaton(IRuleAutomaton automaton, String file) throws IOException {
+        FileOutputStream fos = new FileOutputStream(file);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(automaton);
+        Logger.debug("Automaton serialized");
     }
 }

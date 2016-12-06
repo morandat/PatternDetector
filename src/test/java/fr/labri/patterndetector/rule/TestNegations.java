@@ -3,7 +3,7 @@ package fr.labri.patterndetector.rule;
 import fr.labri.patterndetector.runtime.AutomatonRunnerType;
 import fr.labri.patterndetector.runtime.Event;
 import fr.labri.patterndetector.runtime.expressions.*;
-import fr.labri.patterndetector.runtime.expressions.predicates.Equal;
+import fr.labri.patterndetector.runtime.expressions.predicates.Equals;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 @RunWith(Parameterized.class)
-public class TestNac extends AbstractTestDetection {
+public class TestNegations extends AbstractTestDetection {
 
     public Stream<? extends Event> generate() {
         return scenario();
@@ -40,18 +40,18 @@ public class TestNac extends AbstractTestDetection {
                                 " Detect scenario : k+ -> end # end.t - k[0].t < 10 ",
                                 new FollowedBy(
                                         new Kleene("View")
-                                                .addPredicate(new Equal(
+                                                .addPredicate(new Equals(
                                                         new FieldCurrent("productId"),
                                                         new FieldKleeneStaticIndex(1, "productId", -1)))
-                                                .addNacBeginMarker(new NacBeginMarker(
-                                                        // NAC rule
+                                                .addNegationBeginMarker(new NegationBeginMarker(
+                                                        // negation rule
                                                         new Atom("AddBasket")
-                                                                .addPredicate(new Equal(
+                                                                .addPredicate(new Equals(
                                                                         new FieldAtom(0, "productId"),
                                                                         new FieldKleeneStaticIndex(1, "productId", 0))),
-                                                        "nac")),
+                                                        "negation")),
                                         new Atom("Exit")
-                                                .addNacEndMarker(new NacEndMarker("nac"))),
+                                                .addNegationEndMarker(new NegationEndMarker("negation"))),
                                 Arrays.asList(
                                         new Event("View", 5),
                                         new Event("Exit", 6)),

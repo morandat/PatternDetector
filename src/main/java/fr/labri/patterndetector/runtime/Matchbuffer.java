@@ -25,6 +25,7 @@ public class Matchbuffer {
 
     public boolean hasEvent(int fieldPosition, int eventPosition) {
         List<Event> slot = _slots[fieldPosition];
+
         return slot != null && slot.size() >= eventPosition;
     }
 
@@ -53,6 +54,7 @@ public class Matchbuffer {
 
     public Matchbuffer duplicate() {
         Matchbuffer m = new Matchbuffer(_slots.length);
+
         for (int i = 0; i < _slots.length; i++) {
             List<Event> slot = _slots[i];
             if (slot != null) {
@@ -60,6 +62,7 @@ public class Matchbuffer {
                 m._slots[i].addAll(slot);
             }
         }
+
         return m;
     }
 }

@@ -6,8 +6,8 @@ package fr.labri.patterndetector.runtime;
 
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.automaton.ITransition;
-import fr.labri.patterndetector.rule.INacBeginMarker;
-import fr.labri.patterndetector.rule.INacEndMarker;
+import fr.labri.patterndetector.rule.INegationBeginMarker;
+import fr.labri.patterndetector.rule.INegationEndMarker;
 
 import java.io.Serializable;
 import java.util.*;
@@ -39,10 +39,10 @@ public class DeterministicRunner extends AbstractAutomatonRunner implements Seri
 
     @Override
     public void fire(Event e) {
-        // Fire NACs
-        ArrayList<DeterministicRunner> nacRunnersCopy = new ArrayList<>();
-        nacRunnersCopy.addAll(_context.getNacRunners());
-        nacRunnersCopy.forEach(nacRunner -> nacRunner.fire(e));
+        // Fire negations
+        ArrayList<DeterministicRunner> negationRunnersCopy = new ArrayList<>();
+        negationRunnersCopy.addAll(_context.getNegationRunners());
+        negationRunnersCopy.forEach(negationRunner -> negationRunner.fire(e));
 
         ITransition t = _context.getCurrentState().pickTransition(e.getType());
 
@@ -64,25 +64,25 @@ public class DeterministicRunner extends AbstractAutomatonRunner implements Seri
                         case TRANSITION_DROP:
                     }
 
-                    // NAC markers are ignored for NAC runners
-                    if (!_isNac) {
-                        // Start NACs if there are any NAC START markers on the current transition
-                        if (!t.getNacBeginMarkers().isEmpty()) {
-                            for (INacBeginMarker startNacMarker : t.getNacBeginMarkers()) {
-                                Optional<DeterministicRunner> nacRunner = _context.startNac(startNacMarker.getNacId(), startNacMarker.getNacRule());
+                    // ngeation markers are ignored for negation runners
+                    if (!_isNegation) {
+                        // Start negations if there are any negation begin markers on the current transition
+                        if (!t.getNegationBeginMarkers().isEmpty()) {
+                            for (INegationBeginMarker negationBeginMarker : t.getNegationBeginMarkers()) {
+                                Optional<DeterministicRunner> negationRunner = _context.beginNegation(negationBeginMarker.getNegationId(), negationBeginMarker.getNegationRule());
 
-                                if (nacRunner.isPresent()) {
-                                    nacRunner.get().registerPatternObserver((Collection<Event> pattern) -> {
-                                        Logger.debug(getContextId() + " : NAC matched, resetting run context");
+                                if (negationRunner.isPresent()) {
+                                    negationRunner.get().registerPatternObserver((Collection<Event> pattern) -> {
+                                        Logger.debug(getContextId() + " : negation matched, resetting run context");
                                         resetContext();
                                     });
                                 }
                             }
                         }
-                        // Stop NACs if there are any NAC STOP markers on the current transition
-                        if (!t.getNacEndMarkers().isEmpty()) {
-                            for (INacEndMarker stopNacMarker : t.getNacEndMarkers()) {
-                                _context.stopNac(stopNacMarker.getNacId());
+                        // Stop negations if there are any negation end markers on the current transition
+                        if (!t.getNegationEndMarkers().isEmpty()) {
+                            for (INegationEndMarker negationEndMarker : t.getNegationEndMarkers()) {
+                                _context.endNegation(negationEndMarker.getNegationId());
                             }
                         }
                     }
@@ -109,8 +109,8 @@ public class DeterministicRunner extends AbstractAutomatonRunner implements Seri
 
     public void resetContext() {
         _context.updateCurrentState(_automaton.getInitialState());
-        if (!_isNac) {
-            _context.clearNacRunners();
+        if (!_isNegation) {
+            _context.clearNegationRunners();
             _context.clearMatchBuffers();
         }
 

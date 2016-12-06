@@ -9,8 +9,8 @@ package fr.labri.patterndetector.runtime;
 import fr.labri.patterndetector.automaton.IRuleAutomaton;
 import fr.labri.patterndetector.automaton.IState;
 import fr.labri.patterndetector.automaton.ITransition;
-import fr.labri.patterndetector.rule.INacBeginMarker;
-import fr.labri.patterndetector.rule.INacEndMarker;
+import fr.labri.patterndetector.rule.INegationBeginMarker;
+import fr.labri.patterndetector.rule.INegationEndMarker;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -80,10 +80,10 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner implem
         ArrayList<DeterministicRunContext> matchingSubContexts = new ArrayList<>();
 
         for (DeterministicRunContext currentSubContext : subContexts) {
-            // Fire NACs
-            ArrayList<DeterministicRunner> nacRunnersCopy = new ArrayList<>();
-            nacRunnersCopy.addAll(currentSubContext.getNacRunners());
-            nacRunnersCopy.forEach(nacRunner -> nacRunner.fire(e));
+            // Fire negations
+            ArrayList<DeterministicRunner> negationRunnersCopy = new ArrayList<>();
+            negationRunnersCopy.addAll(currentSubContext.getNegationRunners());
+            negationRunnersCopy.forEach(negationRunner -> negationRunner.fire(e));
 
             ITransition t = currentSubContext.getCurrentState().pickTransition(e.getType());
 
@@ -119,32 +119,32 @@ public final class NonDeterministicRunner extends AbstractAutomatonRunner implem
 
             if (!nextState.isFinal()) {
                 DeterministicRunContext newSubContext = _context.addSubContext(nextState,
-                        currentSubContext.getMatchBuffer(), currentSubContext.getNacRunnersMap());
+                        currentSubContext.getMatchBuffer(), currentSubContext.getNegationRunnersMap());
                 Logger.debug(currentSubContext.getContextId() + " : new subcontext created (" + newSubContext.getContextId() + ")");
 
                 // Update match buffer
                 newSubContext.appendEvent(e, t.getMatchbufferPosition());
 
-                // NAC markers are ignored for NAC runners
-                if (!_isNac) {
-                    // Start NACs if there are any NAC START markers on the current transition
-                    if (!t.getNacBeginMarkers().isEmpty()) {
-                        for (INacBeginMarker startNacMarker : t.getNacBeginMarkers()) {
-                            Optional<DeterministicRunner> nacRunner = newSubContext.startNac(startNacMarker.getNacId(), startNacMarker.getNacRule());
+                // negation markers are ignored for negation runners
+                if (!_isNegation) {
+                    // Start negations if there are any negation begin markers on the current transition
+                    if (!t.getNegationBeginMarkers().isEmpty()) {
+                        for (INegationBeginMarker startNegationMarker : t.getNegationBeginMarkers()) {
+                            Optional<DeterministicRunner> negationRunner = newSubContext.beginNegation(startNegationMarker.getNegationId(), startNegationMarker.getNegationRule());
 
-                            if (nacRunner.isPresent()) {
-                                nacRunner.get().registerPatternObserver((Collection<Event> pattern) -> {
-                                    Logger.debug(newSubContext.getContextId() + " : NAC matched, removing subcontext " + newSubContext.getContextId());
+                            if (negationRunner.isPresent()) {
+                                negationRunner.get().registerPatternObserver((Collection<Event> pattern) -> {
+                                    Logger.debug(newSubContext.getContextId() + " : negation matched, removing subcontext " + newSubContext.getContextId());
                                     _context.getSubContexts().remove(newSubContext);
                                 });
                             }
                         }
                     }
 
-                    // Stop NACs if there are any NAC STOP markers on the current transition
-                    if (!t.getNacEndMarkers().isEmpty()) {
-                        for (INacEndMarker stopNacMarker : t.getNacEndMarkers()) {
-                            newSubContext.stopNac(stopNacMarker.getNacId());
+                    // Stop negations if there are any negation end markers on the current transition
+                    if (!t.getNegationEndMarkers().isEmpty()) {
+                        for (INegationEndMarker negationEndMarker : t.getNegationEndMarkers()) {
+                            newSubContext.endNegation(negationEndMarker.getNegationId());
                         }
                     }
                 }

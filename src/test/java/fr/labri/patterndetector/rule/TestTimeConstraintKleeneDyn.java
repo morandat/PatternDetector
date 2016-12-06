@@ -6,7 +6,7 @@ import fr.labri.patterndetector.runtime.expressions.Constant;
 import fr.labri.patterndetector.runtime.expressions.FieldCurrentTime;
 import fr.labri.patterndetector.runtime.expressions.FieldKleeneStaticIndexTime;
 import fr.labri.patterndetector.runtime.expressions.arithmetic.Add;
-import fr.labri.patterndetector.runtime.expressions.predicates.Equal;
+import fr.labri.patterndetector.runtime.expressions.predicates.Equals;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -39,7 +39,7 @@ public class TestTimeConstraintKleeneDyn extends AbstractTestDetection {
                                 " Detect scenario : k+ -> end | k[i].t = k[i-1].t + 1 ",
                                 new FollowedBy(
                                         new Kleene("k")
-                                                .addPredicate(new Equal(
+                                                .addPredicate(new Equals(
                                                         new FieldCurrentTime(),
                                                         new Add(new FieldKleeneStaticIndexTime(0, -1), new Constant(1)))),
                                         "end"),

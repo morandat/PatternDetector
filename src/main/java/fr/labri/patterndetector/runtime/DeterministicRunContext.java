@@ -22,28 +22,28 @@ public class DeterministicRunContext extends AbstractRunContext implements Seria
 
     private IState _currentState;
     private Matchbuffer _matchbuffer; // maps pattern ids to corresponding pattern events
-    private Map<String, DeterministicRunner> _nacRunners; // maps NAC IDs to corresponding automata
+    private Map<String, DeterministicRunner> _negationRunners; // maps negations to corresponding automata
 
     public DeterministicRunContext(IState initialState, int matchbufferSize) {
         super();
         _currentState = initialState;
         _matchbuffer = new Matchbuffer(matchbufferSize);
-        _nacRunners = new HashMap<>();
+        _negationRunners = new HashMap<>();
     }
 
     public DeterministicRunContext(IState initialState, Matchbuffer matchbuffer) {
         super();
         _currentState = initialState;
-        _matchbuffer = matchbuffer.duplicate(); // FIXME inefficient : matchbuffers might not need to be copied to each NAC / subcontext
-        _nacRunners = new HashMap<>();
+        _matchbuffer = matchbuffer.duplicate(); // FIXME inefficient : matchbuffers might not need to be copied to each negation / subcontext
+        _negationRunners = new HashMap<>();
     }
 
-    public DeterministicRunContext(IState initialState, Matchbuffer matchbuffer, Map<String, DeterministicRunner> nacRunners) {
+    public DeterministicRunContext(IState initialState, Matchbuffer matchbuffer, Map<String, DeterministicRunner> negationRunners) {
         super();
         _currentState = initialState;
         _matchbuffer = matchbuffer.duplicate();
-        _nacRunners = new HashMap<>(); // FIXME inefficient : NACS might not need to be copied
-        _nacRunners.putAll(nacRunners);
+        _negationRunners = new HashMap<>(); // FIXME inefficient : negations might not need to be copied
+        _negationRunners.putAll(negationRunners);
     }
 
     public boolean isCurrentStateFinal() {
@@ -62,12 +62,12 @@ public class DeterministicRunContext extends AbstractRunContext implements Seria
         return _matchbuffer;
     }
 
-    public Map<String, DeterministicRunner> getNacRunnersMap() {
-        return _nacRunners;
+    public Map<String, DeterministicRunner> getNegationRunnersMap() {
+        return _negationRunners;
     }
 
-    public Collection<DeterministicRunner> getNacRunners() {
-        return _nacRunners.values();
+    public Collection<DeterministicRunner> getNegationRunners() {
+        return _negationRunners.values();
     }
 
     public void appendEvent(Event event, int patternId) {
@@ -78,12 +78,12 @@ public class DeterministicRunContext extends AbstractRunContext implements Seria
         _matchbuffer.clear();
     }
 
-    public void clearNacRunners() {
-        _nacRunners.clear();
+    public void clearNegationRunners() {
+        _negationRunners.clear();
     }
 
     public boolean isTransitionValid(ITransition transition, Event current) throws UnknownFieldException {
-        for (IPredicate predicate: transition.getPredicates()) {
+        for (IPredicate predicate : transition.getPredicates()) {
             if (!evaluatePredicate(predicate, current))
                 return false;
         }
@@ -103,25 +103,25 @@ public class DeterministicRunContext extends AbstractRunContext implements Seria
         return true;
     }
 
-    public Optional<DeterministicRunner> startNac(String nacId, IRule nacRule) {
-        if (!_nacRunners.containsKey(nacId)) { // check if this NAC was already started
-            IRuleAutomaton nacPowerset = RuleAutomatonMaker.makeAutomaton(nacRule).powerset();
-            nacPowerset.validate();
+    public Optional<DeterministicRunner> beginNegation(String negationId, IRule negationRule) {
+        if (!_negationRunners.containsKey(negationId)) { // check if this negation was already started (can be the case for kleene transitions)
+            IRuleAutomaton negationPowerset = RuleAutomatonMaker.makeAutomaton(negationRule).powerset();
+            negationPowerset.validate();
 
-            DeterministicRunner nacRunner = new DeterministicRunner(nacPowerset, _matchbuffer);
-            _nacRunners.put(nacId, nacRunner);
+            DeterministicRunner negationRunner = new DeterministicRunner(negationPowerset, _matchbuffer);
+            _negationRunners.put(negationId, negationRunner);
 
-            Logger.debug(_contextId + " : NAC \"" + nacId + "\" started with context " + nacRunner.getContextId() + " : " + nacRule);
+            Logger.debug(_contextId + " : negation \"" + negationId + "\" started with context " + negationRunner.getContextId() + " : " + negationRule);
 
-            return Optional.of(nacRunner);
+            return Optional.of(negationRunner);
         } else
             return Optional.empty();
     }
 
-    public void stopNac(String nacId) {
-        Logger.debug(_contextId + " : NAC stopped : " + nacId);
+    public void endNegation(String negationId) {
+        Logger.debug(_contextId + " : negation stopped : " + negationId);
 
-        _nacRunners.remove(nacId);
+        _negationRunners.remove(negationId);
     }
 
     public String toString() {

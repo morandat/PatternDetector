@@ -30,9 +30,9 @@ public interface IRule {
 
     ArrayList<IPredicate> getPredicates();
 
-    ArrayList<INacBeginMarker> getNacBeginMarkers();
+    ArrayList<INegationBeginMarker> getNegationBeginMarkers();
 
-    ArrayList<INacEndMarker> getNacEndMarkers();
+    ArrayList<INegationEndMarker> getNegationEndMarkers();
 
     Runnable getAction();
 
@@ -54,13 +54,13 @@ public interface IRule {
 
     IRule setPredicates(ArrayList<IPredicate> predicates);
 
-    IRule addNacBeginMarker(INacBeginMarker startNacMarker);
+    IRule addNegationBeginMarker(INegationBeginMarker negationBeginMarker);
 
-    IRule setNacBeginMarkers(ArrayList<INacBeginMarker> startNacMarkers);
+    IRule setNegationBeginMarkers(ArrayList<INegationBeginMarker> negationBeginMarkers);
 
-    IRule addNacEndMarker(INacEndMarker stopNacMarker);
+    IRule addNegationEndMarker(INegationEndMarker negationEndMarker);
 
-    IRule setNacEndMarkers(ArrayList<INacEndMarker> stopNacMarkers);
+    IRule setNegationEndMarkers(ArrayList<INegationEndMarker> negationEndMarkers);
 
     void accept(IRuleVisitor visitor);
 

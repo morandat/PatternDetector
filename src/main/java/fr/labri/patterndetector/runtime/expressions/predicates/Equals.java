@@ -6,8 +6,8 @@ import fr.labri.patterndetector.runtime.expressions.*;
  * Created by morandat on 05/12/2016.
  */
 @Register(name = "=")
-public class Equal extends Predicate2 {
-    public Equal(IField... fields) {
+public class Equals extends Predicate2 {
+    public Equals(IField... fields) {
         super(fields);
     }
 

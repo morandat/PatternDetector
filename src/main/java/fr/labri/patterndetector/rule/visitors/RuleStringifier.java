@@ -25,12 +25,12 @@ public final class RuleStringifier {
 
         @Override
         public void visit(Atom atom) {
-            _ruleString = atom.getEventType() + "(" + atom.getName() + ")";
+            _ruleString = atom.getEventType() + "(" + atom.getMatchbufferPosition() + ")";
         }
 
         @Override
         public void visit(Kleene kleene) {
-            _ruleString = kleene.getEventType() + kleene.getSymbol() + "(" + kleene.getName() + ")";
+            _ruleString = kleene.getEventType() + kleene.getSymbol() + "(" + kleene.getMatchbufferPosition() + ")";
         }
 
         @Override

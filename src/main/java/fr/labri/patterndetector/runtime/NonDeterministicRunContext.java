@@ -35,8 +35,8 @@ public class NonDeterministicRunContext extends AbstractRunContext implements Se
     }
 
     public DeterministicRunContext addSubContext(IState initialState, Matchbuffer matchBuffer,
-                                                 Map<String, DeterministicRunner> nacRunners) {
-        DeterministicRunContext subContext = new DeterministicRunContext(initialState, matchBuffer, nacRunners);
+                                                 Map<String, DeterministicRunner> negationRunners) {
+        DeterministicRunContext subContext = new DeterministicRunContext(initialState, matchBuffer, negationRunners);
         _subContexts.add(subContext);
 
         return subContext;

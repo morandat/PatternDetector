@@ -1,5 +1,7 @@
 package fr.labri.patterndetector.runtime;
 
+import fr.labri.patterndetector.automaton.IRuleAutomaton;
+
 import java.util.Collection;
 
 /**
@@ -14,6 +16,8 @@ public interface IAutomatonRunner {
     void fire(Event e);
 
     IRunContext getContext();
+
+    IRuleAutomaton getAutomaton();
 
     /**
      * Register a pattern observer.

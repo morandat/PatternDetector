@@ -1,8 +1,8 @@
 package fr.labri.patterndetector.automaton;
 
 import fr.labri.patterndetector.runtime.expressions.IPredicate;
-import fr.labri.patterndetector.rule.INacBeginMarker;
-import fr.labri.patterndetector.rule.INacEndMarker;
+import fr.labri.patterndetector.rule.INegationBeginMarker;
+import fr.labri.patterndetector.rule.INegationEndMarker;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -21,8 +21,8 @@ public class Transition implements ITransition, Serializable {
     private TransitionType _type;
     private int _matchBufferPosition;
     private ArrayList<IPredicate> _predicates;
-    private ArrayList<INacBeginMarker> _startNacMarkers;
-    private ArrayList<INacEndMarker> _stopNacMarkers;
+    private ArrayList<INegationBeginMarker> _negationStartMarkers;
+    private ArrayList<INegationEndMarker> _negationStopMarkers;
 
     public Transition(IState source, IState target, String label, TransitionType type) {
         _source = source;
@@ -31,8 +31,8 @@ public class Transition implements ITransition, Serializable {
         _type = type;
 
         _predicates = new ArrayList<>();
-        _startNacMarkers = new ArrayList<>();
-        _stopNacMarkers = new ArrayList<>();
+        _negationStartMarkers = new ArrayList<>();
+        _negationStopMarkers = new ArrayList<>();
     }
 
     @Override
@@ -71,13 +71,13 @@ public class Transition implements ITransition, Serializable {
     }
 
     @Override
-    public ArrayList<INacBeginMarker> getNacBeginMarkers() {
-        return _startNacMarkers;
+    public ArrayList<INegationBeginMarker> getNegationBeginMarkers() {
+        return _negationStartMarkers;
     }
 
     @Override
-    public ArrayList<INacEndMarker> getNacEndMarkers() {
-        return _stopNacMarkers;
+    public ArrayList<INegationEndMarker> getNegationEndMarkers() {
+        return _negationStopMarkers;
     }
 
     @Override
@@ -95,15 +95,15 @@ public class Transition implements ITransition, Serializable {
     }
 
     @Override
-    public ITransition setNacBeginMarkers(ArrayList<INacBeginMarker> nacBeginMarkers) {
-        _startNacMarkers = nacBeginMarkers;
+    public ITransition setNegationBeginMarkers(ArrayList<INegationBeginMarker> negationBeginMarkers) {
+        _negationStartMarkers = negationBeginMarkers;
 
         return this;
     }
 
     @Override
-    public ITransition setNacEndMarkers(ArrayList<INacEndMarker> nacEndMarkers) {
-        _stopNacMarkers = nacEndMarkers;
+    public ITransition setNegationEndMarkers(ArrayList<INegationEndMarker> negationEndMarkers) {
+        _negationStopMarkers = negationEndMarkers;
 
         return this;
     }
